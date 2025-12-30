@@ -1,1 +1,1 @@
-Added a Change Log
+- Added CoolImageEditor
