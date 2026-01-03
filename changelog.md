@@ -1,1 +1,1 @@
-- Added CoolImageEditor
+- Added delay before Clear Installer prompt
