@@ -1,1 +1,3 @@
-- Created AbelTools Config
+- Removed AbelTools Config
+- Added Aleksey Menu 3.5
+- Added "| NEW |" as a tag for new projects in name
