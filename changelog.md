@@ -1,1 +1,2 @@
-- Improvements
+- Added WIFI Requirement
+- Added ATools 4.0
