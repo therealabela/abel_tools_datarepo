@@ -1,1 +1,1 @@
-- Fixed the “Do you want to continue” bug
+- Fixed Bugs
