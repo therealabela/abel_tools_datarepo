@@ -1,2 +1,1 @@
-- Added WIFI Requirement
-- Added ATools 4.0
+- Tested AbelToolsUPDPUSH 3
