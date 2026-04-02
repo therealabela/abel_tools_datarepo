@@ -1,3 +1,1 @@
-- Added Editable Materials
-- Updated Start Text
-- Added Editable Materials to API
+- Added Copyright: © 2026 Abel Tools Installer by Abel Achenkunju. All rights reserved.
