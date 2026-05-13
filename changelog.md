@@ -1,1 +1,2 @@
-- Added Copyright: © 2026 Abel Tools Installer by Abel Achenkunju. All rights reserved.
+- Updated Change Log API
+- Added SaveMyBattery V2!
