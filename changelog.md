@@ -1,2 +1,2 @@
-- Updated Change Log API
-- Added SaveMyBattery V2!
+- Fixed SaveMyBattery V2 with V2.1
+- Updated Abel Tools API with V2.1
