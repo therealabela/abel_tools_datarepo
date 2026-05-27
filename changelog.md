@@ -1,2 +1,2 @@
-- Fixed SaveMyBattery V2 with V2.1
-- Updated Abel Tools API with V2.1
+- Minor Changes to Abel Tools Installer
+- Changed the first button of the "Clear Installer" Popup to "No"
