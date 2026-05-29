@@ -3,7 +3,6 @@ Quickscreen
 AnythingButGlass
 SaveMyBattery V2.1
 SaveMyBattery V1
-WebsiteSafer
 CoolBGRemover
 CoolImageEditor
 leaf blower w/ Google Search
