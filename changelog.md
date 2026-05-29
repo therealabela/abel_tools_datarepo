@@ -1,2 +1,1 @@
-- Minor Changes to Abel Tools Installer
-- Changed the first button of the "Clear Installer" Popup to "No"
+- Removed WebsiteSafer
