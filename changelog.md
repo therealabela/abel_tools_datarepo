@@ -1,1 +1,3 @@
-- Added NotARobot API
+- Added NotARobot API V1.1
+- Changed Startup Text
+- Changed Update Fail Text
