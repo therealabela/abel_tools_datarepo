@@ -1,3 +1,2 @@
-- Added NotARobot API V1.1
-- Changed Startup Text
-- Changed Update Fail Text
+- Replaced all data links for updater
+- New Shortcut: Moo Cleanup Tool!
