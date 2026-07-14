@@ -628,6 +628,67 @@
     .sheet-action { margin-top: 20px; }
     .sheet-action .btn { width: 100%; min-height: 48px; font-size: 15px; border-radius: 15px; }
 
+    /* ---------- Confirm alert ---------- */
+    .alert-overlay {
+        position: fixed;
+        top: 0; right: 0; bottom: 0; left: 0;
+        background: var(--overlay);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        z-index: 60;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s ease;
+    }
+    .alert-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .alert {
+        position: fixed;
+        top: 50%; left: 50%;
+        z-index: 61;
+        width: 280px;
+        background: var(--bg-solid);
+        border: 0.5px solid var(--hairline);
+        border-radius: 16px;
+        box-shadow: var(--shadow-md);
+        text-align: center;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-50%, -50%) scale(1.08);
+        transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .alert.open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+
+    @media (prefers-reduced-motion: reduce) {
+        .alert, .alert-overlay { transition: none; }
+    }
+
+    .alert-title { font-size: 16px; font-weight: 700; padding: 19px 18px 5px; letter-spacing: -0.01em; }
+    .alert-msg { font-size: 13px; color: var(--text-2); line-height: 1.45; padding: 0 18px 17px; }
+    .alert-buttons { display: flex; border-top: 0.5px solid var(--separator); }
+    .alert-btn {
+        flex: 1;
+        border: none;
+        background: none;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--tint);
+        min-height: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: background-color 0.15s ease;
+    }
+    .alert-btn:active { background: var(--search-bg); }
+    .alert-btn + .alert-btn { border-left: 0.5px solid var(--separator); }
+    .alert-btn-primary { font-weight: 700; }
+
+    /* ---------- Header actions ---------- */
+    .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
     /* ---------- Empty / footer ---------- */
     .empty {
         display: none;
@@ -655,9 +716,14 @@
     <p class="eyebrow rise" id="dateEyebrow"></p>
     <div class="header-row rise">
         <h1 class="large-title">Abel Tools</h1>
-        <button class="theme-btn surface" id="themeBtn" aria-label="Toggle dark mode">
-            <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
-        </button>
+        <div class="header-actions">
+            <button class="theme-btn surface" id="aboutBtn" aria-label="About Abel Tools">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </button>
+            <button class="theme-btn surface" id="themeBtn" aria-label="Toggle dark mode">
+                <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
+            </button>
+        </div>
     </div>
     <div class="header-meta rise d1">
         <span class="version-pill" id="versionPill">v&hellip;</span>
@@ -733,6 +799,38 @@
     <div class="sheet-action" id="sheetAction"></div>
 </div>
 
+<div class="sheet" id="aboutSheet" role="dialog" aria-modal="true" aria-labelledby="aboutName">
+    <div class="sheet-grabber"></div>
+    <button class="sheet-close" id="aboutClose" aria-label="Close">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="sheet-head">
+        <div class="sheet-icon" style="background: linear-gradient(140deg, #2563eb, #7c3aed 55%, #db2777);">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3L10.7 10a6 6 0 0 1 8-8l-4 4Z"/></svg>
+        </div>
+        <div>
+            <div class="sheet-name" id="aboutName">Abel Tools</div>
+            <div class="sheet-cat" id="aboutVersion">Installer</div>
+        </div>
+    </div>
+    <p class="sheet-desc">
+        Abel Tools is a collection of Apple Shortcuts for iPad, made by Abel.
+        This installer keeps everything in one place: browse the catalog, install
+        shortcuts with one tap, and get updates as soon as they ship. Every tool
+        installs as a normal Apple Shortcut on your device.
+    </p>
+</div>
+
+<div class="alert-overlay" id="alertOverlay"></div>
+<div class="alert" id="alert" role="alertdialog" aria-modal="true" aria-labelledby="alertTitle">
+    <p class="alert-title" id="alertTitle">Do you want to continue?</p>
+    <p class="alert-msg" id="alertMsg"></p>
+    <div class="alert-buttons">
+        <button class="alert-btn" id="alertCancel">Cancel</button>
+        <a class="alert-btn alert-btn-primary" id="alertContinue" href="#">Continue</a>
+    </div>
+</div>
+
 <script>
 (function () {
     'use strict';
@@ -740,6 +838,7 @@
     /* ================= Configuration ================= */
 
     var RAW_BASE = 'https://raw.githubusercontent.com/therealabela/abel_tools_datarepo/refs/heads/main/';
+    var API_BASE = 'https://achenkunju.com/api/';
     var params = new URLSearchParams(location.search);
     var SELF_NAME = params.get('self') || 'Abel Tools Installer';
 
@@ -907,6 +1006,10 @@
         // iCloud links open natively in any web view; deep link is the fallback
         a.href = item.link || deepLink(item);
         a.setAttribute('aria-label', (status === 'UPDATE' ? 'Update ' : 'Get ') + item.name);
+        a.addEventListener('click', function (e) {
+            e.preventDefault();
+            openConfirm(item, a.href);
+        });
         return a;
     }
 
@@ -1010,9 +1113,60 @@
     }
 
     document.getElementById('sheetClose').addEventListener('click', closeSheet);
-    sheetOverlay.addEventListener('click', closeSheet);
+
+    /* ================= About sheet ================= */
+
+    var aboutSheet = document.getElementById('aboutSheet');
+
+    function openAbout() {
+        aboutSheet.classList.add('open');
+        sheetOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeAbout() {
+        aboutSheet.classList.remove('open');
+        sheetOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('aboutBtn').addEventListener('click', openAbout);
+    document.getElementById('aboutClose').addEventListener('click', closeAbout);
+
+    sheetOverlay.addEventListener('click', function () { closeSheet(); closeAbout(); });
+
+    /* ================= Confirm alert ================= */
+
+    var alertBox = document.getElementById('alert');
+    var alertOverlay = document.getElementById('alertOverlay');
+    var alertContinue = document.getElementById('alertContinue');
+
+    function openConfirm(item, href) {
+        document.getElementById('alertMsg').textContent =
+            '\u201C' + item.name + '\u201D will open in Shortcuts.';
+        alertContinue.href = href;
+        alertBox.classList.add('open');
+        alertOverlay.classList.add('open');
+    }
+
+    function closeConfirm() {
+        alertBox.classList.remove('open');
+        alertOverlay.classList.remove('open');
+    }
+
+    document.getElementById('alertCancel').addEventListener('click', closeConfirm);
+    alertOverlay.addEventListener('click', closeConfirm);
+    alertContinue.addEventListener('click', function () {
+        // Let navigation proceed, then tidy up the dialog
+        closeConfirm();
+        closeSheet();
+    });
+
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
+        if (e.key !== 'Escape') return;
+        if (alertBox.classList.contains('open')) { closeConfirm(); return; }
+        if (sheet.classList.contains('open')) closeSheet();
+        if (aboutSheet.classList.contains('open')) closeAbout();
     });
 
     /* ================= Announcement banner ================= */
@@ -1095,10 +1249,18 @@
         });
     }
 
+    function fetchApi(endpoint) {
+        return fetch(API_BASE + endpoint, { cache: 'no-store' }).then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status + ' for ' + endpoint);
+            return r.text();
+        });
+    }
+
     function init() {
-        var versionPromise = fetchText('newversion.md').then(function (v) {
+        var versionPromise = fetchApi('newversion').then(function (v) {
             var version = v.trim();
             document.getElementById('versionPill').textContent = 'v' + version;
+            document.getElementById('aboutVersion').textContent = 'Installer \u00b7 Version ' + version;
             return version;
         }).catch(function () {
             document.getElementById('versionPill').textContent = 'v?';
@@ -1106,7 +1268,7 @@
         });
 
         Promise.all([
-            fetchText('newchangelog.md').catch(function () { return ''; }),
+            fetchApi('newchangelog').catch(function () { return ''; }),
             versionPromise
         ]).then(function (results) {
             if (results[0]) renderChangelog(results[0], results[1]);
@@ -1118,7 +1280,7 @@
         Promise.all([
             fetchText('shortcutslist.md').then(function (t) { return t.split('\n'); })
                 .catch(function () { return FALLBACK_LIST; }),
-            fetchText('newshortcuts.md').then(function (t) {
+            fetchApi('newshortcuts').then(function (t) {
                 return t.split('\n').map(normalize).filter(Boolean);
             }).catch(function () { return []; })
         ]).then(function (results) {
