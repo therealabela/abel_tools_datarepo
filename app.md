@@ -389,25 +389,6 @@
         box-shadow: 0 4px 14px color-mix(in srgb, var(--tint) 40%, transparent);
     }
 
-    /* ---------- Update All banner ---------- */
-    .update-banner {
-        display: none;
-        align-items: center;
-        gap: 12px;
-        background: var(--tint-bg);
-        border: 0.5px solid color-mix(in srgb, var(--tint) 24%, transparent);
-        border-radius: 15px;
-        padding: 11px 12px 11px 15px;
-        margin-bottom: 13px;
-    }
-    .update-banner.show { display: flex; }
-    .update-banner-text { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--tint); }
-    .btn-update-all {
-        background: var(--tint);
-        color: #fff;
-        box-shadow: 0 4px 14px color-mix(in srgb, var(--tint) 42%, transparent);
-    }
-
     /* ---------- Section header ---------- */
     .section-head {
         display: flex;
@@ -713,11 +694,6 @@
 
     <div class="chips rise d4" id="chips" role="tablist" aria-label="Categories"></div>
 
-    <div class="update-banner" id="updateBanner">
-        <span class="update-banner-text" id="updateBannerText"></span>
-        <a class="btn btn-update-all" id="updateAllBtn" href="#">UPDATE ALL</a>
-    </div>
-
     <div class="section-head rise d4">
         <h2 class="section-title">Shortcuts</h2>
         <span class="section-tools">
@@ -798,20 +774,20 @@
        known names. Unknown names get sensible defaults. */
 
     var META = {
-        'quickscreen': { icon: 'split', gradient: 'linear-gradient(135deg,#0a84ff,#5e5ce6)', category: 'Productivity', desc: 'Split screen your apps and resize windows with ease. Perfect for iPad multitasking.' },
-        'anythingbutglass': { icon: 'layers', gradient: 'linear-gradient(135deg,#5e5ce6,#bf5af2)', category: 'Customization', desc: 'Removes the Liquid Glass look from iOS 26 for a cleaner, classic appearance.' },
-        'savemybattery v2.1': { icon: 'batteryBolt', gradient: 'linear-gradient(135deg,#30d158,#0a84ff)', category: 'Battery', desc: 'Optimize battery life in one tap: low power mode, reduced transparency and motion.' },
-        'savemybattery v1': { icon: 'battery', gradient: 'linear-gradient(135deg,#8e8e93,#48484a)', category: 'Battery', desc: 'The original SaveMyBattery. Kept for older setups.' },
-        'coolbgremover': { icon: 'scissors', gradient: 'linear-gradient(135deg,#ff9f0a,#ff375f)', category: 'Images', desc: 'Remove backgrounds from images instantly.' },
-        'coolimageeditor': { icon: 'image', gradient: 'linear-gradient(135deg,#bf5af2,#ff375f)', category: 'Images', desc: 'Quick image editing: crop, convert, resize and more.' },
-        'leaf blower w/ google search': { icon: 'leaf', gradient: 'linear-gradient(135deg,#30d158,#64d2ff)', category: 'Voice', desc: 'A very dumb Siri alternative. Search the web using just your voice via Google Search.' },
-        'leaf blower w/ google gemini': { icon: 'sparkle', gradient: 'linear-gradient(135deg,#64d2ff,#5e5ce6)', category: 'Voice', desc: 'Leaf Blower powered by Google Gemini for smarter voice answers.' },
-        'editable materials': { icon: 'cube', gradient: 'linear-gradient(135deg,#ff9f0a,#ffd60a)', category: 'Productivity', desc: 'Edit files in the Materials section of Google Classroom.' },
-        'editable matrials': { icon: 'cube', gradient: 'linear-gradient(135deg,#ff9f0a,#ffd60a)', category: 'Productivity', desc: 'Edit files in the Materials section of Google Classroom.' },
-        'deviceinfo': { icon: 'tablet', gradient: 'linear-gradient(135deg,#48484a,#8e8e93)', category: 'Utilities', desc: 'See detailed information about your device at a glance.' },
-        'moo cleanup tool': { icon: 'broom', gradient: 'linear-gradient(135deg,#ff375f,#ff9f0a)', category: 'Utilities', desc: 'Clean up leftovers and junk. New in version 44!' },
-        '[api] notarobot api v1.1': { icon: 'terminal', gradient: 'linear-gradient(135deg,#0a84ff,#64d2ff)', category: 'Developer', desc: 'NotARobot verification API for shortcut developers.' },
-        'kool menu': { icon: 'archive', gradient: 'linear-gradient(135deg,#636366,#3a3a3c)', category: 'Legacy', desc: 'The original Kool Menu. No longer maintained.' }
+        'quickscreen': { icon: 'split', gradient: 'linear-gradient(135deg,#0a84ff,#5e5ce6)', category: 'Productivity', desc: 'Split screen your apps and resize windows with ease. Perfect for iPad multitasking.', link: 'https://www.icloud.com/shortcuts/419b76c98a474c35b11c8497529b3d36' },
+        'anythingbutglass': { icon: 'layers', gradient: 'linear-gradient(135deg,#5e5ce6,#bf5af2)', category: 'Customization', desc: 'Removes the Liquid Glass look from iOS 26 for a cleaner, classic appearance.', link: 'https://www.icloud.com/shortcuts/66d53e172121493e9d834df6a5062f25' },
+        'savemybattery v2.1': { icon: 'batteryBolt', gradient: 'linear-gradient(135deg,#30d158,#0a84ff)', category: 'Battery', desc: 'Optimize battery life in one tap: low power mode, reduced transparency and motion.', link: 'https://www.icloud.com/shortcuts/32e766396219425e8d29eaf0e4c4a161' },
+        'savemybattery v1': { icon: 'battery', gradient: 'linear-gradient(135deg,#8e8e93,#48484a)', category: 'Battery', desc: 'The original SaveMyBattery. Kept for older setups.', link: 'https://www.icloud.com/shortcuts/594fff3adae8400faf5a903167f0854d' },
+        'coolbgremover': { icon: 'scissors', gradient: 'linear-gradient(135deg,#ff9f0a,#ff375f)', category: 'Images', desc: 'Remove backgrounds from images instantly.', link: 'https://www.icloud.com/shortcuts/c9d90103e0eb4a56bcde227b8006c9b7' },
+        'coolimageeditor': { icon: 'image', gradient: 'linear-gradient(135deg,#bf5af2,#ff375f)', category: 'Images', desc: 'Quick image editing: crop, convert, resize and more.', link: 'https://www.icloud.com/shortcuts/b9d34799af7248e084e08671549c297d' },
+        'leaf blower w/ google search': { icon: 'leaf', gradient: 'linear-gradient(135deg,#30d158,#64d2ff)', category: 'Voice', desc: 'A very dumb Siri alternative. Search the web using just your voice via Google Search.', link: 'https://www.icloud.com/shortcuts/a52c67fa1d68460abee42b63831bbae5' },
+        'leaf blower w/ google gemini': { icon: 'sparkle', gradient: 'linear-gradient(135deg,#64d2ff,#5e5ce6)', category: 'Voice', desc: 'Leaf Blower powered by Google Gemini for smarter voice answers.', link: 'https://www.icloud.com/shortcuts/9a3c7bc343cb474e94b8ac83828f494b' },
+        'editable materials': { icon: 'cube', gradient: 'linear-gradient(135deg,#ff9f0a,#ffd60a)', category: 'Productivity', desc: 'Edit files in the Materials section of Google Classroom.', link: 'https://www.icloud.com/shortcuts/d5e5fe1db65745a891e6e81038ed238f' },
+        'editable matrials': { icon: 'cube', gradient: 'linear-gradient(135deg,#ff9f0a,#ffd60a)', category: 'Productivity', desc: 'Edit files in the Materials section of Google Classroom.', link: 'https://www.icloud.com/shortcuts/d5e5fe1db65745a891e6e81038ed238f' },
+        'deviceinfo': { icon: 'tablet', gradient: 'linear-gradient(135deg,#48484a,#8e8e93)', category: 'Utilities', desc: 'See detailed information about your device at a glance.', link: 'https://www.icloud.com/shortcuts/ca35bc3d75814583af3461518c8badf8' },
+        'moo cleanup tool': { icon: 'broom', gradient: 'linear-gradient(135deg,#ff375f,#ff9f0a)', category: 'Utilities', desc: 'Clean up leftovers and junk. New in version 44!', link: 'https://www.icloud.com/shortcuts/fa85f39337b049d4b175ca978d9a9966' },
+        '[api] notarobot api v1.1': { icon: 'terminal', gradient: 'linear-gradient(135deg,#0a84ff,#64d2ff)', category: 'Developer', desc: 'NotARobot verification API for shortcut developers.', link: 'https://www.icloud.com/shortcuts/642810ae87534d64873d19a5498948f4' },
+        'kool menu': { icon: 'archive', gradient: 'linear-gradient(135deg,#636366,#3a3a3c)', category: 'Legacy', desc: 'The original Kool Menu. No longer maintained.', link: 'https://www.icloud.com/shortcuts/9c0322bfe63647fb9782128d388325f7' }
     };
 
     var DEFAULT_META = { icon: 'wrench', gradient: 'linear-gradient(135deg,#8e8e93,#3a3a3c)', category: 'Other', desc: 'An Abel Tools shortcut.' };
@@ -928,7 +904,8 @@
         if (status === 'EOL') return el('span', 'btn btn-eol', 'EOL');
         if (status === 'INSTALLED') return el('span', 'btn btn-installed', 'INSTALLED');
         var a = el('a', status === 'UPDATE' ? 'btn btn-update' : 'btn btn-get', status);
-        a.href = deepLink(item);
+        // iCloud links open natively in any web view; deep link is the fallback
+        a.href = item.link || deepLink(item);
         a.setAttribute('aria-label', (status === 'UPDATE' ? 'Update ' : 'Get ') + item.name);
         return a;
     }
@@ -1038,23 +1015,6 @@
         if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
     });
 
-    /* ================= Update All banner ================= */
-
-    function renderUpdateBanner() {
-        var pending = catalog.filter(function (item) {
-            return !item.eol && updates.indexOf(item.key) !== -1;
-        });
-        if (pending.length === 0) return;
-
-        document.getElementById('updateBannerText').textContent =
-            pending.length + (pending.length === 1 ? ' update available' : ' updates available');
-        var names = pending.map(function (item) { return item.name; }).join(',');
-        document.getElementById('updateAllBtn').href =
-            'shortcuts://run-shortcut?name=' + encodeURIComponent(SELF_NAME) +
-            '&input=text&text=' + encodeURIComponent('installall:' + names);
-        document.getElementById('updateBanner').classList.add('show');
-    }
-
     /* ================= Announcement banner ================= */
 
     function renderAnnouncement(text) {
@@ -1120,6 +1080,7 @@
                     eol: eol,
                     isNew: newNames.indexOf(key) !== -1,
                     icon: meta.icon,
+                    link: meta.link || null,
                     gradient: meta.gradient,
                     category: eol ? 'Legacy' : meta.category,
                     desc: meta.desc
@@ -1164,7 +1125,6 @@
             newNames = results[1];
             buildCatalog(results[0]);
             buildChips();
-            renderUpdateBanner();
             render();
         });
     }
