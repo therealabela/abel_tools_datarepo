@@ -7,7 +7,7 @@ CoolBGRemover
 CoolImageEditor
 leaf blower w/ Google Search
 leaf blower w/ Google Gemini
-Editable Matrials
+Editable Materials
 DeviceInfo
 Moo Cleanup Tool
 [API] NotARobot API V1.1
