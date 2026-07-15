@@ -161,10 +161,7 @@
         font-weight: 800;
         letter-spacing: -0.025em;
         line-height: 1.08;
-        background: linear-gradient(180deg, var(--text) 55%, color-mix(in srgb, var(--text) 62%, transparent));
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
+        color: var(--text);
     }
 
     .header-meta {
@@ -199,6 +196,47 @@
         transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease;
     }
     .theme-btn:active { transform: scale(0.88); }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .icon-spin { animation: iconSpin 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+        @keyframes iconSpin { from { transform: rotate(-90deg) scale(0.7); opacity: 0; } }
+    }
+
+    /* ---------- Collapsing mini header ---------- */
+    .mini-header {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 46px;
+        padding-top: env(safe-area-inset-top);
+        background: color-mix(in srgb, var(--bg) 80%, transparent);
+        -webkit-backdrop-filter: blur(20px) saturate(1.6);
+        backdrop-filter: blur(20px) saturate(1.6);
+        border-bottom: 0.5px solid var(--hairline);
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+        transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .mini-header.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .mini-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+    .mini-version {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--tint);
+        background: var(--tint-bg);
+        border-radius: 999px;
+        padding: 2px 8px;
+    }
+    .mini-version:empty { display: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .mini-header { transition: none; }
+    }
 
     /* ---------- Announcement banner ---------- */
     .announce {
@@ -357,6 +395,7 @@
         align-items: center;
         justify-content: center;
     }
+    .search-clear.show { display: flex; }
 
     /* ---------- Category chips ---------- */
     .chips {
@@ -397,7 +436,7 @@
         margin: 14px 2px 11px;
     }
 
-    .section-title { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; }
+    .section-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
     .section-tools { display: flex; align-items: center; gap: 10px; }
     .sort-btn {
         border: none;
@@ -411,6 +450,75 @@
     }
     .section-count { font-size: 12px; font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; }
 
+    /* ---------- Spotlight feature card ---------- */
+    .spotlight {
+        position: relative;
+        border-radius: 24px;
+        padding: 18px 18px 20px;
+        margin: 4px 0 16px;
+        color: #fff;
+        overflow: hidden;
+        cursor: pointer;
+        box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .spotlight:active { transform: scale(0.98); }
+    .spotlight::before {
+        content: "";
+        position: absolute;
+        top: -70%;
+        left: 24%;
+        width: 40%;
+        height: 240%;
+        background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+        transform: rotate(22deg);
+        pointer-events: none;
+    }
+    .spotlight-eyebrow {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.85;
+    }
+    .spotlight-body {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 13px;
+        position: relative;
+    }
+    .spotlight-icon {
+        width: 66px;
+        height: 66px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .spotlight-info { flex: 1; min-width: 0; }
+    .spotlight-name {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    }
+    .spotlight-desc {
+        font-size: 13.5px;
+        line-height: 1.45;
+        opacity: 0.92;
+        margin-top: 3px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .spotlight .btn-get, .spotlight .btn-update { background: #fff; color: #0f172a; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18); }
+    .spotlight .btn-installed { border-color: rgba(255, 255, 255, 0.55); color: rgba(255, 255, 255, 0.9); }
+
     /* ---------- Inset grouped list ---------- */
     .list {
         border-radius: 20px;
@@ -422,7 +530,7 @@
         display: flex;
         align-items: center;
         gap: 14px;
-        padding: 14px 16px;
+        padding: 15px 16px;
         position: relative;
         cursor: pointer;
         transition: background-color 0.18s ease;
@@ -432,7 +540,7 @@
         content: "";
         position: absolute;
         top: 0;
-        left: 82px;
+        left: 88px;
         right: 0;
         height: 0.5px;
         background: var(--separator);
@@ -441,9 +549,9 @@
     .row.eol .row-icon { filter: saturate(0.3); -webkit-filter: saturate(0.3); }
 
     .row-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 13px;
+        width: 58px;
+        height: 58px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -466,7 +574,7 @@
     .row-info { flex: 1; min-width: 0; }
 
     .row-name {
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 650;
         letter-spacing: -0.01em;
         white-space: nowrap;
@@ -475,7 +583,7 @@
     }
 
     .row-desc {
-        font-size: 12.5px;
+        font-size: 13px;
         color: var(--text-2);
         line-height: 1.4;
         margin-top: 2.5px;
@@ -541,7 +649,7 @@
     /* ---------- Skeleton loading ---------- */
     .skeleton-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
     .sk { background: var(--skeleton); border-radius: 8px; }
-    .sk-icon { width: 52px; height: 52px; border-radius: 13px; flex-shrink: 0; }
+    .sk-icon { width: 58px; height: 58px; border-radius: 14px; flex-shrink: 0; }
     .sk-lines { flex: 1; display: flex; flex-direction: column; gap: 7px; }
     .sk-line-1 { height: 13px; width: 55%; }
     .sk-line-2 { height: 10px; width: 85%; }
@@ -577,6 +685,9 @@
         border-bottom: none;
         border-radius: 26px 26px 0 0;
         padding: 14px 22px calc(26px + env(safe-area-inset-bottom));
+        max-height: 85vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         transform: translateY(105%);
         transition: transform 0.38s cubic-bezier(0.32, 0.72, 0.24, 1);
         box-shadow: 0 -12px 60px rgba(0, 0, 0, 0.3);
@@ -626,6 +737,42 @@
     .sheet-cat { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-top: 4px; }
     .sheet-desc { font-size: 14.5px; line-height: 1.6; color: var(--text-2); margin-top: 15px; }
     .sheet-action { margin-top: 20px; }
+
+    /* ---------- About sheet extras ---------- */
+    .about-heading {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 0.5px solid var(--separator);
+    }
+    .about-bio { margin-top: 7px; font-size: 13.5px; }
+    .about-links { display: flex; gap: 8px; margin-top: 14px; }
+    .about-link {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--tint);
+        background: var(--tint-bg);
+        border-radius: 11px;
+        min-height: 40px;
+        padding: 8px 10px;
+        text-decoration: none;
+        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
+    }
+    .about-link:active { transform: scale(0.95); opacity: 0.8; }
+    .sheet-copyright {
+        font-size: 11px;
+        color: var(--text-3);
+        text-align: center;
+        margin-top: 18px;
+        line-height: 1.5;
+    }
     .sheet-action .btn { width: 100%; min-height: 48px; font-size: 15px; border-radius: 15px; }
 
     /* ---------- Confirm alert ---------- */
@@ -646,12 +793,15 @@
         position: fixed;
         top: 50%; left: 50%;
         z-index: 61;
-        width: 280px;
-        background: var(--bg-solid);
+        width: 304px;
+        background: var(--bg-card);
+        -webkit-backdrop-filter: blur(24px) saturate(1.4);
+        backdrop-filter: blur(24px) saturate(1.4);
         border: 0.5px solid var(--hairline);
-        border-radius: 16px;
+        border-radius: 24px;
         box-shadow: var(--shadow-md);
         text-align: center;
+        padding: 24px 20px 18px;
         overflow: hidden;
         opacity: 0;
         pointer-events: none;
@@ -664,27 +814,53 @@
         .alert, .alert-overlay { transition: none; }
     }
 
-    .alert-title { font-size: 16px; font-weight: 700; padding: 19px 18px 5px; letter-spacing: -0.01em; }
-    .alert-msg { font-size: 13px; color: var(--text-2); line-height: 1.45; padding: 0 18px 17px; }
-    .alert-buttons { display: flex; border-top: 0.5px solid var(--separator); }
+    .alert-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 14px;
+        margin: 0 auto 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        position: relative;
+        box-shadow:
+            0 6px 16px rgba(15, 23, 42, 0.22),
+            inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .alert-icon::after {
+        content: "";
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        border-radius: inherit;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 52%);
+        pointer-events: none;
+    }
+    .alert-title { font-size: 17px; font-weight: 800; letter-spacing: -0.015em; }
+    .alert-msg { font-size: 13.5px; color: var(--text-2); line-height: 1.5; margin-top: 6px; }
+    .alert-buttons { display: flex; gap: 9px; margin-top: 19px; }
     .alert-btn {
         flex: 1;
         border: none;
-        background: none;
         font-family: inherit;
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--tint);
-        min-height: 46px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+        background: var(--search-bg);
+        border-radius: 999px;
+        min-height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
         text-decoration: none;
-        transition: background-color 0.15s ease;
+        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
     }
-    .alert-btn:active { background: var(--search-bg); }
-    .alert-btn + .alert-btn { border-left: 0.5px solid var(--separator); }
-    .alert-btn-primary { font-weight: 700; }
+    .alert-btn:active { transform: scale(0.95); opacity: 0.8; }
+    .alert-btn-primary {
+        background: var(--tint);
+        color: #fff;
+        box-shadow: 0 4px 12px color-mix(in srgb, var(--tint) 38%, transparent);
+    }
 
     /* ---------- Header actions ---------- */
     .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
@@ -699,6 +875,20 @@
         line-height: 1.6;
     }
     .empty strong { color: var(--text); }
+    .empty-clear {
+        border: none;
+        background: var(--tint-bg);
+        color: var(--tint);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        border-radius: 999px;
+        min-height: 34px;
+        padding: 7px 18px;
+        margin-top: 14px;
+        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .empty-clear:active { transform: scale(0.94); }
 
     .footer {
         text-align: center;
@@ -711,6 +901,10 @@
 </head>
 <body>
 <div class="atmosphere" aria-hidden="true"></div>
+<header class="mini-header" id="miniHeader" aria-hidden="true">
+    <span class="mini-title">Abel Tools</span>
+    <span class="mini-version" id="miniVersion"></span>
+</header>
 <div class="container">
 
     <p class="eyebrow rise" id="dateEyebrow"></p>
@@ -760,6 +954,8 @@
 
     <div class="chips rise d4" id="chips" role="tablist" aria-label="Categories"></div>
 
+    <div id="spotlights"></div>
+
     <div class="section-head rise d4">
         <h2 class="section-title">Shortcuts</h2>
         <span class="section-tools">
@@ -774,11 +970,12 @@
         <div class="skeleton-row"><div class="sk sk-icon"></div><div class="sk-lines"><div class="sk sk-line-1"></div><div class="sk sk-line-2"></div></div><div class="sk sk-btn"></div></div>
         <div class="skeleton-row"><div class="sk sk-icon"></div><div class="sk-lines"><div class="sk sk-line-1"></div><div class="sk sk-line-2"></div></div><div class="sk sk-btn"></div></div>
     </div>
-    <div class="empty" id="empty"><strong>No results</strong><br>Try a different search or category.</div>
+    <div class="empty" id="empty"><strong>No results</strong><br>Try a different search or category.<br><button class="empty-clear" id="emptyClear">Clear filters</button></div>
 
     <p class="footer">
         Abel Tools Installer &middot; Tap GET to install through the installer engine.<br>
-        Shortcuts remain normal Apple Shortcuts on your device.
+        Shortcuts remain normal Apple Shortcuts on your device.<br>
+        &copy; 2026 Abel Tools Installer by Abel Achenkunju. All rights reserved.
     </p>
 </div>
 
@@ -819,10 +1016,31 @@
         shortcuts with one tap, and get updates as soon as they ship. Every tool
         installs as a normal Apple Shortcut on your device.
     </p>
+    <h3 class="about-heading">About the developer</h3>
+    <p class="sheet-desc about-bio">
+        Abel Achenkunju builds tools, shortcuts, and whatever comes next &mdash;
+        including Abel Tools, Abel&rsquo;s Countdown, and a browser-based file converter.
+    </p>
+    <div class="about-links">
+        <a class="about-link" href="https://achenkunju.com" target="_blank" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
+            Website
+        </a>
+        <a class="about-link" href="https://blog.achenkunju.com" target="_blank" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Blog
+        </a>
+        <a class="about-link" href="https://github.com/therealabela" target="_blank" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+            GitHub
+        </a>
+    </div>
+    <p class="sheet-copyright">&copy; 2026 Abel Tools Installer by Abel Achenkunju. All rights reserved.</p>
 </div>
 
 <div class="alert-overlay" id="alertOverlay"></div>
 <div class="alert" id="alert" role="alertdialog" aria-modal="true" aria-labelledby="alertTitle">
+    <div class="alert-icon" id="alertIcon" aria-hidden="true"></div>
     <p class="alert-title" id="alertTitle">Do you want to continue?</p>
     <p class="alert-msg" id="alertMsg"></p>
     <div class="alert-buttons">
@@ -963,7 +1181,26 @@
     themeBtn.addEventListener('click', function () {
         currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
         applyTheme(currentTheme);
+        themeIcon.classList.remove('icon-spin');
+        void themeIcon.offsetWidth; // restart the animation
+        themeIcon.classList.add('icon-spin');
         try { localStorage.setItem('abeltools-theme', currentTheme); } catch (e) {}
+    });
+
+    /* ================= Collapsing mini header ================= */
+
+    var miniHeader = document.getElementById('miniHeader');
+    var headerRow = document.querySelector('.header-row');
+
+    function onScroll() {
+        miniHeader.classList.toggle('show',
+            window.scrollY > headerRow.offsetTop + headerRow.offsetHeight);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    miniHeader.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     /* ================= Rendering ================= */
@@ -995,7 +1232,8 @@
     function matchesFilters(item) {
         if (activeCategory !== 'All' && item.category !== activeCategory) return false;
         if (searchQuery && item.name.toLowerCase().indexOf(searchQuery) === -1 &&
-            item.category.toLowerCase().indexOf(searchQuery) === -1) return false;
+            item.category.toLowerCase().indexOf(searchQuery) === -1 &&
+            item.desc.toLowerCase().indexOf(searchQuery) === -1) return false;
         return true;
     }
 
@@ -1030,7 +1268,51 @@
         return items;
     }
 
+    var spotEl = document.getElementById('spotlights');
+
+    function renderSpotlights() {
+        spotEl.innerHTML = '';
+        // Spotlights only decorate the default browse view
+        if (activeCategory !== 'All' || searchQuery) return;
+
+        catalog.filter(function (i) { return i.isNew && !i.eol; })
+            .slice(0, 2)
+            .forEach(function (item) {
+                var card = el('div', 'spotlight');
+                card.style.background = item.gradient;
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('aria-label', 'View details for ' + item.name);
+
+                card.appendChild(el('p', 'spotlight-eyebrow', 'New this update'));
+
+                var icon = el('div', 'spotlight-icon');
+                icon.innerHTML = iconSvg(item.icon, 32);
+
+                var info = el('div', 'spotlight-info');
+                info.appendChild(el('div', 'spotlight-name', item.name));
+                info.appendChild(el('div', 'spotlight-desc', item.desc));
+
+                var body = el('div', 'spotlight-body');
+                body.appendChild(icon);
+                body.appendChild(info);
+                body.appendChild(buildButton(item, statusFor(item)));
+                card.appendChild(body);
+
+                card.addEventListener('click', function (e) {
+                    if (e.target.closest('.btn')) return;
+                    openSheet(item);
+                });
+                card.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(item); }
+                });
+
+                spotEl.appendChild(card);
+            });
+    }
+
     function render() {
+        renderSpotlights();
         listEl.innerHTML = '';
         var items = sortedCatalog();
 
@@ -1072,6 +1354,33 @@
         listEl.style.display = items.length === 0 ? 'none' : 'block';
         emptyEl.style.display = items.length === 0 ? 'block' : 'none';
     }
+
+    /* ================= Search ================= */
+
+    var searchInput = document.getElementById('searchInput');
+    var searchClear = document.getElementById('searchClear');
+
+    function setSearch(value) {
+        searchQuery = value.trim().toLowerCase();
+        searchClear.classList.toggle('show', searchQuery.length > 0);
+        render();
+    }
+
+    searchInput.addEventListener('input', function () { setSearch(searchInput.value); });
+    searchClear.addEventListener('click', function () {
+        searchInput.value = '';
+        setSearch('');
+        searchInput.focus();
+    });
+
+    document.getElementById('emptyClear').addEventListener('click', function () {
+        searchInput.value = '';
+        searchQuery = '';
+        searchClear.classList.remove('show');
+        activeCategory = 'All';
+        buildChips();
+        render();
+    });
 
     /* ================= Sort toggle ================= */
 
@@ -1135,6 +1444,46 @@
 
     sheetOverlay.addEventListener('click', function () { closeSheet(); closeAbout(); });
 
+    /* ================= Swipe-to-dismiss sheets ================= */
+
+    function enableSwipe(sheetEl, closeFn) {
+        var startY = 0, dy = 0, dragging = false;
+
+        sheetEl.addEventListener('touchstart', function (e) {
+            if (sheetEl.scrollTop > 0) return; // let content scroll first
+            startY = e.touches[0].clientY;
+            dy = 0;
+            dragging = true;
+        }, { passive: true });
+
+        sheetEl.addEventListener('touchmove', function (e) {
+            if (!dragging) return;
+            dy = e.touches[0].clientY - startY;
+            if (dy <= 0) { // upward: hand the gesture back to scrolling
+                dragging = false;
+                sheetEl.style.transition = '';
+                sheetEl.style.transform = '';
+                return;
+            }
+            e.preventDefault();
+            sheetEl.style.transition = 'none';
+            sheetEl.style.transform = 'translateY(' + dy + 'px)';
+        }, { passive: false });
+
+        sheetEl.addEventListener('touchend', function () {
+            if (!dragging) return;
+            dragging = false;
+            // Clearing inline styles in the same frame lets the CSS
+            // transition pick up from the dragged position.
+            sheetEl.style.transition = '';
+            sheetEl.style.transform = '';
+            if (dy > 110) closeFn();
+        });
+    }
+
+    enableSwipe(sheet, closeSheet);
+    enableSwipe(aboutSheet, closeAbout);
+
     /* ================= Confirm alert ================= */
 
     var alertBox = document.getElementById('alert');
@@ -1142,6 +1491,9 @@
     var alertContinue = document.getElementById('alertContinue');
 
     function openConfirm(item, href) {
+        var iconNode = document.getElementById('alertIcon');
+        iconNode.style.background = item.gradient;
+        iconNode.innerHTML = iconSvg(item.icon, 26);
         document.getElementById('alertMsg').textContent =
             '\u201C' + item.name + '\u201D will open in Shortcuts.';
         alertContinue.href = href;
@@ -1260,6 +1612,7 @@
         var versionPromise = fetchApi('newversion').then(function (v) {
             var version = v.trim();
             document.getElementById('versionPill').textContent = 'v' + version;
+            document.getElementById('miniVersion').textContent = 'v' + version;
             document.getElementById('aboutVersion').textContent = 'Installer \u00b7 Version ' + version;
             return version;
         }).catch(function () {

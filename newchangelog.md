@@ -1,3 +1,5 @@
-- All-new app-like UI! Browse, search and install shortcuts from a single screen
-- Categories, update badges and light/dark theme support
-- Live changelog and version info right in the app
+- Fresh coat of paint: bigger catalog list, spotlight cards for new shortcuts
+- Search now works, with a clear button and smarter matching
+- New collapsing header and swipe-to-dismiss sheets, just like a real app
+- Redesigned confirm dialog that matches the rest of the UI
+- About page with developer info and links
