@@ -16,11 +16,12 @@
         --hairline: rgba(15, 23, 42, 0.08);
         --text: #0f172a;
         --text-2: #475569;
-        --text-3: #64748b;
+        --text-3: #5d6a7d;
         --separator: rgba(60, 60, 67, 0.10);
-        --tint: #007aff;
-        --tint-bg: rgba(0, 122, 255, 0.12);
-        --red: #ff3b30;
+        --tint: #0071e3;
+        --tint-bg: rgba(0, 113, 227, 0.12);
+        --tint-text: #0361c2;
+        --red: #d70015;
         --hero-a: #2563eb;
         --hero-b: #7c3aed;
         --hero-c: #db2777;
@@ -28,7 +29,7 @@
         --shadow-md: 0 2px 6px rgba(15, 23, 42, 0.05), 0 12px 32px rgba(15, 23, 42, 0.09);
         --skeleton: rgba(120, 120, 128, 0.13);
         --search-bg: rgba(118, 118, 128, 0.10);
-        --focus-ring: #007aff;
+        --focus-ring: #0071e3;
         --overlay: rgba(15, 23, 42, 0.35);
     }
 
@@ -45,6 +46,7 @@
         --separator: rgba(255, 255, 255, 0.07);
         --tint: #0a84ff;
         --tint-bg: rgba(10, 132, 255, 0.20);
+        --tint-text: #64b1ff;
         --red: #ff453a;
         --hero-a: #1d4ed8;
         --hero-b: #6d28d9;
@@ -65,6 +67,7 @@
         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         -webkit-text-size-adjust: 100%;
+        overscroll-behavior-y: none;
     }
 
     body {
@@ -85,6 +88,7 @@
     }
 
     a, button { cursor: pointer; }
+    a, button, input, [role="button"] { touch-action: manipulation; }
 
     :focus { outline: none; }
     :focus-visible {
@@ -174,7 +178,7 @@
     .version-pill {
         font-size: 12px;
         font-weight: 700;
-        color: var(--tint);
+        color: var(--tint-text);
         background: var(--tint-bg);
         border: 0.5px solid color-mix(in srgb, var(--tint) 25%, transparent);
         border-radius: 999px;
@@ -217,6 +221,7 @@
         -webkit-backdrop-filter: blur(20px) saturate(1.6);
         backdrop-filter: blur(20px) saturate(1.6);
         border-bottom: 0.5px solid var(--hairline);
+        cursor: pointer;
         opacity: 0;
         transform: translateY(-10px);
         pointer-events: none;
@@ -227,7 +232,7 @@
     .mini-version {
         font-size: 11px;
         font-weight: 700;
-        color: var(--tint);
+        color: var(--tint-text);
         background: var(--tint-bg);
         border-radius: 999px;
         padding: 2px 8px;
@@ -255,8 +260,8 @@
         border: none;
         background: none;
         color: var(--text-3);
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -281,7 +286,19 @@
             0 2px 8px rgba(37, 99, 235, 0.22),
             0 18px 44px rgba(109, 40, 217, 0.28),
             inset 0 1px 0 rgba(255, 255, 255, 0.28);
+        border: 0.5px solid rgba(255, 255, 255, 0.22);
         overflow: hidden;
+    }
+
+    /* Fine film grain keeps the big gradients from banding */
+    .hero::after, .spotlight::after {
+        content: "";
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        opacity: 0.055;
+        mix-blend-mode: overlay;
+        pointer-events: none;
     }
 
     /* Ghost version numeral — the card's signature */
@@ -347,7 +364,7 @@
 
     .hero-list li svg { flex-shrink: 0; margin-top: 2px; opacity: 0.9; }
 
-    .hero-note { font-size: 12.5px; opacity: 0.75; margin-top: 13px; position: relative; }
+    .hero-note { font-size: 12.5px; opacity: 0.82; margin-top: 13px; position: relative; }
 
     /* ---------- Search ---------- */
     .search-wrap { position: relative; margin: 0 0 13px; }
@@ -383,11 +400,11 @@
 
     .search-clear {
         position: absolute;
-        right: 5px;
+        right: 4px;
         top: 50%;
         transform: translateY(-50%);
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         border: none;
         background: none;
         color: var(--text-3);
@@ -405,6 +422,10 @@
         -webkit-overflow-scrolling: touch;
         padding: 2px 2px 12px;
         scrollbar-width: none;
+        --fade-l: 0px;
+        --fade-r: 0px;
+        -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent 100%);
+        mask-image: linear-gradient(90deg, transparent 0, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent 100%);
     }
     .chips::-webkit-scrollbar { display: none; }
 
@@ -413,7 +434,7 @@
         font-family: inherit;
         font-size: 13px;
         font-weight: 600;
-        min-height: 34px;
+        min-height: 36px;
         padding: 0 15px;
         border-radius: 999px;
         color: var(--text-2);
@@ -444,8 +465,8 @@
         font-family: inherit;
         font-size: 12.5px;
         font-weight: 700;
-        color: var(--tint);
-        min-height: 32px;
+        color: var(--tint-text);
+        min-height: 36px;
         padding: 0 4px;
     }
     .section-count { font-size: 12px; font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; }
@@ -567,7 +588,7 @@
         position: absolute;
         top: 0; right: 0; bottom: 0; left: 0;
         border-radius: inherit;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 52%);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 52%);
         pointer-events: none;
     }
 
@@ -577,9 +598,11 @@
         font-size: 16px;
         font-weight: 650;
         letter-spacing: -0.01em;
-        white-space: nowrap;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
         overflow: hidden;
-        text-overflow: ellipsis;
     }
 
     .row-desc {
@@ -606,9 +629,9 @@
         display: inline-block;
         vertical-align: 2px;
         margin-left: 7px;
-        font-size: 9px;
+        font-size: 10px;
         font-weight: 800;
-        letter-spacing: 0.09em;
+        letter-spacing: 0.08em;
         color: #fff;
         background: linear-gradient(135deg, #ff375f, #ff9f0a);
         border-radius: 5px;
@@ -637,7 +660,7 @@
     }
     a.btn:active { transform: scale(0.92); opacity: 0.75; }
 
-    .btn-get { background: var(--tint-bg); color: var(--tint); }
+    .btn-get { background: var(--tint-bg); color: var(--tint-text); }
     .btn-update {
         background: var(--tint);
         color: #fff;
@@ -687,6 +710,7 @@
         padding: 14px 22px calc(26px + env(safe-area-inset-bottom));
         max-height: 85vh;
         overflow-y: auto;
+        overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
         transform: translateY(105%);
         transition: transform 0.38s cubic-bezier(0.32, 0.72, 0.24, 1);
@@ -701,8 +725,8 @@
     .sheet-grabber { width: 38px; height: 5px; border-radius: 3px; background: var(--separator); margin: 0 auto 18px; }
     .sheet-close {
         position: absolute;
-        top: 16px; right: 16px;
-        width: 32px; height: 32px;
+        top: 14px; right: 14px;
+        width: 38px; height: 38px;
         border: none;
         border-radius: 50%;
         background: var(--search-bg);
@@ -730,7 +754,7 @@
         position: absolute;
         top: 0; right: 0; bottom: 0; left: 0;
         border-radius: inherit;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 52%);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 52%);
         pointer-events: none;
     }
     .sheet-name { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
@@ -757,7 +781,7 @@
         gap: 6px;
         font-size: 13px;
         font-weight: 700;
-        color: var(--tint);
+        color: var(--tint-text);
         background: var(--tint-bg);
         border-radius: 11px;
         min-height: 40px;
@@ -833,7 +857,7 @@
         position: absolute;
         top: 0; right: 0; bottom: 0; left: 0;
         border-radius: inherit;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 52%);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 52%);
         pointer-events: none;
     }
     .alert-title { font-size: 17px; font-weight: 800; letter-spacing: -0.015em; }
@@ -875,10 +899,21 @@
         line-height: 1.6;
     }
     .empty strong { color: var(--text); }
+    .empty-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--search-bg);
+        color: var(--text-3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 14px;
+    }
     .empty-clear {
         border: none;
         background: var(--tint-bg);
-        color: var(--tint);
+        color: var(--tint-text);
         font-family: inherit;
         font-size: 13px;
         font-weight: 700;
@@ -896,6 +931,21 @@
         color: var(--text-3);
         margin-top: 30px;
         line-height: 1.7;
+    }
+
+    /* ---------- Pointer (iPad trackpad / mouse) hover states ---------- */
+    @media (hover: hover) and (pointer: fine) {
+        .row:hover { background: var(--search-bg); }
+        .chip:hover { color: var(--text); }
+        .chip.active:hover { color: #fff; }
+        a.btn:hover { transform: translateY(-1px); }
+        .btn-get:hover { background: color-mix(in srgb, var(--tint) 20%, transparent); }
+        .spotlight .btn-get:hover, .spotlight .btn-update:hover { background: #fff; }
+        .theme-btn:hover { box-shadow: var(--shadow-md); }
+        .announce-close:hover { background: var(--search-bg); }
+        .sheet-close:hover { color: var(--text); }
+        .sort-btn:hover, .about-link:hover, .empty-clear:hover, .alert-btn:hover { opacity: 0.8; }
+        .spotlight:hover { transform: translateY(-2px); }
     }
 </style>
 </head>
@@ -970,7 +1020,12 @@
         <div class="skeleton-row"><div class="sk sk-icon"></div><div class="sk-lines"><div class="sk sk-line-1"></div><div class="sk sk-line-2"></div></div><div class="sk sk-btn"></div></div>
         <div class="skeleton-row"><div class="sk sk-icon"></div><div class="sk-lines"><div class="sk sk-line-1"></div><div class="sk sk-line-2"></div></div><div class="sk sk-btn"></div></div>
     </div>
-    <div class="empty" id="empty"><strong>No results</strong><br>Try a different search or category.<br><button class="empty-clear" id="emptyClear">Clear filters</button></div>
+    <div class="empty" id="empty">
+        <div class="empty-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <strong>No results</strong><br>Try a different search or category.<br><button class="empty-clear" id="emptyClear">Clear filters</button>
+    </div>
 
     <p class="footer">
         Abel Tools Installer &middot; Tap GET to install through the installer engine.<br>
@@ -1210,6 +1265,15 @@
     var countEl = document.getElementById('sectionCount');
     var chipsEl = document.getElementById('chips');
 
+    // Edge fades signal that the chip strip scrolls; hide each fade at its end.
+    function updateChipFade() {
+        var maxScroll = chipsEl.scrollWidth - chipsEl.clientWidth;
+        chipsEl.style.setProperty('--fade-l', chipsEl.scrollLeft > 6 ? '24px' : '0px');
+        chipsEl.style.setProperty('--fade-r', chipsEl.scrollLeft < maxScroll - 6 ? '24px' : '0px');
+    }
+    chipsEl.addEventListener('scroll', updateChipFade, { passive: true });
+    window.addEventListener('resize', updateChipFade);
+
     function buildChips() {
         var cats = ['All'];
         catalog.forEach(function (item) {
@@ -1227,6 +1291,7 @@
             });
             chipsEl.appendChild(chip);
         });
+        updateChipFade();
     }
 
     function matchesFilters(item) {

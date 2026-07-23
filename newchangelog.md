@@ -1,5 +1,6 @@
-- Fresh coat of paint: bigger catalog list, spotlight cards for new shortcuts
-- Search now works, with a clear button and smarter matching
-- New collapsing header and swipe-to-dismiss sheets, just like a real app
-- Redesigned confirm dialog that matches the rest of the UI
-- About page with developer info and links
+- Sharper, easier-to-read text across the whole app, especially in light mode
+- Shortcut names no longer get cut off — long names now wrap to two lines
+- Category bar now fades at the edges to show there is more to scroll
+- Hover highlights on rows, chips and buttons when using a trackpad or mouse
+- Visual polish: refined What's New card, softer icons and a nicer empty state
+- Bigger, easier-to-tap close and clear buttons
