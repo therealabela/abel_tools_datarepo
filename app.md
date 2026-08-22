@@ -932,6 +932,20 @@
         margin-top: 30px;
         line-height: 1.7;
     }
+    .abelid-view {
+        appearance: none;
+        border: 0;
+        cursor: pointer;
+        font: inherit;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 11px;
+        margin-top: 10px;
+        color: var(--tint-text);
+        background: var(--tint-bg);
+        border-radius: 8px;
+        padding: 5px 10px;
+        word-break: break-all;
+    }
 
     /* ---------- Pointer (iPad trackpad / mouse) hover states ---------- */
     @media (hover: hover) and (pointer: fine) {
@@ -1049,7 +1063,8 @@
     <p class="footer">
         Abel Tools Installer &middot; Tap GET to install through the installer engine.<br>
         Shortcuts remain normal Apple Shortcuts on your device.<br>
-        &copy; 2026 Abel Tools Installer by Abel Achenkunju. All rights reserved.
+        &copy; 2026 Abel Tools Installer by Abel Achenkunju. All rights reserved.<br>
+        <button class="abelid-view" id="abelid-view" type="button" title="Tap to copy your AbelDeviceID">AbelDeviceID: checking&hellip;</button>
     </p>
 </div>
 
@@ -1754,6 +1769,32 @@
     }
 
     init();
+
+    /* ================= AbelDeviceID footer badge =================
+       Show the device's shared AbelDeviceID at the bottom, tap to copy.
+       Reads the existing AbelID module state; never generates or stores
+       anything itself (generation stays in the AbelDeviceID gate). */
+    (function () {
+        var btn = document.getElementById('abelid-view');
+        if (!btn || !window.AbelID) return;
+        function label(s) {
+            if (s.id) return 'AbelDeviceID: ' + s.id;
+            if (s.status === 'banned') return 'AbelDeviceID: banned';
+            if (s.status === 'checking') return 'AbelDeviceID: checking…';
+            return 'AbelDeviceID: not generated';
+        }
+        function upd() { btn.textContent = label(AbelID.getState()); }
+        upd();
+        AbelID.onChange(upd);
+        btn.addEventListener('click', function () {
+            var id = AbelID.getState().id;
+            if (!id || !navigator.clipboard) return;
+            navigator.clipboard.writeText(id).then(function () {
+                btn.textContent = 'AbelDeviceID: copied!';
+                setTimeout(upd, 1200);
+            }).catch(function () {});
+        });
+    })();
 })();
 </script>
 </body>
