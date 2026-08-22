@@ -1,6 +1,4 @@
-- Sharper, easier-to-read text across the whole app, especially in light mode
-- Shortcut names no longer get cut off — long names now wrap to two lines
-- Category bar now fades at the edges to show there is more to scroll
-- Hover highlights on rows, chips and buttons when using a trackpad or mouse
-- Visual polish: refined What's New card, softer icons and a nicer empty state
-- Bigger, easier-to-tap close and clear buttons
+- New: Abel Tools now verifies your device with a private AbelDeviceID, created right on your device — your key never leaves it and is never uploaded
+- You may be asked to generate your AbelDeviceID once when you open the installer — it's free and takes a second
+- More secure installer that opens straight from the Abel Tools Installer shortcut
+- If you're on an older version, please reinstall the Abel Tools Installer shortcut to keep getting updates

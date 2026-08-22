@@ -948,6 +948,25 @@
         .spotlight:hover { transform: translateY(-2px); }
     }
 </style>
+<!-- Shared AbelDeviceID gate (loaded from the canonical origin so it works
+     whether the installer runs same-origin under achenkunju.com or is rendered
+     cross-origin from the served HTML). The existing module owns the identity,
+     validation, ban list, gate UI, and same-/cross-origin bridge. -->
+<script src="https://achenkunju.com/abelid/abelid.js"></script>
+<script>(function (p) {
+    if (window.AbelID) { AbelID.protect({ project: p }); return; }
+    // Fail closed: if the identity gate can't load, block instead of allowing
+    // the installer to run without protection.
+    function block() {
+        var o = document.createElement('div');
+        o.setAttribute('role', 'dialog');
+        o.style.cssText = 'position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:24px;background:#05070f;color:#eef2fb;text-align:center;font-family:system-ui,sans-serif';
+        o.innerHTML = '<div style="max-width:420px"><div style="font-size:34px;margin-bottom:14px">&#128274;</div><h1 style="font-size:20px;margin:0 0 8px">Identity check unavailable</h1><p style="color:#a8b5cd;font-size:15px;margin:0 0 20px">' + p + ' could not load the AbelDeviceID gate, so it cannot verify this device. Check your connection and reload.</p><button style="font:inherit;font-weight:600;border:0;border-radius:12px;padding:12px 20px;cursor:pointer;color:#05070f;background:#6aa5ff">Reload</button></div>';
+        o.querySelector('button').addEventListener('click', function () { location.reload(); });
+        (document.body || document.documentElement).appendChild(o);
+    }
+    if (document.body) block(); else window.addEventListener('DOMContentLoaded', block);
+})('Abel Tools');</script>
 </head>
 <body>
 <div class="atmosphere" aria-hidden="true"></div>
@@ -1107,6 +1126,31 @@
 <script>
 (function () {
     'use strict';
+
+    /* ================= Runtime capability wall =================
+       Backup to the server-side signed-URL gate. app.md is only usable when
+       loaded same-origin under achenkunju.com in a secure context (so the
+       shared AbelDeviceID module can run). If it is ever loaded some other way
+       — e.g. an old string-injected/opaque-origin web view, or a saved copy —
+       show a short "get the shortcut" message instead of a broken installer. */
+    var isSupportedRuntime =
+        location.origin === 'https://achenkunju.com' &&
+        window.isSecureContext === true &&
+        !!(window.crypto && window.crypto.subtle);
+    if (!isSupportedRuntime) {
+        document.documentElement.innerHTML =
+            '<body style="margin:0;min-height:100vh;display:flex;align-items:center;' +
+            'justify-content:center;padding:24px;background:#05070f;color:#eef2fb;' +
+            'text-align:center;font-family:-apple-system,system-ui,sans-serif;line-height:1.6">' +
+            '<div style="max-width:420px"><div style="font-size:34px;margin-bottom:14px">&#128241;</div>' +
+            '<h1 style="font-size:20px;margin:0 0 8px">Open this in the Abel Tools Installer</h1>' +
+            '<p style="color:#a8b5cd;font-size:15px;margin:0 0 20px">Run the Abel Tools Installer ' +
+            'shortcut to open this installer. If you don’t have it yet, add the shortcut first.</p>' +
+            '<a href="https://www.icloud.com/shortcuts/5ef518ebbbca40039df5325b264e9fb0" ' +
+            'style="display:block;text-decoration:none;font-weight:600;color:#05070f;background:#6aa5ff;' +
+            'border-radius:12px;padding:13px 22px">Get the Abel Tools Installer</a></div></body>';
+        return;
+    }
 
     /* ================= Configuration ================= */
 
