@@ -1,1 +1,1 @@
-Moo Cleanup Tool
+Abel's URL Compressor

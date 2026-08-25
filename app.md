@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Abel Tools</title>
+<title>Abel Tools Installer</title>
 <style>
     :root {
         --bg: #f4f4f9;
@@ -301,7 +301,7 @@
         pointer-events: none;
     }
 
-    /* Ghost version numeral — the card's signature */
+    /* Ghost version numeral - the card's signature */
     .hero-ghost {
         position: absolute;
         right: -6px;
@@ -961,6 +961,128 @@
         .sort-btn:hover, .about-link:hover, .empty-clear:hover, .alert-btn:hover { opacity: 0.8; }
         .spotlight:hover { transform: translateY(-2px); }
     }
+
+    /* ---------- Real shortcut icon tiles ---------- */
+    .tile-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: inherit;
+        display: block;
+        pointer-events: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    .has-img { overflow: hidden; }
+    /* Real art carries its own lighting - drop the synthetic gloss overlay */
+    .row-icon.has-img::after,
+    .sheet-icon.has-img::after,
+    .alert-icon.has-img::after,
+    .spotlight-icon.has-img::after { display: none; }
+    .row-icon.has-img {
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.16), inset 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+    }
+    .sheet-icon.has-img {
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.25), inset 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+    }
+    .alert-icon.has-img {
+        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22), inset 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+    }
+    .spotlight-icon.has-img {
+        background: rgba(255, 255, 255, 0.16);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22), inset 0 0 0 0.5px rgba(255, 255, 255, 0.25);
+    }
+
+    /* ---------- Appearance panel ---------- */
+    .appearance-label {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-3);
+        margin-top: 20px;
+    }
+    .appearance-label:first-of-type { margin-top: 4px; }
+
+    .seg {
+        display: flex;
+        gap: 4px;
+        background: var(--search-bg);
+        border-radius: 13px;
+        padding: 4px;
+        margin-top: 10px;
+    }
+    .seg-btn {
+        flex: 1;
+        border: none;
+        background: none;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-2);
+        border-radius: 10px;
+        min-height: 38px;
+        transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .seg-btn.active {
+        background: var(--bg-solid);
+        color: var(--text);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .swatches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 12px;
+    }
+    .swatch {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        position: relative;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 6px rgba(15, 23, 42, 0.18);
+        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+    }
+    .swatch:active { transform: scale(0.9); }
+    .swatch.active {
+        box-shadow: 0 0 0 2.5px var(--bg-solid), 0 0 0 5px var(--tint), 0 2px 6px rgba(15, 23, 42, 0.18);
+    }
+    .swatch.active::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 15px;
+        height: 15px;
+        transform: translate(-50%, -50%);
+        background: no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+    }
+
+    /* ---------- Accent themes (blue = default :root) ---------- */
+    :root[data-accent="indigo"] { --tint:#5e5ce6; --tint-bg:rgba(94,92,230,0.12); --tint-text:#4b49c8; --focus-ring:#5e5ce6; --hero-a:#4f46e5; --hero-b:#7c3aed; --hero-c:#2563eb; }
+    [data-theme="dark"][data-accent="indigo"] { --tint:#7d7aff; --tint-bg:rgba(125,122,255,0.20); --tint-text:#a6a3ff; --focus-ring:#7d7aff; --hero-a:#4338ca; --hero-b:#6d28d9; --hero-c:#1d4ed8; }
+
+    :root[data-accent="purple"] { --tint:#8b3ff0; --tint-bg:rgba(139,63,240,0.12); --tint-text:#7a29d8; --focus-ring:#8b3ff0; --hero-a:#7c3aed; --hero-b:#c026d3; --hero-c:#db2777; }
+    [data-theme="dark"][data-accent="purple"] { --tint:#b57bff; --tint-bg:rgba(181,123,255,0.20); --tint-text:#c99bff; --focus-ring:#b57bff; --hero-a:#6d28d9; --hero-b:#a21caf; --hero-c:#be185d; }
+
+    :root[data-accent="pink"] { --tint:#e5308a; --tint-bg:rgba(229,48,138,0.12); --tint-text:#cc1f77; --focus-ring:#e5308a; --hero-a:#db2777; --hero-b:#e11d48; --hero-c:#f97316; }
+    [data-theme="dark"][data-accent="pink"] { --tint:#ff5fa8; --tint-bg:rgba(255,95,168,0.20); --tint-text:#ff8bc0; --focus-ring:#ff5fa8; --hero-a:#be185d; --hero-b:#9f1239; --hero-c:#c2410c; }
+
+    :root[data-accent="red"] { --tint:#e0245e; --tint-bg:rgba(224,36,94,0.12); --tint-text:#c4164c; --focus-ring:#e0245e; --hero-a:#e11d48; --hero-b:#db2777; --hero-c:#f97316; }
+    [data-theme="dark"][data-accent="red"] { --tint:#ff5470; --tint-bg:rgba(255,84,112,0.20); --tint-text:#ff8496; --focus-ring:#ff5470; --hero-a:#9f1239; --hero-b:#9d174d; --hero-c:#c2410c; }
+
+    :root[data-accent="orange"] { --tint:#f97316; --tint-bg:rgba(249,115,22,0.14); --tint-text:#c2570b; --focus-ring:#f97316; --hero-a:#f97316; --hero-b:#db2777; --hero-c:#7c3aed; }
+    [data-theme="dark"][data-accent="orange"] { --tint:#ff9f47; --tint-bg:rgba(255,159,71,0.22); --tint-text:#ffb877; --focus-ring:#ff9f47; --hero-a:#c2410c; --hero-b:#9d174d; --hero-c:#6d28d9; }
+
+    :root[data-accent="green"] { --tint:#0f9d58; --tint-bg:rgba(15,157,88,0.13); --tint-text:#0b7f46; --focus-ring:#0f9d58; --hero-a:#059669; --hero-b:#0891b2; --hero-c:#2563eb; }
+    [data-theme="dark"][data-accent="green"] { --tint:#34d17d; --tint-bg:rgba(52,209,125,0.20); --tint-text:#6ee0a2; --focus-ring:#34d17d; --hero-a:#047857; --hero-b:#0e7490; --hero-c:#1d4ed8; }
+
+    :root[data-accent="graphite"] { --tint:#5b6473; --tint-bg:rgba(91,100,115,0.14); --tint-text:#454c58; --focus-ring:#5b6473; --hero-a:#334155; --hero-b:#475569; --hero-c:#64748b; }
+    [data-theme="dark"][data-accent="graphite"] { --tint:#9aa3b2; --tint-bg:rgba(154,163,178,0.22); --tint-text:#b8c0cd; --focus-ring:#9aa3b2; --hero-a:#334155; --hero-b:#475569; --hero-c:#64748b; }
 </style>
 <!-- Shared AbelDeviceID gate (loaded from the canonical origin so it works
      whether the installer runs same-origin under achenkunju.com or is rendered
@@ -985,17 +1107,20 @@
 <body>
 <div class="atmosphere" aria-hidden="true"></div>
 <header class="mini-header" id="miniHeader" aria-hidden="true">
-    <span class="mini-title">Abel Tools</span>
+    <span class="mini-title">Abel Tools Installer</span>
     <span class="mini-version" id="miniVersion"></span>
 </header>
 <div class="container">
 
     <p class="eyebrow rise" id="dateEyebrow"></p>
     <div class="header-row rise">
-        <h1 class="large-title">Abel Tools</h1>
+        <h1 class="large-title">Abel Tools Installer</h1>
         <div class="header-actions">
-            <button class="theme-btn surface" id="aboutBtn" aria-label="About Abel Tools">
+            <button class="theme-btn surface" id="aboutBtn" aria-label="About Abel Tools Installer">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </button>
+            <button class="theme-btn surface" id="appearanceBtn" aria-label="Appearance and themes">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 5-5 5h-1.8a2 2 0 0 0-1.5 3.3l.2.2a2 2 0 0 1-1.4 3.3z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>
             </button>
             <button class="theme-btn surface" id="themeBtn" aria-label="Toggle dark mode">
                 <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
@@ -1095,8 +1220,8 @@
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3L10.7 10a6 6 0 0 1 8-8l-4 4Z"/></svg>
         </div>
         <div>
-            <div class="sheet-name" id="aboutName">Abel Tools</div>
-            <div class="sheet-cat" id="aboutVersion">Installer</div>
+            <div class="sheet-name" id="aboutName">Abel Tools Installer</div>
+            <div class="sheet-cat" id="aboutVersion">Version &hellip;</div>
         </div>
     </div>
     <p class="sheet-desc">
@@ -1107,7 +1232,7 @@
     </p>
     <h3 class="about-heading">About the developer</h3>
     <p class="sheet-desc about-bio">
-        Abel Achenkunju builds tools, shortcuts, and whatever comes next &mdash;
+        Abel Achenkunju builds tools, shortcuts, and whatever comes next -
         including Abel Tools, Abel&rsquo;s Countdown, and a browser-based file converter.
     </p>
     <div class="about-links">
@@ -1125,6 +1250,30 @@
         </a>
     </div>
     <p class="sheet-copyright">&copy; 2026 Abel Tools Installer by Abel Achenkunju. All rights reserved.</p>
+</div>
+
+<div class="sheet" id="appearanceSheet" role="dialog" aria-modal="true" aria-labelledby="appearanceName">
+    <div class="sheet-grabber"></div>
+    <button class="sheet-close" id="appearanceClose" aria-label="Close">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="sheet-head">
+        <div class="sheet-icon" style="background: linear-gradient(140deg, var(--hero-a), var(--hero-b) 55%, var(--hero-c));">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 5-5 5h-1.8a2 2 0 0 0-1.5 3.3l.2.2a2 2 0 0 1-1.4 3.3z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>
+        </div>
+        <div>
+            <div class="sheet-name" id="appearanceName">Appearance</div>
+            <div class="sheet-cat">Make it yours</div>
+        </div>
+    </div>
+    <p class="appearance-label">Theme</p>
+    <div class="seg" id="modeSeg" role="group" aria-label="Theme mode">
+        <button class="seg-btn" data-mode="auto">Auto</button>
+        <button class="seg-btn" data-mode="light">Light</button>
+        <button class="seg-btn" data-mode="dark">Dark</button>
+    </div>
+    <p class="appearance-label">Accent color</p>
+    <div class="swatches" id="swatches" role="group" aria-label="Accent color"></div>
 </div>
 
 <div class="alert-overlay" id="alertOverlay"></div>
@@ -1146,7 +1295,7 @@
        Backup to the server-side signed-URL gate. app.md is only usable when
        loaded same-origin under achenkunju.com in a secure context (so the
        shared AbelDeviceID module can run). If it is ever loaded some other way
-       — e.g. an old string-injected/opaque-origin web view, or a saved copy —
+       - e.g. an old string-injected/opaque-origin web view, or a saved copy -
        show a short "get the shortcut" message instead of a broken installer. */
     var isSupportedRuntime =
         location.origin === 'https://achenkunju.com' &&
@@ -1193,11 +1342,68 @@
         wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3L10.7 10a6 6 0 0 1 8-8l-4 4Z"/>',
         sun: '<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/>',
         moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>',
+        link: '<path d="M9 15 15 9"/><path d="M11 6.5 12.8 4.7a4.6 4.6 0 0 1 6.5 6.5L17.5 13"/><path d="M13 17.5 11.2 19.3a4.6 4.6 0 0 1-6.5-6.5L6.5 11"/>',
         check: '<polyline points="20 6 9 17 4 12"/>'
     };
 
+    /* ================= Real shortcut icons (embedded WebP) =================
+       Downloaded from each shortcut's iCloud record and optimized. Used in
+       place of the generated glyphs; ICON_TINT holds each icon's dominant
+       color for accent surfaces. Unknown shortcuts fall back to a glyph. */
+    var ICON_IMG = {
+        "quickscreen": 'data:image/webp;base64,UklGRqADAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IAQDAAAwFQCdASp4AHgAPmEskUYkIqGhLRO5EIAMCUAZoU44Vf1Le75hj3Hk/+v+QB7Jttn5gP1k/YD3wP1A9gHoAf4DzjvYA9AD9M/Tj9lP90kiAM9xQXPNAqoV9Afjdz+6luWBWcBimXUYXkEIiwfVyfd9cwGQbpyr/FEBFHxVDQz3YWbUTljphF+3lSw7zfx7B3h7u3Umd8J5CKURrx0elQBCSjAXX61pTc3vFjPnI8UuD+oAAP7tMl//yVvXZ2vcn7k8Qf/zrkglfD/zf/IecwAAjwgZ8QjRGuU+c1uu9UOdD1ki6dFkK1rkHmRMQiaZqtX6R0KJ9OQblUHKLRLj+Pcf7+rVuDZr5ARsIya2QFpwEuOAUKAPUByeZDT/Baqrgg9vjFWgQpS6+Yjvr8s9+cQvMfEWQ55eBBk/gY518+/s+4cjAdHiQR4eTocCiqU/rhe2AlwbQSpWAKBnwoZHyGfMZULDOQGjcoCMiJGMeMii3a9QW2bNC+0Dqtfvc9dJOJUlpvseg5oNi/Kz5HdE2rXXZUeEFzyKLhr+HFJVsIVuAu241Uwvg5DBAI9K/tNq1Bi2drE3lIjBwncXDXxGkzAtbQT+HZwtC4akvfimrZnvpfPqf5gwA1Gu/7VBzKzep/h8wunB2q8m0W9GzkajFlEHzsJqzy4NSnVLCu4hXZnDb5S5UYhv6Dan6yVm7PBBDeGqoA9ELRUIJR6QqKDQnHZGT3Qje5wlFPkdPsVECK/DJuNJZ8O+MK0wP/MKM6OFrjA7AUPEET6AOKKNHgKFMbX2M6sCVnnBvJDSoAXZAUI1WU10HSnvFfr4k7fMQzMMbCE51u/xXFakPbSyFrs6x6ezIKFtTOznsbsFIrGReoznfLndev19fw30+IKqihw0CSUr9t8uzzk8Hi1S/ZEMug0Aq6S7fcfgNf1sptYvo4gxX83Wrw6SBLD/UrqWBKAu49VJUvB3Y6nH9cAZor2kJa60DisjDxkppT8bLiL1Dt5pw7tzzztKVF4Ki8monHrY7jvjkAAA',
+        "anythingbutglass": 'data:image/webp;base64,UklGRggEAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IGwDAACwFACdASp4AHgAPmEwlEakIyIhKRVZCIAMCUAaGAKvsuVPJMmr6gNsP5oPOq89XfRN5mryGvFNPvf831Vn3jH8s79AVELdBQzWJcXK1w8zORo8tCWqzUTXOx+OeH5y1XbiCUBZigWNpkLKiO6aSTTWAbKufDtI29sXHZicibmJdtk0S0fmG5LfQaGs2cjVrgdipUflwSpb9tCbIXiyKM9mdqymRIvItcMU2ShV0AAA/vDiI58dCMecw5qP/+Jv0aN/TDtRmezbRngk7wOPcDq+uCdlscno7NJ4mZI2V9/dDlOxjiiLZDqh4nEdXkkiZ6H835OlH8KywNSfa79wgGpAv5EClhhzYDAY4i52Uw2YUO4r7DeLRJoJHlE5QA/HBjcvCKN88LwZ4AczjdQwnp3rOFrLs581yHiAKSEz3+cZQv97nZbEmagg90JxHKOZfWOoSpjbXNkwbJ0WbKCVIS7ZEFAEfyKpeWlIkyAX1g8SQzayvtD36dl8VbazIKNIjkmgnmEJhBO6nSvRj5Q9pTd+c8XpjLzPCqJBUOZSctxVmN5WmJffbeMtZUcUKW4oUZO3WSX9ozs1ZOmqVQY0+b1JdT58wzZzQzeNL89yR7nfgnEUO5eIQYMwTZVSmirmYHRKOAS6i4aBGBUuJme+Kczyv1SpA1HtaJOJYjo2shf81vk9fZfS0lFH4Enx7KpkPAj84iV7IopHfs6zBTuaUy+QblbKShDAgzv4vFa/yU2EHT+8irllS/H97IwUtNrYnlW3Knsu6APH64bHzDC1UF5ZkWG9B+tM6hHAGwzgXOVOair6d7WUTB3S5FJk3+QbYks3qeb9aMdrYXg9rsjff6trOz38aUrEDEg1o64WSbPACgS+Hw/k7nFILT1GvKBRet38JEWnalySyuoqOI5MCxSKzGxH/hYPu1ubSUvNv2ZxBlLwzlH7TYs5pMWfH1djfJ0QbrwNEeX0MGQsFzlMjkIBnxvlEUBCJ2t3MaBSqXwrql7ogzy89zloScSnNu9cHvt064XQDTCF2WeQZIdXL9AONDZKLaUvlV5hAuooP+t4N8ULREisMDCWuh3pdrRZ3qUfC00be6sMuLQwoK8t/LgJcwziaXz/yy/v/8gAAARBaIcFbmvoEHWbSzNh5YKnkn+UOKaJXsfn5kxwAAA=',
+        "savemybattery v2.1": 'data:image/webp;base64,UklGRmIFAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IMYEAABQGQCdASp4AHgAPmEwlUekIyIhIpZpwIAMCUDOAanXYvkPN8uH+Q4j5mfoTcxfLN8H/UB4pfSV8wH6zfsB7vv96/1Xs+9AD9jeso/Yz2H/La/aD4W/3B9JumYbS86/gjpvJpHkiOsq9AdSbN3oBu6lJKRTFHMlDvRGkpOythom5AwBzofD1I5UIpAlVCZbwuv5aNqYFaU8MT+nAzRe8IlD/YL4DpkHznBdk4LXePgL4wuHDRNWfSQDJP4UbGMhAgzxEw7e2WrcOTCcmsFvJhNY9eoAAP7qqyT46EY/i6wsPjf//6FAA9o5W/8Qz/xDPZCCvVJoifSFj4DKUoRS65SKHLZNc5OJVY9/3XximkzQFU+Pmgmqlida8bdu34Aa5FoMmGY5Q3M4/W9uW1Kym8Lmk0Oga4dNnT26H2Tzz/iKmP4uAW3GPJA4kM+9pN7xEbC/RkVX0RuHK72WdGHt5K5VxCqmdUvwhohadRZT5mUs0q9doBeAPNGYYpHu1XCC4LVc2WBnq7Ls95hPJHdxK6pQkB1OQpJUIv+c3h+2lTviWGYPgNFZ+IpLuPGY8p8T7/gk1i1HHYcDPYwEFfUJovpet8LjbuFUx3mNT4RTg3nrXnyLHUraMHHPMBSNg2wXxnjKzSagJg6QXldlp8V55jgFVXsu8m0GrFNZeAI4vVCp7/ha6iMOKNzi+H00RNNg7l9bidHuueRPekwUqLo+uSs0Gf0xzYw4yEN1n+/4/Sd07+cPWGIiyEvQHM9shlzFrwKyCf5vSvPdxFVuIMYTx2XJpse5vrG6ZO1RRnQc8CDujIcnXUytSGcGRyOL3xYSjMnl31FhMBmJ/jjTH1d9kqoeTDSQfGxlQo5cKwh99atZLILT3E6fO3IFDJhE/N3OQqTt2xUaiL1H/G9lMZA9zWCsU/4sN/xCROMAPPXHAgXhDo6o/ZprNoq6ZljrB7cdLnXabc2L81yDOZDONYuiLiq3gEAfyDzV75comF7Xqxk3UaHzy9RdDB/+pqc0/RNXQMGPopaw1ZJ9p+5ki3deqUvkvxZU9mRlBiuVv/d8nBXuEHjvMIoKH9TTpIcYL97s+bsqPrIAC5zS5mu22esMSxbwz+wm2esePZ+AYv4ubdfXBE1W3n8EdqjZrIXi3K2o6lGT39iH2qwHVFM/a5oCSL+9/52o748ZXUA6jozLDodlp/esHjheR4o8iW7wF5JciJ9dY78nwUo/xWak4/xaWyHmtkjV0bv6zs3PRMJNclVGF2Fe+EJDI20j5NK6w/2CmCUmMkKGkVXbI7O/QN9WXUmdStI1lk1t4j/STK4Y+hvb0h4VZr8pEZ6z5t++aTgy1Z8znnXgNQE+HHr0FEIDV/uzVdb/v/v3jmZt2fUwD4NC2LgVyEQCFQzUz4hxH0najXfCWVvc6PPkAVC2gZC65lWPvHIcwdvVl+VLhZadojR9KcVhGIYfHKIkbcoltiddRODKnM8BK0K15X5NMaz8QJ3ktKVrh3lfCcjtMRZsNn73k4bSIMhUU3eOA6FdpEifEAAAC2CTYHhs5yYOesdMThIgj5CD9muCQJrHW4tp5OfUnQAAyS86UG4LXBV20v9PfORCF0PHZLFT7w5tjJy5r4F/ob/POAAA',
+        "savemybattery v1": 'data:image/webp;base64,UklGRpoDAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IP4CAACQEgCdASp4AHgAPmEulUekIqIhJBIJkIAMCUDOAaf4wPlcNO4SqgdoDbgeMB6u/9w/x2qMfsr7Ev7M+m7+wHw0/uL6Tie+97aFkf7vWGUKFCb2Ey1jWGCw/Zpozq8pl0g3XlRE+3SocgbjOePb5kc/XvW+8DuQaI2WX/SSj/3czkSwXKkHYyDyeoIfQ40vU+xu8tFg/UdYuSIpnr2AAP7qqyT46EY/dCCAqqOH//Qzd7OW6b/pC3/iFv2QdiOGE8bGHI4DKUniR794osZuix85ZWGVkVP6p8Ynhb20xRgQYMU9vmfY8qV2yIvVRqiBySsV6eWkOELldTJqUoAgfnx8amIbAhde734ncUHex8/sl7LvmNKkFDMciEZLaH/tVEve8TFsqHSPj/SBdddZvTscvg2sgXnXV7rlY/y7AF8GVnHPRik/w2TQjC9dWlFybsonQKnrsuaS93uxB8tQ7pP8I6QaZVlp8APpVEMn6SW86q+SBLljdnR7r6PGwGAflNrmxoXFLB8MxhxTddvJbWsXNRvHAS4AKYokaBs1hwBb65f1C2NJnH4wc3gRyBYsOVF+MPI23iy2Zq5BwSfVopdArSNFgB2CiHh+X6+wyMEtm2KNS+rRU8KwmfxK0CMdbrlpkHFBbHi/x7mV3N8f5wCaCLyPefnv0THHpSIrRgin4/U/zGBBjVr/ObjFR2lDfsO7OkQ8rSElQ63KmW2z/yrO0/l508qPoUfx49nBLYqEPRc25lX8neNjMWvgOIProFB4jw/KmMZZ1Y/uj/v536oJmCvo/LcYhjISWVGXqNNacuNGGQ2isyaF5vnJyK+3UA3wCgm4Wmx5BdLz0RuEwcWDIqk7E3NyNtvxy/g8MFCzXh+/nRtf813sCQ1c2WIHYZmSfh5tpctqH+KFnbusYF1aFPTtLKa1RSh9OVKnIh9WBo1hCX38+HXGTADADfGlC/s6QRzT1BB2YxS14AAmEqw0xw/ig6Mxn09tVdMDMF9fH0jxiYC5ZWvq//4ZgAAA',
+        "coolbgremover": 'data:image/webp;base64,UklGRkAFAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IKQEAAAwGQCdASp4AHgAPmEwlEckIyIhJRZpWIAMCUB2A5iAq7Hr1X8kOfB4HMxe2ScB90HuAfpL0iPMB+y37K++B/K/0A9wH+H9QD+y/8DrGPQA/W704/2w+Dr9wv269p95IgwR5DdiYJ6UFm0aAJxXesx0tNxf3Pk9MGqDU72342koH4ppi6FKbYEm3fSNPPUe757wuAEduO9QR0qZ41xq10DcOvwoa6fSzNZqfT27jtpOaRPzeFAxqg4ML3fd7nWCd8OZ8/fleZOqYs+TgWGR7xWK+gAA/s8Bv+oXPcU/in5WH8rD2Xf+LE3gGNiBrCYlEEaWSbrCcwX/stXy+2gpdDK49/i/Nv/amJNOkvwtXzyND47Zc5L/ZVk8/1FMyCbVX0wCoOyv0bXm3H7UhcswxujKPt7HXhSYNd8xUZrmxuMqnGdvwRYaVZnNQkqGeTt5g6DvIxS61n2IerCP5hbe5j3VGEewF1ZxqBuh7tX2A2kN3dK3QRWs1Hg00/gFVxWkBtElhtaMwX1CcAdmTcNIM9ob3Ik7OBt8vJ/wzZxKJyLFTptlab34iXlRNYjLCVndXjyq93QF49KeQ+EmWQTvVi4DsdGxGL2zYUiE69hbnHWIwT3OVXnS2+zWOjaHIRPZeK3Jig9gQQxGMM3KdfOv388ouZI4QUGjn7LHTAM6gSUVXqofqyvbWttNj1J5WeS4d1mxl/2rrRxnbRQA4o4tKOTMOyt8/Lla7qv7LbsgsQ49x89+AxW4eSosn2BVIGbKa9sOUuaC3HStGln2PXCJ+EZUeGfb/H45FdfLkX1Lgb7DKAeN8O1UfBqHOUqvVsEv/Ajs6Wm9Tk59XGvMpULLvdSPOr+UVjeNIskVxXOVfjI6M3vA6RDkB8bKs9aGJaoMkzVOAE6fosqE2jGfWtLDruKPuPDqDLV/eHqQOyjMfjrUWkG9ymVhzbpM99FCVTewGL41EpNZlXmExXN8Ke5i1uc/3EZ2gKA1FkRCCb/oxsAtQQLgP8ga7c47TZxq6ecP/h8kdmFaATZZJTy3kHH5dQW/igmu+ELO4/9nOsEyNl00FtD7RNtj7jsKg3BTkD6rkJqEwJb7iHrtLe7cYvPPmgPDFU5XsfhgosJEQG5U2njx+DwuPDXmpTZ0ssufrjI08WMlVM4izF4PEzrxzkKXUE0D+pkqXimFwwdFfL2mDZE+0/Lrbke1J7afRI9lPSVlaiUXXdn9hAjProYuJv9nMSYnOcqfszMQTDt3HWUdxiObbfqEs2u9+n1N5ph3uUZPeftuWOOOzBSuPYNbinfdIDsOccU7jp0AInp64egpLPt67CNS0hF45ylwU9GV45RzyS3rfIYNVdfqoVIQqFSKRYuA10VvxZhWgdZItaB5cBq/2TOFvnLucekXsXVa7tAYBkc5TBhrShxmreVyC9bAb1GtjI2x8Ag86Dujx81UjCSjGxn+O7SskurhWpwAzK+kgNp/H0u8j835PqF8KFKfcpYIkZSrbKRUY7/1/71VuY/KiM3hfLicUMLB7JJEuzwF1OA4zsUQzqTVfqHxkByXP+A48jZ3qipETNkCAc3mAp8SLmI8AAA=',
+        "coolimageeditor": 'data:image/webp;base64,UklGRgYFAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IGoEAACwGQCdASp4AHgAPmEsk0ckIiGhJxW5IIAMCUB2A5uIOvAcctuv4q1bnmOcb/8bzQf272L+YB+qnSA8wH7Gekp+wHuQ9Aj+a/47rEfQA/bv00P3U+Ef9z/3D9o55Ew4qyBMsVLDS/KGs5SlKUo/f7R5MzeSdLkBf8rCDFZov+Zfey4eksa1K1IPyJMTBhad67qI1flziAK5b1AFx89q9BNS8Rr39WdQo8PiVqCG0KJq3tbTccXYigwH+KfotXcFoX8ST++WK4TX/3JbcgoMsillj2AAdLTAAP7JaBpz/9QSr64xAgc/5sP/zYd3z//kBUn2I+2b4W+Sm4VZzSSeKUsD6AgyvzGgalQ8MHc3zZtVqwXxWuzUe1dHI0B0Q+4AXE+CuuYmVKEPF8tS8Y2DAjquRFU/DhG+bjozchYJVT/22VT0lWeXWxgFrZm2c71RQWW0HOBpMSs0DmvkWCQg2BjW043Wi0OCAh0RZV/pKO748QqtLCJB1WvAj4Tz2Nwp8Mhr8hZsNUHPsYrpVJ1iGmpk0E0aNJAYh754gnYgHMGMIfOEWr35sWwhe5DVSK8NzQC2/PwPfAixJ+wfaGJmfn7P5fAdHVqmsLf3TEB3GGH0rJzpqVFChEy9Jde6Xahu5vCO4eAgZ1LXvRunIAWPJfUYi0Jpc9OZOEFTI1k4VwlvRJ5TuDP0nKSviimnvDrzuwpm7jcuCgY2Y88nUXSXSlQeVWTYZo2KgXblChgn79HB+Ckaayjx02vtggc80SVVluxiWSwS32BQuS34eYIxZA9mWxZwvBrOX+d/Z1lUtz6529kDv4Jr+i0JZ83rZ5jMG6Zsm9x3CO5lRkOHkrh+yv8Jy0s+Wca3IyIVw1nHjqFU+oGF9ll0B/PpXLUfvH8setl/nWML0yVgj/0zVVvxU9Owlex8dcOQKiAsKIny2S2dH2wRf2zNgxtjs/3JRr120fPoEGTCnLMMo1nKOMq5GV3gScJDX97ecpFy1/j/2GeUPFgORR4FGnrqa+astePGNcE21VSA6aZMPjbu2rnue2F7Q1dkIYKim9CDs9yyVZVM0ovKo4wnnTOXCti7gKQSUqC6gOTnyKP9ujF+UGdQ8VunulBYzb3oJ4gbfRuLwDyzerTNmt+8fbWL67EP2crGwc9IcG2HZ/wKivYrD8MkGUeIKtWePvaafPCBdkfEeS103bLiIPSkxLIJ9lM+YYIhOjZ+G17qDzMFb0HJxOD4QRz2JCfZU6fXWirnJ7GQJ199pHKg6UN/scDox7XK3Ko7xmCgkAvuJoXj9e2PP6U/2vh4zlarWYdNVWI+yMFWUb/42yq7LKJI2i5HAtdfns1XRIAPCJBd3P+69bYHE58l4Ym29j6BKSPD8ERkALU/LqRLf5AGPFRWpY0Ix/PQ6UVHBawBLdPh2FG6qQNHy5F8V9f+6sxHM/NQ3yVjNGPd6MxjPV4JEC6nAVTYPxUoD4/uMC1J1fgOOfY9ycvz+yAqPy/wckuovonA34AAAA==',
+        "leaf blower w/ google search": 'data:image/webp;base64,UklGRqYDAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IAoDAABwFACdASp4AHgAPmEwlEYkI6IhKxdIwIAMCWMDsB1DvnX6u3U030eznPKb9P/oM8wH2ge6L/w/UB0KPq4eir+wHWyG0Bpj2fQrs2V+AGFQSZ9Cqb3xLrEpbcKSslLdAin8VsZ/EarPQRWuy50ukJeymzdsyAaL5nxchR0i7aAGjsSRRzDnsugqDXfw0Z1Dl6yMVt9RY6spc6WjH/13Xw1xv1+nK8iVgnp0N59AAP7uwqb887/besNLLbucWv/V3t4Dz93O7ukT+z0t46HDEmfj1rLCbmh7lz59DSpBJHrbcIveK+fVMgkh/y2PXqIYxhpnm05MstfA32k/8kXaQQ4TEmBBchHg84Uk3d4tWSURTD0+wHC8QohUM81KAroB6OAdkO+UKXeqFMzL5jEK0heAeDT7hJZUO/4eCFt/HO2NLy1ulPRebD0JUm3HF2dZdSOwTCLg/PHQ2KdXheQbjpg+yUZTlZ4a2xun8v+G2HiVOnehVUY6G9eQrbWQNJSwnhmBsMKsiQBrg4QxEoaH5929jPPmt53HiIAu9iTrcYsg7tsmBoN+2oZs1P7QNqBtIy7zwdfv4502PyIe2neK5MxIS3VXUTvRFKXLAj6z1n2uz+iKQpTEewv1AoetkWb0V7UeyWSQHmn/xJjjGOODFIsh54LfSVO3knZxSuPsZAo+DzSHzSrr365P+aRAvO/bLK/9GDvBqZHieeBh8eoH8wqmEweC488ecEywrGW2dGXN5B8drALlDR0sNKWigLpsbcTN5/P1mJVauyo8Sa7YVtUGIGTjJTZkTvAtBrM271gKqYUyoU6CJepEA4rutk72qztHIPRXforWj3hwzVg+AehgEHKQzEGgpbtz9oX9vHurx9palyBYhwQwdQEsY68fDuau0033Lgd9yJCYOgZnyfAJtu+rm4GIn8XtcxAGpA9wvSJ9LzEIn0uwerx7fhvbpg9vqLhLuapS9KVQlrWLfbejI+cV1p+tWAAAAu9k28Vo4EVjUxXA9AyJJHGxbpz7v+Zg0B4xt+8HAAAA',
+        "leaf blower w/ google gemini": 'data:image/webp;base64,UklGRqYDAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IAoDAABwFACdASp4AHgAPmEwlEYkI6IhKxdIwIAMCWMDsB1DvnX6u3U030eznPKb9P/oM8wH2ge6L/w/UB0KPq4eir+wHWyG0Bpj2fQrs2V+AGFQSZ9Cqb3xLrEpbcKSslLdAin8VsZ/EarPQRWuy50ukJeymzdsyAaL5nxchR0i7aAGjsSRRzDnsugqDXfw0Z1Dl6yMVt9RY6spc6WjH/13Xw1xv1+nK8iVgnp0N59AAP7uwqb887/besNLLbucWv/V3t4Dz93O7ukT+z0t46HDEmfj1rLCbmh7lz59DSpBJHrbcIveK+fVMgkh/y2PXqIYxhpnm05MstfA32k/8kXaQQ4TEmBBchHg84Uk3d4tWSURTD0+wHC8QohUM81KAroB6OAdkO+UKXeqFMzL5jEK0heAeDT7hJZUO/4eCFt/HO2NLy1ulPRebD0JUm3HF2dZdSOwTCLg/PHQ2KdXheQbjpg+yUZTlZ4a2xun8v+G2HiVOnehVUY6G9eQrbWQNJSwnhmBsMKsiQBrg4QxEoaH5929jPPmt53HiIAu9iTrcYsg7tsmBoN+2oZs1P7QNqBtIy7zwdfv4502PyIe2neK5MxIS3VXUTvRFKXLAj6z1n2uz+iKQpTEewv1AoetkWb0V7UeyWSQHmn/xJjjGOODFIsh54LfSVO3knZxSuPsZAo+DzSHzSrr365P+aRAvO/bLK/9GDvBqZHieeBh8eoH8wqmEweC488ecEywrGW2dGXN5B8drALlDR0sNKWigLpsbcTN5/P1mJVauyo8Sa7YVtUGIGTjJTZkTvAtBrM271gKqYUyoU6CJepEA4rutk72qztHIPRXforWj3hwzVg+AehgEHKQzEGgpbtz9oX9vHurx9palyBYhwQwdQEsY68fDuau0033Lgd9yJCYOgZnyfAJtu+rm4GIn8XtcxAGpA9wvSJ9LzEIn0uwerx7fhvbpg9vqLhLuapS9KVQlrWLfbejI+cV1p+tWAAAAu9k28Vo4EVjUxXA9AyJJHGxbpz7v+Zg0B4xt+8HAAAA',
+        "editable materials": 'data:image/webp;base64,UklGRvADAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IFQDAACwFQCdASp4AHgAPmEskUakIqGhLBNY0IAMCUB2A6y4TsFnUt8B75ZPfzf4t/6N7APuA9wD9Tek35gP209bT+weoD0Dv2Q6yX0APLA9j79zPS3u8muDNATM2Cui42b8D9HthJvrkCfCQwmUN9WK4gl1W60t+MbYD6NEc2xMIs9e5UHzXVsuVL7kjI+NkFSm+Kk9zEXY1QzBPB6YthNNRTB6uyA3qyF7uhV9CuD0U2hBzniYP2D0AAD+zwWPz410/9hhIw5bWi3/pJv/aLWkR/+X+PwAOny//Gr2ARsezwdtQygueI2jX1MvKA/HfGPHITGjatVmn9HwhbRUNKElQ0kW+n9TDPxqxOPnDeXdj3keIv+DEhxhTaYMcNqV8MGrbm0YtbbDcfXPGTqr1E7Zp9d9NqY+NHvvZEEKNAhNXduEoGKlRlYW+45ThmujPwpbcnUec/TkoFEaAjmRGRySfJ0GePwEpAUzcKBmN1+LZov6wUtN4i8ioBSdW9byIv/xgUyrHNT/jaCC6r8aww8ttOFbeXOR1grtR1Id4uyYINVdxOLIoL/jXxEesJjobuIxmX4QNNTTW/znvsOTJMLdb9uWStm9ZdBXANxxGCnN3ij6FNiprwA9kBGh2CD/g8VlERGqRKUTc6jljFCYj5I6XpurQ4m6pfpZcTCTpQ0m7KCcXH9UihS2KY95l3bWjSAR6PkCoriAuz9ayn7lgx+qTVmchW6arxGkZl430Pjp/U+1hn/yyxUjkE24I9hzcxwOXn/njgq92WeoeyOePObdhzE5HR8H99/Yt2cG4Yo9yVrNPN4GpAFM72dWXKPhDuv6hl/HInZe4WX2C0l6Fmupi3tptKfnhEhlFjOTh7BGCG/reY8JVOKl+LdaZO1G7QdvU19h8r1Ig5P9wJJ+yFiidr6T6nzd3DsdzS88sNb5p2vyNmVfUbDsSUHnI6PSMCqMTrH44pZYNRepe6MPjNlXHxSCs4IajRtgjczHktQtVjPHTSgSmdz4ObEcOanMEmM2yvaVuAbgKKVHCLsC8WIEONqyh/QaPP/qPI1JuRkaojdf8BmTQVA64zkPAuprrUetbkCO3ubUPNvXBlH/y/jz/6G/KNh7N0OXCAvSHTidKU1/ybpoAAA=',
+        "editable matrials": 'data:image/webp;base64,UklGRvADAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IFQDAACwFQCdASp4AHgAPmEskUakIqGhLBNY0IAMCUB2A6y4TsFnUt8B75ZPfzf4t/6N7APuA9wD9Tek35gP209bT+weoD0Dv2Q6yX0APLA9j79zPS3u8muDNATM2Cui42b8D9HthJvrkCfCQwmUN9WK4gl1W60t+MbYD6NEc2xMIs9e5UHzXVsuVL7kjI+NkFSm+Kk9zEXY1QzBPB6YthNNRTB6uyA3qyF7uhV9CuD0U2hBzniYP2D0AAD+zwWPz410/9hhIw5bWi3/pJv/aLWkR/+X+PwAOny//Gr2ARsezwdtQygueI2jX1MvKA/HfGPHITGjatVmn9HwhbRUNKElQ0kW+n9TDPxqxOPnDeXdj3keIv+DEhxhTaYMcNqV8MGrbm0YtbbDcfXPGTqr1E7Zp9d9NqY+NHvvZEEKNAhNXduEoGKlRlYW+45ThmujPwpbcnUec/TkoFEaAjmRGRySfJ0GePwEpAUzcKBmN1+LZov6wUtN4i8ioBSdW9byIv/xgUyrHNT/jaCC6r8aww8ttOFbeXOR1grtR1Id4uyYINVdxOLIoL/jXxEesJjobuIxmX4QNNTTW/znvsOTJMLdb9uWStm9ZdBXANxxGCnN3ij6FNiprwA9kBGh2CD/g8VlERGqRKUTc6jljFCYj5I6XpurQ4m6pfpZcTCTpQ0m7KCcXH9UihS2KY95l3bWjSAR6PkCoriAuz9ayn7lgx+qTVmchW6arxGkZl430Pjp/U+1hn/yyxUjkE24I9hzcxwOXn/njgq92WeoeyOePObdhzE5HR8H99/Yt2cG4Yo9yVrNPN4GpAFM72dWXKPhDuv6hl/HInZe4WX2C0l6Fmupi3tptKfnhEhlFjOTh7BGCG/reY8JVOKl+LdaZO1G7QdvU19h8r1Ig5P9wJJ+yFiidr6T6nzd3DsdzS88sNb5p2vyNmVfUbDsSUHnI6PSMCqMTrH44pZYNRepe6MPjNlXHxSCs4IajRtgjczHktQtVjPHTSgSmdz4ObEcOanMEmM2yvaVuAbgKKVHCLsC8WIEONqyh/QaPP/qPI1JuRkaojdf8BmTQVA64zkPAuprrUetbkCO3ubUPNvXBlH/y/jz/6G/KNh7N0OXCAvSHTidKU1/ybpoAAA=',
+        "deviceinfo": 'data:image/webp;base64,UklGRugDAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IEwDAAAQFQCdASp4AHgAPmEulEakIqIhKhJpoIAMCUAlP7uDI9OnsW9uzWXqfJH+b+136H+jDbZeYD9bv2Z96/9QPYB6AH9g6hf0AP2A9Nv2Uv3H9K47QBjjddxAlJ15hn17LvKr3pfgQzkWlMGivgM2qfo+nasjKOtc2S89cthObhcnGdA2gHuQASz+GjHSqNhCNsrNbbnHVtd1XTJeFzgOo8YQvdaAgR3eW//oBme8FlezOgAA/s8Bv/9QeFazBZP/lY/+Vj9l7//FhSjmC61+tedLW144ku6roPTu4pARak9wlX7mgdisny9P9d5t58htha36iFV/O7hf9l26Ej6bOJZCh868r9B9tzNe+QoatyzFNtD8y5flcrzaMJWvZuNRu1t2H6MmNhHmlmnrWSlDH1y9Z5KnUN8+ZqcPHmuAYbYxdinWgsJvBlYjtCDfCbcStPqRMqCx+nDihJ3Sb5C7zwbywQyrecSMOkx4WBtilAPvUyOlT8F/Ktr0rYOZRI0Xudy+DKx6RiqQhAMqCNyQE6MVtnGxiSe0Xun5T7VgQL288vlK25NIEvqNNgOCQBheDg3uBKVPARX7NJ9xQSheRFcJ2WZu+V08EjKJKVDoGPGyGsl8MhYnoScjKcM4WFY9kJbVkU88EwZu4t8JxUO1VOLRCtAWuYl3BnamCW8+Tx0p/m0r1QLFsxijQhtgvvSWTe/cR0qAkhDI2rf6fSBPp9/7sPm1rzJ+9Bd7KWfBDOKagHDZwk8zSHoWBmupNazH8orHAYNZozHZo1JNxSSV3buKRFEVuYVpw4lw8fHA8q+LfF4e/VWOAngLlsmu61NKuCSFNrRC619pP7H5PpuunxJMHnYUVrvuSqAmfGVjBE3YipnD2TtnnyENGTxCyleQXeject0WcCaum/lXGpZ0WTQn5m+dzX9tkluKl5qc5WjNNvctrpgEbYjaqKibvYary3XqSxlkzPYBkMxR71cjj0U2f/lKGUArBdwEd+feyZhRQPQZ5zyGuWMKR9O15tbPI/1SFMOe9+31zfOOGhyHdXcgZVbYHfIIoNoqWgX0D64yV8V/DZDNBYRLleHOAHh/JnGO3BtC0VbCL5c+zYJgXWfmxcPt6xgfMol4AAAA',
+        "moo cleanup tool": 'data:image/webp;base64,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',
+        "[api] notarobot api v1.1": 'data:image/webp;base64,UklGRhgEAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4IHwDAADwFgCdASp4AHgAPmEwkkYkIyGhKptowIAMCUAZKU8oI/3zkjeHNf/Mu9T4V+UD5+fzn+3fwD+AfCXzAP0O6QHmA83f/ZdQP/R+o89AD9bvTF/Z74Vf2y/aT2gCZlJ0Gz2vmoD5PkaxaRIlyxouAyhkdBQuOdwfjdWgCCewpgOC99ME8g6dXe6t02Ei293m30hf95ti23TFUM/mmzmQTLMztk1DwWVGYMv80TTs6jZ1k5utnBDp+6Avd7nCxlgKA6AA/slpT7Tn/VlJIsZQdgv/oCf/QE+vr/+Ud+7txb3bfEWY5ndogyyNHaMGU6PVXa39l5rJXn+MTmPp0zOXhVx9DyLB0j2yBX2xaDNYyIK2/05U6Lyx6h37UQ4F1Rx+v7DMZcGdolZ7eTccu+Nwa6YY1XdTyofXs/f4P2JcbxlpydoV+Ud324xvGPWqO/e3IpR3U+9tr34fayUr4ojXInfv4n8qcAfxWIpSn8Hwj/vRUQR/mXMTQq3ALpbqb/UK503QJqfC569AnHrHfBPrMO+NIe0G5MIK8mziCsTSHQjoAdKWLprBaWXNAfdLAHfkjQb1z6YKatrdAclL+TT3x8EBfdwrgMcrCieM5gKYxTkRxKu0D2PP9PSrWHcNY0Gre0y+aQrPFwc6WJndF+h4HNyxyXfkhBVjcMvUN1ECPS4A/3W/hOFW042Qfi63GS3NRoj1tECjVLmqiAsjfKOSTOu66re93vYHQtFIoiS14OUcwF0xMBkSwzghqCt5lBXstX2FBwEJkZgdLXriqBVyuVD73ckIBi91m6sZ3Y0sdxhYwj0Zve7GeCwilNz6XhhzIJ6jZ72Zw02i+dvirYM9QsoFybpM0//Rng3+yYSs2DKvojFoA50WUIJQWXEXZXlK9HptWxCMvIKbZYwARs9R15eu3+KRLwnehJI3p7m9H0Tlm/TtyvjUzpe8Dvy7E/HHQ1/iJ4cpdbEVY/VoNRYkjEDvpclOYPuO4hXJT1Rwsucfb466KJoBGCiSl26E0pHOwckM6DJavG0r+qexMAwIOj1u9hjt7QJPXXMno3u2KMHJEecFW8yvMDmNa7Wum0oVZdRmZtjRcZuhx8YiT/TxfvPaPaYsIRCK4I3Fv0lZx6+dXlJT+yGZopnlovjFq2fw/Nr/5VImjnrj+19VjPHcJ8M/g/rWsafxhTpoAAAA',
+        "kool menu": 'data:image/webp;base64,UklGRsIFAABXRUJQVlA4WAoAAAAQAAAAdwAAdwAAQUxQSHYAAAABcFvbthLdEH5DSAtWpc9UgpWgMaQfoscbiW/8I2ICAJjstd+Pknzu/ZUZ/Me90u0jANGphM8IZlLKk8mVdP5m9d5Z7RerS1iJOv87/zvoCyuxrOzMai5ZlSmrxB84DT6Cg9ERAAg7Pl2Ify8pZissxM5F4gEAVlA4ICYFAAAQHgCdASp4AHgAPmEukEWkIqGXDExwQAYEsgHYDohb/9u7cTjnYvOfsP9Y/C+HVfzPux93f+A9gH5k/2/uAfqF0gPMB5yvod9CDyQPYc9AD9M/Tg9kX9z/2u9qrVNPPHYxXg+DXenKV4KaSCaN5SYhYHDjSZZEoihn0t8lLqAnUc4FMHCWKytYPNnCyYNKPQ2LvV56CUnL3wThC0C4+G30MMI59/9blc59if9qWiy0xbEeJ+oVg2g6RqufK9LE1iU4TyJLRN/KcciPNhMCfe7v36z/3oAgIKvJ4qFvPAdLygto6vKX1U45t46DnlhdDka/VNEzdZ8uKQAA/s8Fj8+NdPYVFEyWlNxv+ysf6lmVn8wviqTmdfvLWkgvSsABH/9lQqphCfUokmH/jGXyGk5rP+mWUX/B7NhMZSlAiPidXcr9/OCd1npLcBDp2Oe9rwudVCTpQdUiYksZqhCWAXU4+nn7S2d7iHG7UfUBR3H1XV+dMjfM8NL4d7DhhoWMHpvPGuAS5ArUw0yTLLq/BHiHZ1Pd+nLLTUAnEjtpk5HLIuBic3Th5jezjVmfEbkiiNBrM0xqfi1ElE/KLopfBJZlGvU0oBw03IvyzPB3BqKgIGnkuq8oepmiHcxWs8ySAWmElYkOB50E3MprKeh/rtvrjX2bU5lMUKGdxVHOJnCM5uyisFCU0zSZ5CyGZtTux2qZzokfXAVvxILp1x7Jhthi5UKFSuBKcOtfroPYDMRGG6/uKxiMYaak6GhCyrU9qHCC4ZO6KN7925aFUhUdOhM8iUkkc0olF4F3Dot5lopMrI5mX5Xq6oPdTLNz5o3uZIPftV6zpSVJ+z+N16No4HP5EuufPZXC4mIWYuV07UCKw+oMqRDL+HlVuumD7D5wLSJf+m+XP6Px84qSdLihDej7YyZUznW/kc4JLn2hHl3OllaEvzmPTXr3bnpYufFX7ZSu1uYuOM+vyGXM8VvF+eGA/fuSyBkgLoCkpQ0Ced/5GbTDU7BlqfuSHefpaIage2eKyrzQA7y9a2/sW7fPn1ofaG2DgpZgi2aSSH/38KXekXwhmpV9+32K1mX2cXwqRzYSbHHD7CmWVhJI0mH1TesDFh/VmU3ThuPV2xHHLTxHD/5zQywghI4hxesWxkvWv/+ntjhwmfqLFeffhfh4EypgkDGZ3YYUT0//7yuA24ElTq3KJmQ3apcSaGHiyjrYetWdQl+Go826AeBJVgWA56Qq0LB1KFqx7RWbz9AfRBbN9mtrrT8ppH6+4l4agoBSN1FRnAqhZJhAYSkHmmwA7GQnXqC9+Cl9PTLQcm2mBDd4a/cdHpIDkjGp2j/xFedj2lLHYxBYKLxp19QiGRC6ahb5gSZhKnPT7xKNPDlxq6yL+aRYahTqJ/5y1vOFr2NrTGyXDqAGT5omiP+PqDKWY1MLf5Z/i++L47gcphALJ+EY7MYfFIrGnFluYJJH2/UNGOU2duPIMfThYdo+SnBmnZK+W2kcKnSdrgzBSFOx9R+o13ldUlVFQEZWvmmH74aMHydHkYL81yJ2qdGRsHNA3Ur4IGGu9lp0eN6tfhok6P+BGbuaZ+wwyoBt5s3YpjQe3+OzCHpTpyP56v8BjZtyBxyfR/sMjmiGioQyjEispg2YN9qztmrHmGyRJ3AafEeYBg9MaaDrAXvCVuf/PLPcBOzQN8K3fibaBa8thqnABIUnvog1kG36yUwY/m254No7QJ/PHDxgUufiRkvW//CD+tKj9+KnvEAA',
+        "abel's url compressor": 'data:image/webp;base64,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',
+    };
+    var ICON_TINT = {
+        "quickscreen": '#45b3f6',
+        "anythingbutglass": '#ec8ed4',
+        "savemybattery v2.1": '#ec6168',
+        "savemybattery v1": '#ec6067',
+        "coolbgremover": '#3c82fc',
+        "coolimageeditor": '#3e84fc',
+        "leaf blower w/ google search": '#67c663',
+        "leaf blower w/ google gemini": '#67c663',
+        "editable materials": '#4588fd',
+        "editable matrials": '#4588fd',
+        "deviceinfo": '#4286fc',
+        "moo cleanup tool": '#377ffc',
+        "[api] notarobot api v1.1": '#3c82fc',
+        "kool menu": '#4185fc',
+        "abel's url compressor": '#3c82fc',
+    };
+
     function iconSvg(name, size) {
-        return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
+        return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || ICONS.wrench) + '</svg>';
+    }
+
+    /* Paint an icon tile with the shortcut's real icon when we have one,
+       otherwise fall back to the generated glyph on its gradient.
+       opts.keepBg leaves the element's own background (used by spotlight). */
+    function fillTile(node, item, size, opts) {
+        opts = opts || {};
+        var img = ICON_IMG[item.key];
+        if (img) {
+            node.classList.add('has-img');
+            if (!opts.keepBg) node.style.background = ICON_TINT[item.key] || 'transparent';
+            node.innerHTML = '<img class="tile-img" src="' + img + '" alt="" draggable="false">';
+        } else {
+            node.classList.remove('has-img');
+            if (!opts.keepBg) node.style.background = item.gradient;
+            node.innerHTML = iconSvg(item.icon, size);
+        }
     }
 
     /* ================= Catalog metadata =================
@@ -1218,7 +1424,8 @@
         'deviceinfo': { icon: 'tablet', gradient: 'linear-gradient(135deg,#48484a,#8e8e93)', category: 'Utilities', desc: 'See detailed information about your device at a glance.', link: 'https://www.icloud.com/shortcuts/ca35bc3d75814583af3461518c8badf8' },
         'moo cleanup tool': { icon: 'broom', gradient: 'linear-gradient(135deg,#ff375f,#ff9f0a)', category: 'Utilities', desc: 'Clean up leftovers and junk. New in version 44!', link: 'https://www.icloud.com/shortcuts/fa85f39337b049d4b175ca978d9a9966' },
         '[api] notarobot api v1.1': { icon: 'terminal', gradient: 'linear-gradient(135deg,#0a84ff,#64d2ff)', category: 'Developer', desc: 'NotARobot verification API for shortcut developers.', link: 'https://www.icloud.com/shortcuts/642810ae87534d64873d19a5498948f4' },
-        'kool menu': { icon: 'archive', gradient: 'linear-gradient(135deg,#636366,#3a3a3c)', category: 'Legacy', desc: 'The original Kool Menu. No longer maintained.', link: 'https://www.icloud.com/shortcuts/9c0322bfe63647fb9782128d388325f7' }
+        'kool menu': { icon: 'archive', gradient: 'linear-gradient(135deg,#636366,#3a3a3c)', category: 'Legacy', desc: 'The original Kool Menu. No longer maintained.', link: 'https://www.icloud.com/shortcuts/9c0322bfe63647fb9782128d388325f7' },
+        'abel\'s url compressor': { icon: 'link', gradient: 'linear-gradient(135deg,#5aa2ff,#2563eb)', category: 'Utilities', desc: 'Shrink long links into short, shareable TinyURLs in one tap. Paste or share a URL and get a compact link back.', link: 'https://www.icloud.com/shortcuts/9b3fadd93afa4c0c8e051223ce70f6ce' }
     };
 
     var DEFAULT_META = { icon: 'wrench', gradient: 'linear-gradient(135deg,#8e8e93,#3a3a3c)', category: 'Other', desc: 'An Abel Tools shortcut.' };
@@ -1268,38 +1475,147 @@
 
     var themeBtn = document.getElementById('themeBtn');
     var themeIcon = document.getElementById('themeIcon');
+    var root = document.documentElement;
+
+    var ACCENTS = ['blue', 'indigo', 'purple', 'pink', 'red', 'orange', 'green', 'graphite'];
+    // Swatch previews (mid-tone, readable in both themes)
+    var ACCENT_SWATCH = {
+        blue: '#0a84ff', indigo: '#5e5ce6', purple: '#a24bff', pink: '#e5308a',
+        red: '#e0245e', orange: '#f97316', green: '#12b866', graphite: '#7b8494'
+    };
+
+    function systemDark() {
+        return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+
+    function initialMode() {
+        var forced = params.get('theme');
+        if (forced === 'dark' || forced === 'light') return forced;
+        try {
+            var m = localStorage.getItem('abeltools-thememode');
+            if (m === 'auto' || m === 'light' || m === 'dark') return m;
+            var old = localStorage.getItem('abeltools-theme'); // migrate legacy key
+            if (old === 'dark' || old === 'light') return old;
+        } catch (e) { /* localStorage may be unavailable in web view */ }
+        return 'auto';
+    }
+
+    function initialAccent() {
+        var forced = params.get('accent');
+        if (forced && ACCENTS.indexOf(forced) !== -1) return forced;
+        try {
+            var a = localStorage.getItem('abeltools-accent');
+            if (a && ACCENTS.indexOf(a) !== -1) return a;
+        } catch (e) {}
+        return 'blue';
+    }
+
+    var themeMode = initialMode();      // 'auto' | 'light' | 'dark'
+    var currentTheme;                   // resolved 'light' | 'dark'
+    var currentAccent = initialAccent();
+
+    function resolvedTheme() {
+        return themeMode === 'auto' ? (systemDark() ? 'dark' : 'light') : themeMode;
+    }
 
     function applyTheme(theme) {
         if (theme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
+            root.setAttribute('data-theme', 'dark');
             themeIcon.innerHTML = ICONS.sun;
         } else {
-            document.documentElement.removeAttribute('data-theme');
+            root.removeAttribute('data-theme');
             themeIcon.innerHTML = ICONS.moon;
         }
     }
 
-    function initialTheme() {
-        var forced = params.get('theme');
-        if (forced === 'dark' || forced === 'light') return forced;
-        try {
-            var saved = localStorage.getItem('abeltools-theme');
-            if (saved === 'dark' || saved === 'light') return saved;
-        } catch (e) { /* localStorage may be unavailable in web view */ }
-        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    function applyAccent(name) {
+        if (ACCENTS.indexOf(name) === -1) name = 'blue';
+        currentAccent = name;
+        if (name === 'blue') root.removeAttribute('data-accent');
+        else root.setAttribute('data-accent', name);
     }
 
-    var currentTheme = initialTheme();
-    applyTheme(currentTheme);
-
-    themeBtn.addEventListener('click', function () {
-        currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    function syncTheme() {
+        currentTheme = resolvedTheme();
         applyTheme(currentTheme);
+    }
+
+    applyAccent(currentAccent);
+    syncTheme();
+
+    // Follow the system automatically while in Auto mode.
+    if (window.matchMedia) {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        var onMq = function () { if (themeMode === 'auto') syncTheme(); };
+        if (mq.addEventListener) mq.addEventListener('change', onMq);
+        else if (mq.addListener) mq.addListener(onMq);
+    }
+
+    function setMode(mode) {
+        themeMode = mode;
+        try { localStorage.setItem('abeltools-thememode', mode); } catch (e) {}
+        syncTheme();
         themeIcon.classList.remove('icon-spin');
         void themeIcon.offsetWidth; // restart the animation
         themeIcon.classList.add('icon-spin');
-        try { localStorage.setItem('abeltools-theme', currentTheme); } catch (e) {}
+        updateAppearanceUI();
+    }
+
+    function setAccent(name) {
+        applyAccent(name);
+        try { localStorage.setItem('abeltools-accent', name); } catch (e) {}
+        updateAppearanceUI();
+    }
+
+    // Header toggle: quick flip between light and dark (steps out of Auto).
+    themeBtn.addEventListener('click', function () {
+        setMode(currentTheme === 'dark' ? 'light' : 'dark');
     });
+
+    /* ================= Appearance sheet ================= */
+
+    var appearanceSheet = document.getElementById('appearanceSheet');
+    var modeSeg = document.getElementById('modeSeg');
+    var swatchesEl = document.getElementById('swatches');
+
+    ACCENTS.forEach(function (name) {
+        var b = el('button', 'swatch');
+        b.type = 'button';
+        b.style.background = ACCENT_SWATCH[name];
+        b.setAttribute('data-accent', name);
+        b.setAttribute('aria-label', name.charAt(0).toUpperCase() + name.slice(1) + ' accent');
+        b.addEventListener('click', function () { setAccent(name); });
+        swatchesEl.appendChild(b);
+    });
+
+    Array.prototype.forEach.call(modeSeg.querySelectorAll('.seg-btn'), function (btn) {
+        btn.addEventListener('click', function () { setMode(btn.getAttribute('data-mode')); });
+    });
+
+    function updateAppearanceUI() {
+        Array.prototype.forEach.call(modeSeg.querySelectorAll('.seg-btn'), function (btn) {
+            var on = btn.getAttribute('data-mode') === themeMode;
+            btn.classList.toggle('active', on);
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        Array.prototype.forEach.call(swatchesEl.querySelectorAll('.swatch'), function (btn) {
+            btn.classList.toggle('active', btn.getAttribute('data-accent') === currentAccent);
+        });
+    }
+    updateAppearanceUI();
+
+    function openAppearance() {
+        appearanceSheet.classList.add('open');
+        sheetOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeAppearance() {
+        appearanceSheet.classList.remove('open');
+        sheetOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    document.getElementById('appearanceBtn').addEventListener('click', openAppearance);
+    document.getElementById('appearanceClose').addEventListener('click', closeAppearance);
 
     /* ================= Collapsing mini header ================= */
 
@@ -1411,7 +1727,7 @@
                 card.appendChild(el('p', 'spotlight-eyebrow', 'New this update'));
 
                 var icon = el('div', 'spotlight-icon');
-                icon.innerHTML = iconSvg(item.icon, 32);
+                fillTile(icon, item, 32, { keepBg: true });
 
                 var info = el('div', 'spotlight-info');
                 info.appendChild(el('div', 'spotlight-name', item.name));
@@ -1448,8 +1764,7 @@
             row.setAttribute('aria-label', 'View details for ' + item.name);
 
             var icon = el('div', 'row-icon');
-            icon.style.background = item.gradient;
-            icon.innerHTML = iconSvg(item.icon, 25);
+            fillTile(icon, item, 25);
 
             var name = el('div', 'row-name', item.name);
             if (item.isNew && !item.eol) name.appendChild(el('span', 'badge-new', 'NEW'));
@@ -1523,8 +1838,7 @@
     function openSheet(item) {
         var status = statusFor(item);
         var iconNode = document.getElementById('sheetIcon');
-        iconNode.style.background = item.gradient;
-        iconNode.innerHTML = iconSvg(item.icon, 36);
+        fillTile(iconNode, item, 36);
         document.getElementById('sheetName').textContent = item.name;
         document.getElementById('sheetCat').textContent =
             item.category + (item.eol ? ' \u00b7 No longer maintained' : '');
@@ -1566,7 +1880,7 @@
     document.getElementById('aboutBtn').addEventListener('click', openAbout);
     document.getElementById('aboutClose').addEventListener('click', closeAbout);
 
-    sheetOverlay.addEventListener('click', function () { closeSheet(); closeAbout(); });
+    sheetOverlay.addEventListener('click', function () { closeSheet(); closeAbout(); closeAppearance(); });
 
     /* ================= Swipe-to-dismiss sheets ================= */
 
@@ -1607,6 +1921,7 @@
 
     enableSwipe(sheet, closeSheet);
     enableSwipe(aboutSheet, closeAbout);
+    enableSwipe(appearanceSheet, closeAppearance);
 
     /* ================= Confirm alert ================= */
 
@@ -1616,8 +1931,7 @@
 
     function openConfirm(item, href) {
         var iconNode = document.getElementById('alertIcon');
-        iconNode.style.background = item.gradient;
-        iconNode.innerHTML = iconSvg(item.icon, 26);
+        fillTile(iconNode, item, 26);
         document.getElementById('alertMsg').textContent =
             '\u201C' + item.name + '\u201D will open in Shortcuts.';
         alertContinue.href = href;
@@ -1643,6 +1957,7 @@
         if (alertBox.classList.contains('open')) { closeConfirm(); return; }
         if (sheet.classList.contains('open')) closeSheet();
         if (aboutSheet.classList.contains('open')) closeAbout();
+        if (appearanceSheet.classList.contains('open')) closeAppearance();
     });
 
     /* ================= Announcement banner ================= */
@@ -1690,7 +2005,7 @@
 
     // Fallback snapshot used if GitHub is unreachable (mirrors shortcutslist.md).
     var FALLBACK_LIST = [
-        'kool Menu [EOL]', 'Quickscreen', 'AnythingButGlass', 'SaveMyBattery V2.1',
+        'kool Menu [EOL]', 'Abel\'s URL Compressor', 'Quickscreen', 'AnythingButGlass', 'SaveMyBattery V2.1',
         'SaveMyBattery V1', 'CoolBGRemover', 'CoolImageEditor',
         'leaf blower w/ Google Search', 'leaf blower w/ Google Gemini',
         'Editable Materials', 'DeviceInfo', 'Moo Cleanup Tool', '[API] NotARobot API V1.1'
@@ -1737,7 +2052,7 @@
             var version = v.trim();
             document.getElementById('versionPill').textContent = 'v' + version;
             document.getElementById('miniVersion').textContent = 'v' + version;
-            document.getElementById('aboutVersion').textContent = 'Installer \u00b7 Version ' + version;
+            document.getElementById('aboutVersion').textContent = 'Version ' + version;
             return version;
         }).catch(function () {
             document.getElementById('versionPill').textContent = 'v?';

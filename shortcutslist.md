@@ -1,4 +1,5 @@
 kool Menu [EOL]
+Abel's URL Compressor
 Quickscreen
 AnythingButGlass
 SaveMyBattery V2.1

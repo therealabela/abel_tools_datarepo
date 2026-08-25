@@ -1,4 +1,4 @@
-- New: Abel Tools now verifies your device with a private AbelDeviceID, created right on your device — your key never leaves it and is never uploaded
-- You may be asked to generate your AbelDeviceID once when you open the installer — it's free and takes a second
+- New: Abel Tools now verifies your device with a private AbelDeviceID, created right on your device - your key never leaves it and is never uploaded
+- You may be asked to generate your AbelDeviceID once when you open the installer - it's free and takes a second
 - More secure installer that opens straight from the Abel Tools Installer shortcut
 - If you're on an older version, please reinstall the Abel Tools Installer shortcut to keep getting updates

@@ -1,4 +1,5 @@
-- New: Abel Tools now verifies your device with a private AbelDeviceID, created right on your device — your key never leaves it and is never uploaded
-- You may be asked to generate your AbelDeviceID once when you open the installer — it's free and takes a second
-- More secure installer that opens straight from the Abel Tools Installer shortcut
-- If you're on an older version, please reinstall the Abel Tools Installer shortcut to keep getting updates
+- New shortcut: Abel's URL Compressor - shrink long links into short, shareable TinyURLs in one tap
+- Real icons everywhere: every shortcut now shows its actual Apple Shortcuts icon instead of a placeholder
+- New accent themes: pick from blue, indigo, purple, pink, red, orange, green and graphite in the new Appearance panel
+- Light and Dark now includes an Auto option that follows your system
+- Polished UI: cleaner icon tiles, refined spacing and shadows throughout
