@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+
+  <channel>
+    <!-- Channel Information: Tells readers what your feed is about -->
+    <title>My Personal Tech Blog</title>
+    <link>https://example.com</link>
+    <description>Weekly updates on programming, gadgets, and web development.</description>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 02 Sep 2026 14:00:00 EST</lastBuildDate>
+
+    <!-- Item 1: Your newest post -->
+    <item>
+      <title>Getting Started with RSS Feeds</title>
+      <link>https://example.com/blog/getting-started-rss</link>
+      <description>A simple guide explaining how RSS feeds work and why you should still use them today.</description>
+      <pubDate>Wed, 02 Sep 2026 12:30:00 EST</pubDate>
+      <guid>https://example.com/blog/getting-started-rss</guid>
+    </item>
+
+    <!-- Item 2: An older post -->
+    <item>
+      <title>Why AI is Changing Web Design</title>
+      <link>https://example.com/blog/ai-web-design</link>
+      <description>Looking at the modern layout shifts and how automation influences user interfaces.</description>
+      <pubDate>Mon, 31 Aug 2026 09:00:00 EST</pubDate>
+      <guid>https://example.com/blog/ai-web-design</guid>
+    </item>
+
+  </channel>
+</rss>
