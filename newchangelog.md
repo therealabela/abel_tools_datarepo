@@ -1,5 +1,4 @@
-- New shortcut: Abel's URL Compressor - shrink long links into short, shareable TinyURLs in one tap
-- Real icons everywhere: every shortcut now shows its actual Apple Shortcuts icon instead of a placeholder
-- New accent themes: pick from blue, indigo, purple, pink, red, orange, green and graphite in the new Appearance panel
-- Light and Dark now includes an Auto option that follows your system
-- Polished UI: cleaner icon tiles, refined spacing and shadows throughout
+- New: Favorites - tap the star on any shortcut to save it to your own list
+- A Favorites filter with a live count sits at the front of the categories, so your go-to shortcuts are one tap away
+- New: Abel Tools Sync - sign in from the new account button and your favorites, theme and accent color follow you to every device
+- Your theme and accent color now stick properly between launches

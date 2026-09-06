@@ -669,6 +669,130 @@
     .btn-installed { background: none; color: var(--text-3); border: 1.5px solid var(--separator); cursor: default; }
     .btn-eol { background: none; color: var(--red); border: 1.5px solid currentColor; opacity: 0.75; cursor: default; }
 
+    /* ---------- Favorites ---------- */
+    .fav-btn {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        margin: 0 -6px 0 -4px;
+        border: none;
+        background: none;
+        border-radius: 50%;
+        color: var(--text-3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), color 0.18s ease;
+    }
+    .fav-btn:active { transform: scale(0.85); }
+    .fav-btn.on { color: var(--tint); }
+
+    .chip-fav { display: inline-flex; align-items: center; gap: 6px; padding-right: 9px; }
+    .chip-count {
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        padding: 3px 6px;
+        border-radius: 999px;
+        background: var(--search-bg);
+        color: var(--text-3);
+        font-variant-numeric: tabular-nums;
+    }
+    .chip.active .chip-count { background: rgba(255, 255, 255, 0.24); color: #fff; }
+
+    .sheet-fav {
+        width: 100%;
+        margin-top: 10px;
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        border-radius: 15px;
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-2);
+        background: var(--search-bg);
+        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), color 0.18s ease, background-color 0.18s ease;
+    }
+    .sheet-fav:active { transform: scale(0.97); }
+    .sheet-fav.on { color: var(--tint-text); background: var(--tint-bg); }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .star-pop { animation: starPop 0.34s cubic-bezier(0.22, 1, 0.36, 1); }
+        @keyframes starPop {
+            0% { transform: scale(0.72); }
+            55% { transform: scale(1.13); }
+            100% { transform: scale(1); }
+        }
+    }
+
+    /* ---------- Account sheet ---------- */
+    .acct-form, .acct-panel { margin-top: 18px; display: flex; flex-direction: column; }
+    .acct-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-3);
+        margin-bottom: 6px;
+    }
+    .acct-input {
+        font-family: inherit;
+        font-size: 16px; /* 16px keeps iOS from zooming the page on focus */
+        color: var(--text);
+        background: var(--search-bg);
+        border: 0.5px solid var(--hairline);
+        border-radius: 12px;
+        min-height: 46px;
+        padding: 0 14px;
+        margin-bottom: 14px;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    .acct-btn {
+        font-family: inherit;
+        font-size: 15px;
+        font-weight: 700;
+        color: #fff;
+        background: var(--tint);
+        border: none;
+        border-radius: 15px;
+        min-height: 48px;
+        box-shadow: 0 4px 12px color-mix(in srgb, var(--tint) 38%, transparent);
+        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
+    }
+    .acct-btn:active { transform: scale(0.97); opacity: 0.9; }
+    .acct-btn[disabled] { opacity: 0.5; box-shadow: none; }
+    .acct-alt {
+        font-family: inherit;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--tint-text);
+        background: none;
+        border: none;
+        min-height: 44px;
+        margin-top: 6px;
+    }
+    .acct-alt.quiet { color: var(--text-3); }
+    .acct-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 14px;
+        color: var(--text-2);
+        padding: 12px 0;
+        border-bottom: 0.5px solid var(--separator);
+    }
+    .acct-line strong { color: var(--text); font-weight: 650; text-align: right; word-break: break-word; }
+    .acct-panel .acct-btn { margin-top: 20px; }
+    .acct-msg { font-size: 13px; line-height: 1.5; margin-top: 14px; color: var(--text-2); }
+    .acct-msg.error { color: var(--red); }
+    .acct-msg.ok { color: var(--tint-text); }
+
     /* ---------- Skeleton loading ---------- */
     .skeleton-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
     .sk { background: var(--skeleton); border-radius: 8px; }
@@ -1119,6 +1243,9 @@
             <button class="theme-btn surface" id="aboutBtn" aria-label="About Abel Tools Installer">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
             </button>
+            <button class="theme-btn surface" id="accountBtn" aria-label="Account and sync">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </button>
             <button class="theme-btn surface" id="appearanceBtn" aria-label="Appearance and themes">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 5-5 5h-1.8a2 2 0 0 0-1.5 3.3l.2.2a2 2 0 0 1-1.4 3.3z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>
             </button>
@@ -1179,10 +1306,10 @@
         <div class="skeleton-row"><div class="sk sk-icon"></div><div class="sk-lines"><div class="sk sk-line-1"></div><div class="sk sk-line-2"></div></div><div class="sk sk-btn"></div></div>
     </div>
     <div class="empty" id="empty">
-        <div class="empty-icon" aria-hidden="true">
+        <div class="empty-icon" id="emptyIcon" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         </div>
-        <strong>No results</strong><br>Try a different search or category.<br><button class="empty-clear" id="emptyClear">Clear filters</button>
+        <strong id="emptyTitle">No results</strong><br><span id="emptyText">Try a different search or category.</span><br><button class="empty-clear" id="emptyClear">Clear filters</button>
     </div>
 
     <p class="footer">
@@ -1208,6 +1335,7 @@
     </div>
     <p class="sheet-desc" id="sheetDesc"></p>
     <div class="sheet-action" id="sheetAction"></div>
+    <button class="sheet-fav" id="sheetFav" type="button" aria-pressed="false"></button>
 </div>
 
 <div class="sheet" id="aboutSheet" role="dialog" aria-modal="true" aria-labelledby="aboutName">
@@ -1274,6 +1402,45 @@
     </div>
     <p class="appearance-label">Accent color</p>
     <div class="swatches" id="swatches" role="group" aria-label="Accent color"></div>
+</div>
+
+<div class="sheet" id="accountSheet" role="dialog" aria-modal="true" aria-labelledby="accountName">
+    <div class="sheet-grabber"></div>
+    <button class="sheet-close" id="accountClose" aria-label="Close">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="sheet-head">
+        <div class="sheet-icon" style="background: linear-gradient(140deg, var(--hero-a), var(--hero-b) 55%, var(--hero-c));">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div>
+            <div class="sheet-name" id="accountName">Abel Tools Sync</div>
+            <div class="sheet-cat" id="acctStatus">Not signed in</div>
+        </div>
+    </div>
+    <p class="sheet-desc" id="acctIntro">
+        Sign in to keep your favorites, theme and accent color on every device you use Abel Tools on.
+        Your shortcuts stay exactly where they are.
+    </p>
+
+    <form class="acct-form" id="acctForm">
+        <label class="acct-label" for="acctEmail">Email</label>
+        <input class="acct-input" id="acctEmail" type="email" autocomplete="username" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+        <label class="acct-label" for="acctPassword">Password</label>
+        <input class="acct-input" id="acctPassword" type="password" autocomplete="current-password" required>
+        <button class="acct-btn" id="acctSubmit" type="submit">Sign in</button>
+        <button class="acct-alt" id="acctToggle" type="button">Create an account instead</button>
+    </form>
+
+    <div class="acct-panel" id="acctPanel" hidden>
+        <div class="acct-line"><span>Account</span><strong id="acctWho"></strong></div>
+        <div class="acct-line"><span>Favorites</span><strong id="acctFavCount">0</strong></div>
+        <div class="acct-line"><span>Last synced</span><strong id="acctLastSync">never</strong></div>
+        <button class="acct-btn" id="acctSync" type="button">Sync now</button>
+        <button class="acct-alt quiet" id="acctSignOut" type="button">Sign out of this device</button>
+    </div>
+
+    <p class="acct-msg" id="acctMsg" hidden></p>
 </div>
 
 <div class="alert-overlay" id="alertOverlay"></div>
@@ -1466,6 +1633,108 @@
         return node;
     }
 
+    /* ================= Favorites =================
+       Kept on the device under one versioned envelope. Abel Tools SYNC will
+       send this exact shape to the account and merge whatever comes back, so
+       nothing in here changes when sync lands (see the sync seam at the end). */
+
+    var FAV_KEY = 'abeltools-favorites';
+    var FAV_FILTER = 'Favorites';
+    var STAR_PATH = 'M12 2.6 14.3 8.9 20.9 9.1 15.7 13.2 17.5 19.6 12 15.9 6.5 19.6 8.3 13.2 3.1 9.1 9.7 8.9Z';
+
+    function starSvg(size, filled) {
+        return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="' +
+            (filled ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.7" ' +
+            'stroke-linejoin="round" aria-hidden="true"><path d="' + STAR_PATH + '"/></svg>';
+    }
+
+    function readFavorites() {
+        try {
+            var data = JSON.parse(localStorage.getItem(FAV_KEY) || 'null');
+            if (data && Array.isArray(data.keys)) {
+                return {
+                    keys: data.keys.map(normalize).filter(Boolean),
+                    updatedAt: typeof data.updatedAt === 'number' ? data.updatedAt : 0
+                };
+            }
+        } catch (e) { /* unreadable or blocked storage: start with none */ }
+        return { keys: [], updatedAt: 0 };
+    }
+
+    var favState = readFavorites();
+
+    function saveFavorites() {
+        try {
+            localStorage.setItem(FAV_KEY, JSON.stringify({
+                v: 1,
+                keys: favState.keys,
+                updatedAt: favState.updatedAt
+            }));
+        } catch (e) { /* storage full or blocked: favorites last for this session */ }
+    }
+
+    function isFavorite(key) { return favState.keys.indexOf(key) !== -1; }
+
+    // Favorites for shortcuts that have left the catalog are kept on purpose:
+    // a shortcut can come back, and the list fetch can fail.
+    function favoriteCount() {
+        return catalog.filter(function (item) { return isFavorite(item.key); }).length;
+    }
+
+    function toggleFavorite(key) {
+        var i = favState.keys.indexOf(key);
+        if (i === -1) favState.keys.push(key); else favState.keys.splice(i, 1);
+        touchPrefs();
+        return i === -1;
+    }
+
+    /* ================= Preference stamp and mirror =================
+       Favorites, theme mode and accent are one preference set with one
+       timestamp, so sync can settle conflicts with last write wins. A theme
+       change has to move the same clock as a favorite, or a device that only
+       changed its accent would never win a merge.
+
+       localStorage is the store. The cookie is a mirror for web views that
+       block or partition it, which is the case where a saved look appears to
+       reset on every launch. Neither survives Safari clearing site data, that
+       is what signing in will fix. */
+
+    var applyingRemote = false; // set while a synced snapshot is being applied
+
+    function touchPrefs() {
+        if (applyingRemote) return; // remote data keeps the sender's timestamp
+        favState.updatedAt = Date.now();
+        saveFavorites();
+        schedulePush(); // no-op until this device is signed in
+    }
+
+    var LOOK_COOKIE = 'abeltools-look';
+
+    function readCookie(name) {
+        try {
+            var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+            return m ? decodeURIComponent(m[1]) : '';
+        } catch (e) { return ''; }
+    }
+
+    function saveLook() {
+        try {
+            document.cookie = LOOK_COOKIE + '=' + encodeURIComponent(themeMode + '|' + currentAccent) +
+                ';path=/;max-age=31536000;SameSite=Lax;Secure';
+        } catch (e) { /* cookies blocked: localStorage is still the store */ }
+    }
+
+    function readLook() {
+        var parts = readCookie(LOOK_COOKIE).split('|');
+        return { mode: parts[0] || '', accent: parts[1] || '' };
+    }
+
+    function popStar(node) {
+        node.classList.remove('star-pop');
+        void node.offsetWidth; // restart the animation
+        node.classList.add('star-pop');
+    }
+
     /* ================= Header date ================= */
 
     document.getElementById('dateEyebrow').textContent =
@@ -1488,25 +1757,34 @@
         return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
     }
 
+    function isMode(m) { return m === 'auto' || m === 'light' || m === 'dark'; }
+
+    // Order matters: what this device chose wins, then the cookie mirror, and
+    // only then ?theme= / ?accent= from the shortcut. Those params used to be
+    // read first, which quietly overrode a saved choice on every launch.
     function initialMode() {
-        var forced = params.get('theme');
-        if (forced === 'dark' || forced === 'light') return forced;
         try {
             var m = localStorage.getItem('abeltools-thememode');
-            if (m === 'auto' || m === 'light' || m === 'dark') return m;
+            if (isMode(m)) return m;
             var old = localStorage.getItem('abeltools-theme'); // migrate legacy key
             if (old === 'dark' || old === 'light') return old;
         } catch (e) { /* localStorage may be unavailable in web view */ }
+        var mirrored = readLook().mode;
+        if (isMode(mirrored)) return mirrored;
+        var forced = params.get('theme'); // first run only
+        if (forced === 'dark' || forced === 'light') return forced;
         return 'auto';
     }
 
     function initialAccent() {
-        var forced = params.get('accent');
-        if (forced && ACCENTS.indexOf(forced) !== -1) return forced;
         try {
             var a = localStorage.getItem('abeltools-accent');
             if (a && ACCENTS.indexOf(a) !== -1) return a;
         } catch (e) {}
+        var mirrored = readLook().accent;
+        if (ACCENTS.indexOf(mirrored) !== -1) return mirrored;
+        var forced = params.get('accent'); // first run only
+        if (forced && ACCENTS.indexOf(forced) !== -1) return forced;
         return 'blue';
     }
 
@@ -1543,6 +1821,14 @@
     applyAccent(currentAccent);
     syncTheme();
 
+    // Write back whatever we resolved, so a look recovered from the cookie or
+    // from a URL param becomes this device's own saved choice from now on.
+    try {
+        localStorage.setItem('abeltools-thememode', themeMode);
+        localStorage.setItem('abeltools-accent', currentAccent);
+    } catch (e) {}
+    saveLook();
+
     // Follow the system automatically while in Auto mode.
     if (window.matchMedia) {
         var mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -1554,6 +1840,8 @@
     function setMode(mode) {
         themeMode = mode;
         try { localStorage.setItem('abeltools-thememode', mode); } catch (e) {}
+        saveLook();
+        touchPrefs();
         syncTheme();
         themeIcon.classList.remove('icon-spin');
         void themeIcon.offsetWidth; // restart the animation
@@ -1564,6 +1852,8 @@
     function setAccent(name) {
         applyAccent(name);
         try { localStorage.setItem('abeltools-accent', name); } catch (e) {}
+        saveLook();
+        touchPrefs();
         updateAppearanceUI();
     }
 
@@ -1637,6 +1927,10 @@
 
     var listEl = document.getElementById('list');
     var emptyEl = document.getElementById('empty');
+    var emptyIcon = document.getElementById('emptyIcon');
+    var emptyTitle = document.getElementById('emptyTitle');
+    var emptyText = document.getElementById('emptyText');
+    var EMPTY_SEARCH_ICON = emptyIcon.innerHTML; // keep the markup that shipped in the HTML
     var countEl = document.getElementById('sectionCount');
     var chipsEl = document.getElementById('chips');
 
@@ -1654,9 +1948,20 @@
         catalog.forEach(function (item) {
             if (cats.indexOf(item.category) === -1) cats.push(item.category);
         });
+        // Favorites leads the strip once there is something in it, and stays put
+        // while it is the active filter so the view cannot vanish mid-tap.
+        var favCount = favoriteCount();
+        if (favCount > 0 || activeCategory === FAV_FILTER) cats.unshift(FAV_FILTER);
         chipsEl.innerHTML = '';
         cats.forEach(function (cat) {
-            var chip = el('button', 'chip surface' + (cat === activeCategory ? ' active' : ''), cat);
+            var chip = el('button', 'chip surface' + (cat === activeCategory ? ' active' : ''),
+                cat === FAV_FILTER ? '' : cat);
+            if (cat === FAV_FILTER) {
+                chip.classList.add('chip-fav');
+                chip.innerHTML = starSvg(13, true) + '<span>' + FAV_FILTER + '</span>' +
+                    '<span class="chip-count">' + favCount + '</span>';
+            }
+            chip.type = 'button';
             chip.setAttribute('role', 'tab');
             chip.setAttribute('aria-selected', cat === activeCategory ? 'true' : 'false');
             chip.addEventListener('click', function () {
@@ -1670,11 +1975,50 @@
     }
 
     function matchesFilters(item) {
-        if (activeCategory !== 'All' && item.category !== activeCategory) return false;
+        if (activeCategory === FAV_FILTER) {
+            if (!isFavorite(item.key)) return false;
+        } else if (activeCategory !== 'All' && item.category !== activeCategory) return false;
         if (searchQuery && item.name.toLowerCase().indexOf(searchQuery) === -1 &&
             item.category.toLowerCase().indexOf(searchQuery) === -1 &&
             item.desc.toLowerCase().indexOf(searchQuery) === -1) return false;
         return true;
+    }
+
+    var rowStars = Object.create(null); // item key -> that item's star button in the list
+
+    function favLabel(item, on) {
+        return on ? 'Remove ' + item.name + ' from favorites'
+                  : 'Add ' + item.name + ' to favorites';
+    }
+
+    function paintStar(btn, item) {
+        var on = isFavorite(item.key);
+        btn.classList.toggle('on', on);
+        btn.innerHTML = starSvg(21, on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        btn.setAttribute('aria-label', favLabel(item, on));
+    }
+
+    function buildStar(item) {
+        var btn = el('button', 'fav-btn');
+        btn.type = 'button';
+        paintStar(btn, item);
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation(); // the rest of the row opens the detail sheet
+            toggleFavorite(item.key);
+            popStar(btn);
+            favoritesChanged(item);
+        });
+        return btn;
+    }
+
+    // Single place that repaints everything a favorite touches: the chip count,
+    // the list (a row leaves the Favorites view when unfavorited) and the sheet.
+    function favoritesChanged(item) {
+        buildChips();
+        if (activeCategory === FAV_FILTER) render();
+        else if (rowStars[item.key]) paintStar(rowStars[item.key], item);
+        if (sheetItem && sheetItem.key === item.key) paintSheetFav();
     }
 
     function buildButton(item, status) {
@@ -1754,6 +2098,7 @@
     function render() {
         renderSpotlights();
         listEl.innerHTML = '';
+        rowStars = Object.create(null);
         var items = sortedCatalog();
 
         items.forEach(function (item) {
@@ -1774,12 +2119,17 @@
             info.appendChild(el('div', 'row-desc', item.desc));
             info.appendChild(el('div', 'row-cat', item.category));
 
+            var star = buildStar(item);
+            rowStars[item.key] = star;
+
             row.appendChild(icon);
             row.appendChild(info);
+            row.appendChild(star);
             row.appendChild(buildButton(item, status));
 
             row.addEventListener('click', function (e) {
-                if (e.target.closest('.btn')) return; // GET/UPDATE taps keep their own action
+                // GET/UPDATE and the star keep their own actions
+                if (e.target.closest('.btn') || e.target.closest('.fav-btn')) return;
                 openSheet(item);
             });
             row.addEventListener('keydown', function (e) {
@@ -1792,6 +2142,17 @@
         countEl.textContent = items.length + ' of ' + catalog.length;
         listEl.style.display = items.length === 0 ? 'none' : 'block';
         emptyEl.style.display = items.length === 0 ? 'block' : 'none';
+        if (items.length === 0) renderEmptyState();
+    }
+
+    // An empty Favorites view is a first-run state, not a failed search.
+    function renderEmptyState() {
+        var noFavorites = activeCategory === FAV_FILTER && !searchQuery;
+        emptyIcon.innerHTML = noFavorites ? starSvg(24, false) : EMPTY_SEARCH_ICON;
+        emptyTitle.textContent = noFavorites ? 'No favorites yet' : 'No results';
+        emptyText.textContent = noFavorites
+            ? 'Tap the star on any shortcut to keep it here.'
+            : 'Try a different search or category.';
     }
 
     /* ================= Search ================= */
@@ -1816,7 +2177,7 @@
         searchInput.value = '';
         searchQuery = '';
         searchClear.classList.remove('show');
-        activeCategory = 'All';
+        activeCategory = 'All'; // also steps out of the Favorites view
         buildChips();
         render();
     });
@@ -1834,6 +2195,24 @@
 
     var sheet = document.getElementById('sheet');
     var sheetOverlay = document.getElementById('sheetOverlay');
+    var sheetFav = document.getElementById('sheetFav');
+    var sheetItem = null; // the item the sheet is currently showing
+
+    function paintSheetFav() {
+        if (!sheetItem) return;
+        var on = isFavorite(sheetItem.key);
+        sheetFav.classList.toggle('on', on);
+        sheetFav.setAttribute('aria-pressed', on ? 'true' : 'false');
+        sheetFav.innerHTML = starSvg(18, on) +
+            '<span>' + (on ? 'Favorited' : 'Add to Favorites') + '</span>';
+    }
+
+    sheetFav.addEventListener('click', function () {
+        if (!sheetItem) return;
+        toggleFavorite(sheetItem.key);
+        popStar(sheetFav);
+        favoritesChanged(sheetItem);
+    });
 
     function openSheet(item) {
         var status = statusFor(item);
@@ -1848,6 +2227,9 @@
         action.innerHTML = '';
         action.appendChild(buildButton(item, status));
 
+        sheetItem = item;
+        paintSheetFav();
+
         sheet.classList.add('open');
         sheetOverlay.classList.add('open');
         document.body.style.overflow = 'hidden';
@@ -1857,6 +2239,7 @@
         sheet.classList.remove('open');
         sheetOverlay.classList.remove('open');
         document.body.style.overflow = '';
+        sheetItem = null;
     }
 
     document.getElementById('sheetClose').addEventListener('click', closeSheet);
@@ -2084,6 +2467,326 @@
     }
 
     init();
+
+    /* ================= Sync seam (for Abel Tools SYNC) =================
+       Sync is not wired up yet. When it lands it needs exactly two calls:
+       snapshot() for what this device holds, and merge() for what the account
+       holds. Favorites, theme mode and accent share one timestamp, and last
+       write wins on the whole snapshot, so a device that has been offline for
+       a week cannot wipe changes made since. */
+
+    window.AbelToolsPrefs = {
+        snapshot: function () {
+            return {
+                v: 1,
+                updatedAt: favState.updatedAt,
+                favorites: favState.keys.slice(),
+                theme: { mode: themeMode, accent: currentAccent }
+            };
+        },
+        merge: function (remote) {
+            if (!remote || !Array.isArray(remote.favorites)) return false;
+            var remoteAt = typeof remote.updatedAt === 'number' ? remote.updatedAt : 0;
+            if (remoteAt <= favState.updatedAt) return false; // this device is newer
+            applyingRemote = true;
+            try {
+                favState.keys = remote.favorites.map(normalize).filter(Boolean);
+                favState.updatedAt = remoteAt;
+                saveFavorites();
+                var theme = remote.theme || {};
+                if (isMode(theme.mode)) setMode(theme.mode);
+                if (ACCENTS.indexOf(theme.accent) !== -1) setAccent(theme.accent);
+            } finally {
+                applyingRemote = false;
+            }
+            buildChips();
+            render();
+            return true;
+        }
+    };
+
+    /* ================= Account and sync =================
+       Sign in is Netlify Identity, spoken to over its own REST endpoints so the
+       installer stays one self-contained file with no CDN dependency. Tokens
+       live on this device. Preferences travel through /api/sync, which verifies
+       the token and is the only thing that ever sees the spreadsheet.
+
+       This is the installer's own sign in on purpose: the Shortcuts web view
+       keeps a separate cookie and storage jar, so signing in at achenkunju.com
+       in Safari does not carry over here. */
+
+    var AUTH_KEY = 'abeltools-auth';
+    var LAST_SYNC_KEY = 'abeltools-lastsync';
+    var IDENTITY_BASE = '/.netlify/identity';
+
+    var accountSheet = document.getElementById('accountSheet');
+    var acctForm = document.getElementById('acctForm');
+    var acctPanel = document.getElementById('acctPanel');
+    var acctMsg = document.getElementById('acctMsg');
+    var acctSubmit = document.getElementById('acctSubmit');
+    var acctToggle = document.getElementById('acctToggle');
+    var acctEmailInput = document.getElementById('acctEmail');
+    var acctPasswordInput = document.getElementById('acctPassword');
+
+    var signupMode = false;
+    var syncTimer = null;
+    var syncInFlight = false;
+
+    function readStored(key) {
+        try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { return null; }
+    }
+
+    var session = (function () {
+        var saved = readStored(AUTH_KEY);
+        return (saved && saved.access_token && saved.refresh_token) ? saved : null;
+    })();
+
+    var lastSyncedAt = Number(readStored(LAST_SYNC_KEY)) || 0;
+
+    function saveSession(next) {
+        session = next;
+        try {
+            if (next) localStorage.setItem(AUTH_KEY, JSON.stringify(next));
+            else localStorage.removeItem(AUTH_KEY);
+        } catch (e) { /* storage blocked: this sign in lasts for the session */ }
+    }
+
+    function markSynced() {
+        lastSyncedAt = Date.now();
+        try { localStorage.setItem(LAST_SYNC_KEY, String(lastSyncedAt)); } catch (e) {}
+    }
+
+    function identityCall(path, options) {
+        return fetch(IDENTITY_BASE + path, options).then(function (r) {
+            return r.text().then(function (text) {
+                var body;
+                try { body = JSON.parse(text); } catch (e) { body = {}; }
+                if (!r.ok) {
+                    throw new Error(body.error_description || body.msg || body.error ||
+                        ('Could not reach the account service (' + r.status + ')'));
+                }
+                return body;
+            });
+        });
+    }
+
+    function storeToken(token) {
+        saveSession({
+            access_token: token.access_token,
+            refresh_token: token.refresh_token,
+            // Refresh a minute early so a slow request never lands on a dead token
+            expires_at: Date.now() + ((token.expires_in || 3600) * 1000) - 60000
+        });
+        return token;
+    }
+
+    function passwordGrant(email, password) {
+        return identityCall('/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'grant_type=password&username=' + encodeURIComponent(email) +
+                  '&password=' + encodeURIComponent(password)
+        }).then(storeToken);
+    }
+
+    function accessToken() {
+        if (!session) return Promise.reject(new Error('Sign in to sync.'));
+        if (Date.now() < session.expires_at) return Promise.resolve(session.access_token);
+        return identityCall('/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(session.refresh_token)
+        }).then(function (token) {
+            storeToken(token);
+            return session.access_token;
+        }).catch(function (err) {
+            saveSession(null); // the refresh token is dead, ask for a fresh sign in
+            renderAccount();
+            throw err;
+        });
+    }
+
+    // Display only. The server reads the account from the token itself, so
+    // nothing here is ever trusted for identity.
+    function sessionEmail() {
+        if (!session) return '';
+        try {
+            var part = session.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+            while (part.length % 4) part += '=';
+            return JSON.parse(atob(part)).email || '';
+        } catch (e) { return ''; }
+    }
+
+    function deviceId() {
+        try { return (window.AbelID && AbelID.getState().id) || ''; } catch (e) { return ''; }
+    }
+
+    function syncCall(payload) {
+        payload.deviceId = deviceId();
+        return accessToken().then(function (token) {
+            return fetch(API_BASE + 'sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify(payload)
+            });
+        }).then(function (r) {
+            return r.text().then(function (text) {
+                var body;
+                try { body = JSON.parse(text); } catch (e) { body = {}; }
+                if (!r.ok || body.error) throw new Error(body.error || ('Sync failed (' + r.status + ')'));
+                return body;
+            });
+        });
+    }
+
+    function pushPrefs() {
+        return syncCall({ action: 'put', data: window.AbelToolsPrefs.snapshot() })
+            .then(function () { markSynced(); return 'pushed'; });
+    }
+
+    // Pull first: if the account is ahead, this device takes its data. If not,
+    // this device is the newer one and sends its own up.
+    function pullPrefs() {
+        return syncCall({ action: 'get' }).then(function (res) {
+            if (res.data && window.AbelToolsPrefs.merge(res.data)) {
+                markSynced();
+                return 'pulled';
+            }
+            return pushPrefs();
+        });
+    }
+
+    // Local changes come in bursts (starring three shortcuts in a row), so they
+    // settle into one push instead of one request per tap.
+    function schedulePush() {
+        if (!session) return;
+        clearTimeout(syncTimer);
+        syncTimer = setTimeout(function () { runSync(pushPrefs, false); }, 1500);
+    }
+
+    function runSync(work, loud) {
+        if (syncInFlight) return Promise.resolve();
+        syncInFlight = true;
+        if (loud) setAcctMsg('', 'Syncing\u2026');
+        return work().then(function (how) {
+            syncInFlight = false;
+            renderAccount();
+            if (loud) setAcctMsg('ok', how === 'pulled' ? 'Brought this device up to date.' : 'Saved to your account.');
+        }, function (err) {
+            syncInFlight = false;
+            renderAccount();
+            setAcctMsg('error', err.message);
+        });
+    }
+
+    function setAcctMsg(kind, text) {
+        acctMsg.className = 'acct-msg' + (kind ? ' ' + kind : '');
+        acctMsg.textContent = text || '';
+        acctMsg.hidden = !text;
+    }
+
+    function relativeTime(ts) {
+        if (!ts) return 'never';
+        var mins = Math.round((Date.now() - ts) / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return mins + (mins === 1 ? ' min ago' : ' mins ago');
+        var hours = Math.round(mins / 60);
+        if (hours < 24) return hours + (hours === 1 ? ' hour ago' : ' hours ago');
+        var days = Math.round(hours / 24);
+        return days + (days === 1 ? ' day ago' : ' days ago');
+    }
+
+    function renderAccount() {
+        var signedIn = !!session;
+        acctForm.hidden = signedIn;
+        acctPanel.hidden = !signedIn;
+        document.getElementById('acctIntro').hidden = signedIn;
+        document.getElementById('acctStatus').textContent = signedIn ? 'Signed in' : 'Not signed in';
+        if (!signedIn) return;
+        document.getElementById('acctWho').textContent = sessionEmail() || 'Abel Tools account';
+        document.getElementById('acctFavCount').textContent = String(favState.keys.length);
+        document.getElementById('acctLastSync').textContent = relativeTime(lastSyncedAt);
+    }
+
+    function setSignupMode(on) {
+        signupMode = on;
+        acctSubmit.textContent = on ? 'Create account' : 'Sign in';
+        acctToggle.textContent = on ? 'I already have an account' : 'Create an account instead';
+        acctPasswordInput.setAttribute('autocomplete', on ? 'new-password' : 'current-password');
+        document.getElementById('accountName').textContent = on ? 'Create your account' : 'Abel Tools Sync';
+    }
+
+    acctForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = acctEmailInput.value.trim();
+        var password = acctPasswordInput.value;
+        if (!email || !password) return;
+        acctSubmit.disabled = true;
+        setAcctMsg('', signupMode ? 'Creating your account\u2026' : 'Signing in\u2026');
+
+        var work = signupMode
+            ? identityCall('/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, password: password })
+            }).then(function () {
+                setSignupMode(false);
+                setAcctMsg('ok', 'Account created. Confirm it from the email sent to ' + email + ', then sign in.');
+            })
+            : passwordGrant(email, password).then(function () {
+                acctPasswordInput.value = '';
+                renderAccount();
+                return runSync(pullPrefs, true);
+            });
+
+        work.catch(function (err) {
+            setAcctMsg('error', err.message);
+        }).then(function () {
+            acctSubmit.disabled = false;
+        });
+    });
+
+    acctToggle.addEventListener('click', function () {
+        setSignupMode(!signupMode);
+        setAcctMsg('', '');
+    });
+
+    document.getElementById('acctSync').addEventListener('click', function () {
+        runSync(pullPrefs, true);
+    });
+
+    document.getElementById('acctSignOut').addEventListener('click', function () {
+        // Local sign out only: favorites and the look stay on this device, and
+        // the account's copy in the sheet is left untouched.
+        saveSession(null);
+        renderAccount();
+        setAcctMsg('', 'Signed out. Your favorites stay on this device.');
+    });
+
+    function openAccount() {
+        setAcctMsg('', '');
+        renderAccount();
+        accountSheet.classList.add('open');
+        sheetOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeAccount() {
+        accountSheet.classList.remove('open');
+        sheetOverlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('accountBtn').addEventListener('click', openAccount);
+    document.getElementById('accountClose').addEventListener('click', closeAccount);
+    sheetOverlay.addEventListener('click', closeAccount);
+    enableSwipe(accountSheet, closeAccount);
+
+    setSignupMode(false);
+    renderAccount();
+
+    // A signed-in device catches up quietly as soon as the installer opens.
+    if (session) runSync(pullPrefs, false);
 
     /* ================= AbelDeviceID footer badge =================
        Show the device's shared AbelDeviceID at the bottom, tap to copy.
