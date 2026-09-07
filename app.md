@@ -2622,7 +2622,7 @@
     };
 
     /* ================= Account and sync =================
-       Sign in is Netlify Identity, spoken to over its own REST endpoints so the
+       Sign in is Supabase Auth, spoken to over its own REST endpoints so the
        installer stays one self-contained file with no CDN dependency. Tokens
        live on this device. Preferences travel through /api/sync, which verifies
        the token and is the only thing that ever sees the spreadsheet.
