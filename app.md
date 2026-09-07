@@ -2633,7 +2633,14 @@
 
     var AUTH_KEY = 'abeltools-auth';
     var LAST_SYNC_KEY = 'abeltools-lastsync';
-    var IDENTITY_BASE = '/.netlify/identity';
+
+    // Accounts are Supabase Auth, a fork of the same GoTrue that Netlify
+    // Identity ran, so this talks to it over the same REST shapes as before.
+    // The anon key belongs in the page: it is the key the browser is meant to
+    // hold and it grants nothing on its own.
+    var SUPABASE_URL = 'https://buqtnbhyuufyymfgvoyx.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cXRuYmh5dXVmeXltZmd2b3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3NjM4NzUsImV4cCI6MjEwNDMzOTg3NX0.ptsLo9yCspgyxyZGb2EnBMIyYWCVirQfhfFCo2zB2cA';
+    var IDENTITY_BASE = SUPABASE_URL + '/auth/v1';
 
     var accountSheet = document.getElementById('accountSheet');
     var acctForm = document.getElementById('acctForm');
@@ -2686,6 +2693,14 @@
     }
 
     function identityCall(path, options) {
+        options = options || {};
+        // Every Supabase auth call carries the anon key, on top of whatever
+        // headers the caller wanted.
+        var headers = { apikey: SUPABASE_ANON_KEY };
+        Object.keys(options.headers || {}).forEach(function (name) {
+            headers[name] = options.headers[name];
+        });
+        options.headers = headers;
         return fetch(IDENTITY_BASE + path, options).then(function (r) {
             return r.text().then(function (text) {
                 var body;
@@ -2710,21 +2725,20 @@
     }
 
     function passwordGrant(email, password) {
-        return identityCall('/token', {
+        return identityCall('/token?grant_type=password', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'grant_type=password&username=' + encodeURIComponent(email) +
-                  '&password=' + encodeURIComponent(password)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: password })
         }).then(storeToken);
     }
 
     function accessToken() {
         if (!session) return Promise.reject(new Error('Sign in to sync.'));
         if (Date.now() < session.expires_at) return Promise.resolve(session.access_token);
-        return identityCall('/token', {
+        return identityCall('/token?grant_type=refresh_token', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(session.refresh_token)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: session.refresh_token })
         }).then(function (token) {
             storeToken(token);
             return session.access_token;
