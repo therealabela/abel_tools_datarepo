@@ -793,6 +793,79 @@
     .acct-msg.error { color: var(--red); }
     .acct-msg.ok { color: var(--tint-text); }
 
+    .acct-backups { margin-top: 22px; }
+    .acct-backups-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+    .acct-backups-head span {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-3);
+    }
+    .acct-backups-head strong {
+        font-size: 12px;
+        font-weight: 650;
+        color: var(--text-3);
+        font-variant-numeric: tabular-nums;
+    }
+    .backup-list { list-style: none; margin: 0; padding: 0; }
+    .backup-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 11px 0;
+        border-bottom: 0.5px solid var(--separator);
+    }
+    .backup-row:last-child { border-bottom: none; }
+    .backup-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .backup-info strong {
+        font-size: 14px;
+        font-weight: 650;
+        color: var(--text);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .backup-info span { font-size: 12px; color: var(--text-3); }
+    .backup-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .backup-act {
+        font-family: inherit;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--tint-text);
+        background: var(--tint-bg);
+        border: none;
+        border-radius: 10px;
+        min-height: 34px;
+        padding: 0 11px;
+        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .backup-act:active { transform: scale(0.95); }
+    .backup-act.danger { color: var(--red); background: color-mix(in srgb, var(--red) 12%, transparent); }
+    /* Armed is the half second where one more tap does the thing, so it has to
+       read as a different button, not the same one with a new label. */
+    .backup-act.armed { color: #fff; background: var(--red); }
+    .backup-empty {
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--text-3);
+        padding: 4px 0 2px;
+    }
+    .acct-panel .acct-btn.ghost {
+        color: var(--tint-text);
+        background: var(--tint-bg);
+        box-shadow: none;
+        margin-top: 14px;
+        min-height: 44px;
+    }
+
     /* ---------- Skeleton loading ---------- */
     .skeleton-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
     .sk { background: var(--skeleton); border-radius: 8px; }
@@ -1437,6 +1510,17 @@
         <div class="acct-line"><span>Favorites</span><strong id="acctFavCount">0</strong></div>
         <div class="acct-line"><span>Last synced</span><strong id="acctLastSync">never</strong></div>
         <button class="acct-btn" id="acctSync" type="button">Sync now</button>
+
+        <div class="acct-backups">
+            <div class="acct-backups-head">
+                <span>Backups</span>
+                <strong id="acctBackupCount">0 of 5</strong>
+            </div>
+            <ul class="backup-list" id="backupList"></ul>
+            <p class="backup-empty" id="backupEmpty">No backups yet. A backup is a saved copy of your favorites and look that stays put until you remove it, so syncing a device can never take it away.</p>
+            <button class="acct-btn ghost" id="acctBackup" type="button">Back up now</button>
+        </div>
+
         <button class="acct-alt quiet" id="acctSignOut" type="button">Sign out of this device</button>
     </div>
 
@@ -2484,18 +2568,50 @@
                 theme: { mode: themeMode, accent: currentAccent }
             };
         },
-        merge: function (remote) {
+        // Three ways in, because plain last write wins is wrong twice over. On a
+        // first sign in it throws away whichever list happens to be older, and
+        // on a restore it refuses the backup for being old, which is the one
+        // time being old is the whole point.
+        //
+        //   default   the account copy is taken only when it is newer
+        //   'union'   first sync on this device: keep both lists
+        //   'restore' the backup wins outright and is stamped now
+        merge: function (remote, mode) {
             if (!remote || !Array.isArray(remote.favorites)) return false;
+            var remoteKeys = remote.favorites.map(normalize).filter(Boolean);
             var remoteAt = typeof remote.updatedAt === 'number' ? remote.updatedAt : 0;
-            if (remoteAt <= favState.updatedAt) return false; // this device is newer
+            var localAt = favState.updatedAt;
+            var keys, stamp, takeTheme;
+
+            if (mode === 'restore') {
+                keys = remoteKeys;
+                stamp = Date.now(); // newest everywhere, so other devices take it too
+                takeTheme = true;
+            } else if (mode === 'union') {
+                keys = favState.keys.slice();
+                remoteKeys.forEach(function (key) {
+                    if (keys.indexOf(key) === -1) keys.push(key);
+                });
+                takeTheme = remoteAt > localAt;
+                if (keys.length === favState.keys.length && !takeTheme) return false;
+                stamp = Math.max(remoteAt, localAt, Date.now());
+            } else {
+                if (remoteAt <= localAt) return false; // this device is newer
+                keys = remoteKeys;
+                stamp = remoteAt;
+                takeTheme = true;
+            }
+
             applyingRemote = true;
             try {
-                favState.keys = remote.favorites.map(normalize).filter(Boolean);
-                favState.updatedAt = remoteAt;
+                favState.keys = keys;
+                favState.updatedAt = stamp;
                 saveFavorites();
-                var theme = remote.theme || {};
-                if (isMode(theme.mode)) setMode(theme.mode);
-                if (ACCENTS.indexOf(theme.accent) !== -1) setAccent(theme.accent);
+                if (takeTheme) {
+                    var theme = remote.theme || {};
+                    if (isMode(theme.mode)) setMode(theme.mode);
+                    if (ACCENTS.indexOf(theme.accent) !== -1) setAccent(theme.accent);
+                }
             } finally {
                 applyingRemote = false;
             }
@@ -2531,6 +2647,19 @@
     var signupMode = false;
     var syncTimer = null;
     var syncInFlight = false;
+
+    var MAX_BACKUPS = 5; // matches the sheet, which is what actually enforces it
+    var backups = [];
+    var SYNCED_KEY = 'abeltools-synced-with';
+
+    var SYNC_MESSAGES = {
+        pulled: 'Brought this device up to date.',
+        pushed: 'Saved to your account.',
+        merged: 'Merged this device with your account. Nothing was lost.',
+        backed: 'Backed up.',
+        restored: 'Backup restored here and saved to your account.',
+        removed: 'Backup removed.'
+    };
 
     function readStored(key) {
         try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { return null; }
@@ -2644,15 +2773,148 @@
             .then(function () { markSynced(); return 'pushed'; });
     }
 
+    // Signing in on a device is remembered per account, because the very first
+    // sync is the dangerous one: both sides hold real data and neither is a
+    // copy of the other, so that one time the lists are unioned instead.
+    function deviceHasSynced() {
+        return readStored(SYNCED_KEY) === (sessionEmail() || 'account');
+    }
+
+    function markDeviceSynced() {
+        try { localStorage.setItem(SYNCED_KEY, JSON.stringify(sessionEmail() || 'account')); } catch (e) {}
+    }
+
     // Pull first: if the account is ahead, this device takes its data. If not,
     // this device is the newer one and sends its own up.
     function pullPrefs() {
         return syncCall({ action: 'get' }).then(function (res) {
-            if (res.data && window.AbelToolsPrefs.merge(res.data)) {
-                markSynced();
-                return 'pulled';
+            backups = res.backups || [];
+            renderBackups();
+            var first = !deviceHasSynced();
+            markDeviceSynced();
+            if (res.data && window.AbelToolsPrefs.merge(res.data, first ? 'union' : null)) {
+                if (!first) { markSynced(); return 'pulled'; }
+                // A union leaves this device holding the superset, so it goes up.
+                return pushPrefs().then(function () { return 'merged'; });
             }
             return pushPrefs();
+        });
+    }
+
+    function backupNow() {
+        return syncCall({ action: 'backup', data: window.AbelToolsPrefs.snapshot() })
+            .then(function (res) {
+                backups = res.backups || [];
+                renderBackups();
+                return 'backed';
+            });
+    }
+
+    // Restoring writes the backup straight back up to the account as the newest
+    // copy. Without that push the next device to sync would still be holding
+    // newer data and would undo the restore.
+    function restoreBackup(id) {
+        var entry = null;
+        backups.forEach(function (b) { if (b.id === id) entry = b; });
+        if (!entry) return Promise.reject(new Error('That backup is not there any more.'));
+        window.AbelToolsPrefs.merge(entry.data, 'restore');
+        return pushPrefs().then(function () { return 'restored'; });
+    }
+
+    function removeBackup(id) {
+        return syncCall({ action: 'deleteBackup', backupId: id })
+            .then(function (res) {
+                backups = res.backups || [];
+                renderBackups();
+                return 'removed';
+            });
+    }
+
+    function backupSummary(data) {
+        var count = (data && Array.isArray(data.favorites)) ? data.favorites.length : 0;
+        var theme = (data && data.theme) || {};
+        var bits = [count + (count === 1 ? ' favorite' : ' favorites')];
+        if (theme.mode && theme.mode !== 'auto') bits.push(theme.mode);
+        if (theme.accent) bits.push(theme.accent);
+        return bits.join(', ');
+    }
+
+    function backupWhen(entry) {
+        var ts = Date.parse(entry && entry.createdAt);
+        return isNaN(ts) ? 'saved' : relativeTime(ts);
+    }
+
+    // Restore and remove each throw something away, so both ask twice. The
+    // second tap has to land within a few seconds, which keeps a stray tap in a
+    // scrolling list from taking a backup with it.
+    function armedButton(label, extra, ask, run) {
+        var btn = document.createElement('button');
+        var timer = null;
+        btn.type = 'button';
+        btn.className = 'backup-act' + (extra ? ' ' + extra : '');
+        btn.textContent = label;
+
+        function disarm() {
+            clearTimeout(timer);
+            timer = null;
+            btn.classList.remove('armed');
+            btn.textContent = label;
+        }
+
+        btn.addEventListener('click', function () {
+            if (timer) {
+                disarm();
+                setAcctMsg('', '');
+                runSync(run, true);
+                return;
+            }
+            btn.classList.add('armed');
+            btn.textContent = 'Tap again';
+            setAcctMsg('', ask);
+            timer = setTimeout(function () {
+                disarm();
+                setAcctMsg('', '');
+            }, 4000);
+        });
+        return btn;
+    }
+
+    function renderBackups() {
+        var full = backups.length >= MAX_BACKUPS;
+        document.getElementById('acctBackupCount').textContent = backups.length + ' of ' + MAX_BACKUPS;
+        document.getElementById('backupEmpty').hidden = backups.length > 0;
+
+        var addBtn = document.getElementById('acctBackup');
+        addBtn.disabled = full;
+        addBtn.textContent = full ? 'All ' + MAX_BACKUPS + ' slots are full' : 'Back up now';
+
+        var list = document.getElementById('backupList');
+        list.innerHTML = '';
+        backups.forEach(function (entry) {
+            var row = document.createElement('li');
+            row.className = 'backup-row';
+
+            var info = document.createElement('div');
+            info.className = 'backup-info';
+            var title = document.createElement('strong');
+            title.textContent = backupSummary(entry.data);
+            var when = document.createElement('span');
+            when.textContent = backupWhen(entry);
+            info.appendChild(title);
+            info.appendChild(when);
+
+            var actions = document.createElement('div');
+            actions.className = 'backup-actions';
+            actions.appendChild(armedButton('Restore', '', 'Restore this backup? It replaces the favorites and look on this device.', function () {
+                return restoreBackup(entry.id);
+            }));
+            actions.appendChild(armedButton('Remove', 'danger', 'Remove this backup for good?', function () {
+                return removeBackup(entry.id);
+            }));
+
+            row.appendChild(info);
+            row.appendChild(actions);
+            list.appendChild(row);
         });
     }
 
@@ -2671,7 +2933,7 @@
         return work().then(function (how) {
             syncInFlight = false;
             renderAccount();
-            if (loud) setAcctMsg('ok', how === 'pulled' ? 'Brought this device up to date.' : 'Saved to your account.');
+            if (loud) setAcctMsg('ok', SYNC_MESSAGES[how] || 'Done.');
         }, function (err) {
             syncInFlight = false;
             renderAccount();
@@ -2755,10 +3017,16 @@
         runSync(pullPrefs, true);
     });
 
+    document.getElementById('acctBackup').addEventListener('click', function () {
+        runSync(backupNow, true);
+    });
+
     document.getElementById('acctSignOut').addEventListener('click', function () {
         // Local sign out only: favorites and the look stay on this device, and
         // the account's copy in the sheet is left untouched.
         saveSession(null);
+        backups = []; // the account's backups are still in the account, just not shown here
+        renderBackups();
         renderAccount();
         setAcctMsg('', 'Signed out. Your favorites stay on this device.');
     });
@@ -2784,6 +3052,7 @@
 
     setSignupMode(false);
     renderAccount();
+    renderBackups();
 
     // A signed-in device catches up quietly as soon as the installer opens.
     if (session) runSync(pullPrefs, false);

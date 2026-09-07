@@ -2,3 +2,5 @@
 - A Favorites filter with a live count sits at the front of the categories, so your go-to shortcuts are one tap away
 - New: Abel Tools Sync - sign in from the new account button and your favorites, theme and accent color follow you to every device
 - Your theme and accent color now stick properly between launches
+- New: Backups - keep up to five saved copies of your favorites and look, then restore any of them whenever you want
+- Signing in on a new device now merges that device with your account instead of one side overwriting the other
