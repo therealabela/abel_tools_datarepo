@@ -793,6 +793,17 @@
     .acct-msg.error { color: var(--red); }
     .acct-msg.ok { color: var(--tint-text); }
 
+    /* Six digits read off a phone screen and typed in a hurry, so the field
+       is large, monospaced and spaced out. */
+    .acct-code {
+        text-align: center;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.35em;
+        text-indent: 0.35em;
+    }
+
     .acct-backups { margin-top: 22px; }
     .acct-backups-head {
         display: flex;
@@ -1503,6 +1514,13 @@
         <input class="acct-input" id="acctPassword" type="password" autocomplete="current-password" required>
         <button class="acct-btn" id="acctSubmit" type="submit">Sign in</button>
         <button class="acct-alt" id="acctToggle" type="button">Create an account instead</button>
+    </form>
+
+    <form class="acct-form" id="acctMfaForm" hidden>
+        <label class="acct-label" for="acctMfaCode">Authentication code</label>
+        <input class="acct-input acct-code" id="acctMfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="000000" required>
+        <button class="acct-btn" id="acctMfaSubmit" type="submit">Verify</button>
+        <button class="acct-alt quiet" id="acctMfaCancel" type="button">Sign in as someone else</button>
     </form>
 
     <div class="acct-panel" id="acctPanel" hidden>
@@ -2651,9 +2669,21 @@
     var acctEmailInput = document.getElementById('acctEmail');
     var acctPasswordInput = document.getElementById('acctPassword');
 
+    var acctMfaForm = document.getElementById('acctMfaForm');
+    var acctMfaCode = document.getElementById('acctMfaCode');
+    var acctMfaSubmit = document.getElementById('acctMfaSubmit');
+
     var signupMode = false;
     var syncTimer = null;
     var syncInFlight = false;
+
+    // A password gets an aal1 session. If the account has a verified factor
+    // that session is real but unfinished, and /api/sync refuses it, which is
+    // what makes the installer a closed door rather than a way around the
+    // code prompt on the website.
+    var mfaPending = false;
+    var mfaFactor = null;
+    var mfaChallenge = null;
 
     var MAX_BACKUPS = 5; // matches the sheet, which is what actually enforces it
     var backups = [];
@@ -2762,6 +2792,40 @@
 
     function deviceId() {
         try { return (window.AbelID && AbelID.getState().id) || ''; } catch (e) { return ''; }
+    }
+
+    function identityAuthed(path, options) {
+        return accessToken().then(function (token) {
+            options = options || {};
+            options.headers = options.headers || {};
+            options.headers.Authorization = 'Bearer ' + token;
+            return identityCall(path, options);
+        });
+    }
+
+    function newChallenge() {
+        return identityAuthed('/factors/' + mfaFactor + '/challenge', { method: 'POST' })
+            .then(function (challenge) { mfaChallenge = challenge.id; });
+    }
+
+    // Reached when the server says a second factor is owed. Finds the factor
+    // and opens a challenge, so the code the user types has something to be
+    // checked against.
+    function enterMfa() {
+        return identityAuthed('/user', {}).then(function (user) {
+            var factors = (user.factors || []).filter(function (f) {
+                return f.factor_type === 'totp' && f.status === 'verified';
+            });
+            if (!factors.length) return false;
+            mfaFactor = factors[0].id;
+            return newChallenge().then(function () {
+                mfaPending = true;
+                renderAccount();
+                setAcctMsg('', 'Enter the code from your authenticator app.');
+                acctMfaCode.focus();
+                return true;
+            });
+        });
     }
 
     function syncCall(payload) {
@@ -2950,6 +3014,19 @@
             if (loud) setAcctMsg('ok', SYNC_MESSAGES[how] || 'Done.');
         }, function (err) {
             syncInFlight = false;
+            // The server is the one that knows a factor is owed, so this is
+            // driven by its answer rather than by guessing up front. That keeps
+            // the common case at zero extra requests.
+            if (/two factor/i.test(err.message)) {
+                return enterMfa().then(function (started) {
+                    if (started) return;
+                    renderAccount();
+                    setAcctMsg('error', err.message);
+                }, function () {
+                    renderAccount();
+                    setAcctMsg('error', err.message);
+                });
+            }
             renderAccount();
             setAcctMsg('error', err.message);
         });
@@ -2973,11 +3050,14 @@
     }
 
     function renderAccount() {
-        var signedIn = !!session;
-        acctForm.hidden = signedIn;
+        var pending = !!session && mfaPending;
+        var signedIn = !!session && !mfaPending;
+        acctForm.hidden = !!session;
+        acctMfaForm.hidden = !pending;
         acctPanel.hidden = !signedIn;
-        document.getElementById('acctIntro').hidden = signedIn;
-        document.getElementById('acctStatus').textContent = signedIn ? 'Signed in' : 'Not signed in';
+        document.getElementById('acctIntro').hidden = !!session;
+        document.getElementById('acctStatus').textContent =
+            signedIn ? 'Signed in' : (pending ? 'Code needed' : 'Not signed in');
         if (!signedIn) return;
         document.getElementById('acctWho').textContent = sessionEmail() || 'Abel Tools account';
         document.getElementById('acctFavCount').textContent = String(favState.keys.length);
@@ -3022,6 +3102,43 @@
         });
     });
 
+    acctMfaForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var code = acctMfaCode.value.replace(/\D/g, '');
+        if (code.length !== 6) { setAcctMsg('error', 'Enter the 6 digit code.'); return; }
+        acctMfaSubmit.disabled = true;
+        setAcctMsg('', 'Checking\u2026');
+        identityAuthed('/factors/' + mfaFactor + '/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ challenge_id: mfaChallenge, code: code })
+        }).then(function (token) {
+            storeToken(token); // the verified session comes back at aal2
+            mfaPending = false;
+            acctMfaCode.value = '';
+            renderAccount();
+            return runSync(pullPrefs, true);
+        }, function (err) {
+            setAcctMsg('error', err.message);
+            acctMfaCode.value = '';
+            acctMfaCode.focus();
+            // A rejected code burns its challenge, so open a fresh one.
+            return newChallenge().catch(function () {});
+        }).then(function () {
+            acctMfaSubmit.disabled = false;
+        });
+    });
+
+    document.getElementById('acctMfaCancel').addEventListener('click', function () {
+        saveSession(null);
+        mfaPending = false;
+        mfaFactor = null;
+        mfaChallenge = null;
+        acctMfaCode.value = '';
+        renderAccount();
+        setAcctMsg('', '');
+    });
+
     acctToggle.addEventListener('click', function () {
         setSignupMode(!signupMode);
         setAcctMsg('', '');
@@ -3039,6 +3156,7 @@
         // Local sign out only: favorites and the look stay on this device, and
         // the account's copy in the sheet is left untouched.
         saveSession(null);
+        mfaPending = false;
         backups = []; // the account's backups are still in the account, just not shown here
         renderBackups();
         renderAccount();

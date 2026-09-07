@@ -4,3 +4,4 @@
 - Your theme and accent color now stick properly between launches
 - New: Backups - keep up to five saved copies of your favorites and look, then restore any of them whenever you want
 - Signing in on a new device now merges that device with your account instead of one side overwriting the other
+- New: two factor authentication - turn it on from your account at achenkunju.com and the installer asks for a code too
