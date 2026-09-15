@@ -1,7 +1,3 @@
-- New: Favorites - tap the star on any shortcut to save it to your own list
-- A Favorites filter with a live count sits at the front of the categories, so your go-to shortcuts are one tap away
-- New: Abel Tools Sync - sign in from the new account button and your favorites, theme and accent color follow you to every device
-- Your theme and accent color now stick properly between launches
-- New: Backups - keep up to five saved copies of your favorites and look, then restore any of them whenever you want
-- Signing in on a new device now merges that device with your account instead of one side overwriting the other
-- New: two factor authentication - turn it on from your account at achenkunju.com and the installer asks for a code too
+- New shortcut: SaveMyBattery V2.2 - the newest SaveMyBattery, with the latest tweaks for iOS 26
+- V2.1 and V1 are still here, so nothing changes if you are happy where you are
+- SaveMyBattery V2.2 shows up with its real icon and sits at the top of the list under NEW

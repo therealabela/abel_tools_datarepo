@@ -1,1 +1,1 @@
-Abel's URL Compressor
+SaveMyBattery V2.2
