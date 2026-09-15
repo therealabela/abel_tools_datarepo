@@ -3,6 +3,7 @@ Abel's URL Compressor
 Quickscreen
 AnythingButGlass
 SaveMyBattery V2.2
+SaveMyBattery V2.2 Automation
 SaveMyBattery V2.1
 SaveMyBattery V1
 CoolBGRemover

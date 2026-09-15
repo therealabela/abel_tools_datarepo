@@ -1,3 +1,4 @@
 - New shortcut: SaveMyBattery V2.2 - the newest SaveMyBattery, with the latest tweaks for iOS 26
+- New shortcut: SaveMyBattery V2.2 Automation - on iOS 27, it runs the saver for you the moment your battery hits a percentage you pick
+- Install SaveMyBattery V2.2 first, then the Automation, and set your own trigger percentage
 - V2.1 and V1 are still here, so nothing changes if you are happy where you are
-- SaveMyBattery V2.2 shows up with its real icon and sits at the top of the list under NEW
