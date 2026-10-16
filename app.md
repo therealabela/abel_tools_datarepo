@@ -2,1295 +2,1264 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Abel Tools Installer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+<script>
+/* Paint the saved look before the first frame, so a dark-mode device never
+   flashes the light theme. The main script re-derives the same choice and
+   owns it from then on. */
+(function () {
+    var d = document.documentElement, mode = '', accent = '';
+    try {
+        mode = localStorage.getItem('abeltools-thememode') || localStorage.getItem('abeltools-theme') || '';
+        accent = localStorage.getItem('abeltools-accent') || '';
+    } catch (e) {}
+    if (!mode || !accent) {
+        var m = document.cookie.match(/(?:^|; )abeltools-look=([^;]*)/);
+        var look = m ? decodeURIComponent(m[1]).split('|') : [];
+        mode = mode || look[0] || '';
+        accent = accent || look[1] || '';
+    }
+    if (mode !== 'light' && mode !== 'dark') {
+        mode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    if (mode === 'dark') d.setAttribute('data-theme', 'dark');
+    if (accent && accent !== 'blue') d.setAttribute('data-accent', accent);
+})();
+</script>
 <style>
+    /* ================= Tokens =================
+       Light is paper and ink, dark is the near-black set from the Discover
+       artboard. Every surface reads a token, so a screen the design only
+       drew in light still gets a dark mode that belongs to it. */
+
     :root {
-        --bg: #f4f4f9;
-        --bg-glow-1: rgba(0, 122, 255, 0.10);
-        --bg-glow-2: rgba(124, 58, 237, 0.08);
-        --bg-card: rgba(255, 255, 255, 0.86);
-        --bg-solid: #ffffff;
-        --hairline: rgba(15, 23, 42, 0.08);
-        --text: #0f172a;
-        --text-2: #475569;
-        --text-3: #5d6a7d;
-        --separator: rgba(60, 60, 67, 0.10);
-        --tint: #0071e3;
-        --tint-bg: rgba(0, 113, 227, 0.12);
-        --tint-text: #0361c2;
-        --red: #d70015;
-        --hero-a: #2563eb;
-        --hero-b: #7c3aed;
-        --hero-c: #db2777;
-        --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.05);
-        --shadow-md: 0 2px 6px rgba(15, 23, 42, 0.05), 0 12px 32px rgba(15, 23, 42, 0.09);
-        --skeleton: rgba(120, 120, 128, 0.13);
-        --search-bg: rgba(118, 118, 128, 0.10);
-        --focus-ring: #0071e3;
-        --overlay: rgba(15, 23, 42, 0.35);
+        --f-display: 'Bricolage Grotesque', -apple-system, system-ui, sans-serif;
+        --f-body: 'Figtree', -apple-system, system-ui, sans-serif;
+        --f-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+        --bg: #F4F2ED;
+        --side: #ECE9E2;
+        --side-line: #DEDAD1;
+        --card: #FFFFFF;
+        --card-line: #E6E2D9;
+        --row-line: #EFECE6;
+        --ink: #17171B;
+        --ink-2: #3D3D45;
+        --ink-3: #4A4A53;
+        --muted: #5E5E68;
+        --muted-2: #6E6E78;
+        --sub: #5E5E68;
+        --star-off: #9A9AA3;
+        --search-ic: #6E6E78;
+        --field: #FFFFFF;
+        --field-line: #E0DCD3;
+        --nav-on: #FFFFFF;
+        --nav-on-shadow: 0 1px 0 #D9D5CB;
+        --sync-card: #F7F5F0;
+        --sync-card-line: #DCD8CE;
+        --sync-avatar: #E2DED4;
+        --notice: #17171B;
+        --notice-ink: #F4F2ED;
+        --notice-x: #C9C7C0;
+        --seg: #E6E2D9;
+        --seg-2: #EFECE6;
+        --seg-on: #FFFFFF;
+        --seg-on-shadow: 0 1px 2px rgba(23, 23, 27, 0.08);
+        --seg-off: #4A4A53;
+        --pill-line: #E0DCD3;
+        --pill-ink: #5E5E68;
+        --retired: #A1401C;
+        --retired-line: #DDB7A8;
+        --ret-card-line: #D3CEC3;
+        --ret-tile: #B5B5BB;
+        --lime: #CDEB52;
+        --brand-bg: #17171B;
+        --brand-fg: #CDEB52;
+        --panel: #17171B;
+        --panel-line: transparent;
+        --panel-ink: #F4F2ED;
+        --panel-muted: #BDBBB4;
+        --panel-tile: #2A2A31;
+        --panel-btn: #24242A;
+        --panel-btn-line: #3A3A42;
+        --tile-2: #F1EFEA;
+        --dl: #FAF9F6;
+        --dl-line: #ECE9E2;
+        --steps: #F6F4EF;
+        --steps-line: #EBE8E1;
+        --input: #FAF9F6;
+        --input-line: #D6D2C8;
+        --btn2: #FFFFFF;
+        --btn2-line: #D6D2C8;
+        --ink-btn: #17171B;
+        --ink-btn-fg: #FFFFFF;
+        --hint: #ECE9E2;
+        --ghost: #E6E2D9;
+        --radio-off: #CFCBC1;
+        --ok-bg: #E4F3EA;
+        --ok-ink: #17643C;
+        --bad-bg: #FBE9E6;
+        --bad-ink: #B42318;
+        --bad-solid: #C42B1C;
+        --scrim: rgba(23, 23, 27, 0.42);
+        --scrim-alert: rgba(23, 23, 27, 0.48);
+        --sheet-shadow: -20px 0 60px rgba(23, 23, 27, 0.22);
+        --alert-shadow: 0 30px 80px rgba(23, 23, 27, 0.35);
+        --sheet-edge: transparent;
+
+        /* Accent: blue, exactly as drawn */
+        --accent: #2742E8;
+        --accent-ink: #1A2FB8;
+        --accent-soft: #E6EAFD;
+        --accent-soft-ink: #1A2FB8;
+        --accent-dim: #B9C2F5;
+        --on-accent: #FFFFFF;
+        --link: #2742E8;
+        --link-hover: #1A2FB8;
+
+        color-scheme: light;
     }
 
-    [data-theme="dark"] {
-        --bg: #060608;
-        --bg-glow-1: rgba(10, 132, 255, 0.13);
-        --bg-glow-2: rgba(139, 92, 246, 0.10);
-        --bg-card: rgba(26, 26, 32, 0.82);
-        --bg-solid: #1a1a20;
-        --hairline: rgba(255, 255, 255, 0.09);
-        --text: #f5f5f7;
-        --text-2: #a6a6b0;
-        --text-3: #8e8e93;
-        --separator: rgba(255, 255, 255, 0.07);
-        --tint: #0a84ff;
-        --tint-bg: rgba(10, 132, 255, 0.20);
-        --tint-text: #64b1ff;
-        --red: #ff453a;
-        --hero-a: #1d4ed8;
-        --hero-b: #6d28d9;
-        --hero-c: #be185d;
-        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.35);
-        --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.45), 0 16px 44px rgba(0, 0, 0, 0.5);
-        --skeleton: rgba(255, 255, 255, 0.08);
-        --search-bg: rgba(118, 118, 128, 0.22);
-        --focus-ring: #0a84ff;
-        --overlay: rgba(0, 0, 0, 0.55);
+    :root[data-theme="dark"] {
+        --bg: #111114;
+        --side: #16161A;
+        --side-line: #26262C;
+        --card: #1B1B20;
+        --card-line: #2A2A31;
+        --row-line: #27272D;
+        --ink: #F2F1EE;
+        --ink-2: #C8C8D0;
+        --ink-3: #B6B6BF;
+        --muted: #9C9CA6;
+        --muted-2: #8E8E98;
+        --sub: #A8A8B2;
+        --star-off: #74747E;
+        --search-ic: #9C9CA6;
+        --field: #1B1B20;
+        --field-line: #2E2E35;
+        --nav-on: #26262D;
+        --nav-on-shadow: none;
+        --sync-card: #1B1B20;
+        --sync-card-line: #2A2A31;
+        --sync-avatar: #2A2A31;
+        --notice: #24242A;
+        --notice-ink: #F2F1EE;
+        --notice-x: #B6B6BF;
+        --seg: #22222A;
+        --seg-2: #22222A;
+        --seg-on: #34343C;
+        --seg-on-shadow: none;
+        --seg-off: #B6B6BF;
+        --pill-line: #34343B;
+        --pill-ink: #A8A8B2;
+        --retired: #F08A65;
+        --retired-line: #6B3A29;
+        --ret-card-line: #3A3A42;
+        --ret-tile: #4A4A52;
+        --brand-bg: #CDEB52;
+        --brand-fg: #17171B;
+        --panel: #24242A;
+        --panel-line: #2E2E36;
+        --panel-ink: #F2F1EE;
+        --panel-muted: #B6B6BF;
+        --panel-tile: #34343C;
+        --panel-btn: #2E2E36;
+        --panel-btn-line: #3A3A42;
+        --tile-2: #26262D;
+        --dl: #16161A;
+        --dl-line: #2A2A31;
+        --steps: #16161A;
+        --steps-line: #27272D;
+        --input: #16161A;
+        --input-line: #34343B;
+        --btn2: #1B1B20;
+        --btn2-line: #34343B;
+        --ink-btn: #F2F1EE;
+        --ink-btn-fg: #17171B;
+        --hint: #1B1B20;
+        --ghost: #26262D;
+        --radio-off: #3A3A42;
+        --ok-bg: #16301F;
+        --ok-ink: #7FD9A3;
+        --bad-bg: #3A1B17;
+        --bad-ink: #FF9A8A;
+        --bad-solid: #C42B1C;
+        --scrim: rgba(0, 0, 0, 0.55);
+        --scrim-alert: rgba(0, 0, 0, 0.6);
+        --sheet-shadow: -20px 0 60px rgba(0, 0, 0, 0.5);
+        --alert-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+        --sheet-edge: #2A2A31;
+
+        --accent: #8090FF;
+        --accent-ink: #B3BCFF;
+        --accent-soft: #252A52;
+        --accent-soft-ink: #C2C9FF;
+        --on-accent: #0C0F2B;
+        --link: #B3BCFF;
+        --link-hover: #D3D8FF;
+
+        color-scheme: dark;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    /* The other seven accents keep blue's relationships: each token sits at
+       the lightness blue's does, in the accent's own hue. */
+    :root[data-accent="indigo"] { --accent-dim: #C4C0EC; --accent: #5B4FE0; --accent-ink: #3D2FA6; --accent-soft: #EAE9FA; --accent-soft-ink: #3D2FA6; --link: #5B4FE0; --link-hover: #3D2FA6; }
+    :root[data-theme="dark"][data-accent="indigo"] { --accent: #988CED; --accent-ink: #C1B9F3; --accent-soft: #2D294B; --accent-soft-ink: #CDC7F5; --on-accent: #120E27; --link: #C1B9F3; --link-hover: #DBD6F8; }
+    :root[data-accent="purple"] { --accent-dim: #D2BAEB; --accent: #8B3FF0; --accent-ink: #5A0CA8; --accent-soft: #EFE7F9; --accent-soft-ink: #5A0CA8; --link: #8B3FF0; --link-hover: #5A0CA8; }
+    :root[data-theme="dark"][data-accent="purple"] { --accent: #B37EEB; --accent-ink: #D3B1F1; --accent-soft: #37244B; --accent-soft-ink: #DCC1F3; --on-accent: #180B26; --link: #D3B1F1; --link-hover: #E6D2F6; }
+    :root[data-accent="pink"] { --accent-dim: #EAB6BF; --accent: #D6307F; --accent-ink: #86014A; --accent-soft: #F9E5E9; --accent-soft-ink: #86014A; --link: #D6307F; --link-hover: #86014A; }
+    :root[data-theme="dark"][data-accent="pink"] { --accent: #E17490; --accent-ink: #F0ACB8; --accent-soft: #47202A; --accent-soft-ink: #F4BDC5; --on-accent: #230810; --link: #F0ACB8; --link-hover: #F7CFD4; }
+    :root[data-accent="red"] { --accent-dim: #EAB7B1; --accent: #D42A4B; --accent-ink: #8A0429; --accent-soft: #F9E6E4; --accent-soft-ink: #8A0429; --link: #D42A4B; --link-hover: #8A0429; }
+    :root[data-theme="dark"][data-accent="red"] { --accent: #E37872; --accent-ink: #F0AFA6; --accent-soft: #48211F; --accent-soft-ink: #F4BFB7; --on-accent: #240908; --link: #F0AFA6; --link-hover: #F7D1CB; }
+    :root[data-accent="orange"] { --accent-dim: #E0BEA6; --accent: #E0640F; --accent-ink: #763103; --accent-soft: #F5E8E0; --accent-soft-ink: #763103; --link: #E0640F; --link-hover: #763103; }
+    :root[data-theme="dark"][data-accent="orange"] { --accent: #D38752; --accent-ink: #E4B797; --accent-soft: #422714; --accent-soft-ink: #E9C6AB; --on-accent: #200D02; --link: #E4B797; --link-hover: #EFD6C3; }
+    :root[data-accent="green"] { --accent-dim: #B0CEC0; --accent: #138A55; --accent-ink: #055733; --accent-soft: #E3EEE9; --accent-soft-ink: #055733; --link: #138A55; --link-hover: #055733; }
+    :root[data-theme="dark"][data-accent="green"] { --accent: #67AD8F; --accent-ink: #A4CCBB; --accent-soft: #1B342A; --accent-soft-ink: #B6D6C9; --on-accent: #05170F; --link: #A4CCBB; --link-hover: #CAE1D8; }
+    :root[data-accent="graphite"] { --accent-dim: #C4C5CA; --accent: #4F5663; --accent-ink: #434954; --accent-soft: #EAEBED; --accent-soft-ink: #434954; --link: #4F5663; --link-hover: #434954; }
+    :root[data-theme="dark"][data-accent="graphite"] { --accent: #989BA5; --accent-ink: #C0C1C8; --accent-soft: #2D2E32; --accent-soft-ink: #CCCDD2; --on-accent: #121315; --link: #C0C1C8; --link-hover: #DADBDE; }
 
-    html, body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -webkit-text-size-adjust: 100%;
-        overscroll-behavior-y: none;
-    }
+    /* ================= Base ================= */
 
+    /* Box sizing follows the artboards: buttons and fields are border-box
+       (as the browser draws them there), and so is every element the design
+       marks that way below. Everything else is content-box, so a 270px panel
+       with 20px padding really is 310px wide, as drawn. */
+    * { -webkit-tap-highlight-color: transparent; }
+    button, input { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; background: var(--bg); }
     body {
-        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-        min-height: 100vh;
-        position: relative;
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--f-body);
     }
-
-    /* Ambient atmosphere behind everything */
-    .atmosphere {
-        position: fixed;
-        top: 0; right: 0; bottom: 0; left: 0;
-        pointer-events: none;
-        z-index: 0;
-        background:
-            radial-gradient(560px 420px at 12% -6%, var(--bg-glow-1), transparent 68%),
-            radial-gradient(640px 480px at 95% 12%, var(--bg-glow-2), transparent 70%);
-    }
-
-    a, button { cursor: pointer; }
+    button, input { font-family: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: default; }
+    a { color: var(--link); }
+    a:hover { color: var(--link-hover); }
     a, button, input, [role="button"] { touch-action: manipulation; }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    h1, h2, h3, p { margin: 0; }
 
-    :focus { outline: none; }
-    :focus-visible {
-        outline: 2px solid var(--focus-ring);
-        outline-offset: 2px;
-        border-radius: 10px;
-    }
+    .app { display: flex; min-height: 100vh; min-height: 100dvh; }
 
-    .container {
-        position: relative;
-        z-index: 1;
-        max-width: 680px;
-        margin: 0 auto;
-        padding: 12px 18px 56px;
-    }
+    /* ================= Sidebar ================= */
 
-    svg { display: block; }
-
-    /* Shared surface recipe */
-    .surface {
-        background: var(--bg-card);
-        -webkit-backdrop-filter: blur(20px) saturate(1.4);
-        backdrop-filter: blur(20px) saturate(1.4);
-        border: 0.5px solid var(--hairline);
-    }
-
-    /* ---------- Entrance choreography ---------- */
-    @media (prefers-reduced-motion: no-preference) {
-        .rise {
-            opacity: 0;
-            transform: translateY(14px);
-            animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-        @keyframes rise {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .d1 { animation-delay: 0.05s; }
-        .d2 { animation-delay: 0.12s; }
-        .d3 { animation-delay: 0.19s; }
-        .d4 { animation-delay: 0.26s; }
-        .d5 { animation-delay: 0.33s; }
-    }
-
-    /* ---------- Today-style header ---------- */
-    .eyebrow {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        font-size: 11.5px;
-        font-weight: 700;
-        letter-spacing: 0.09em;
-        text-transform: uppercase;
-        color: var(--text-3);
-        margin-top: 16px;
-    }
-    .eyebrow::before {
-        content: "";
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--hero-a), var(--hero-b));
-    }
-
-    .header-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-top: 3px;
-    }
-
-    .large-title {
-        font-size: 40px;
-        font-weight: 800;
-        letter-spacing: -0.025em;
-        line-height: 1.08;
-        color: var(--text);
-    }
-
-    .header-meta {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        margin-top: 8px;
-    }
-
-    .version-pill {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--tint-text);
-        background: var(--tint-bg);
-        border: 0.5px solid color-mix(in srgb, var(--tint) 25%, transparent);
-        border-radius: 999px;
-        padding: 4px 11px;
-    }
-
-    .subtitle { font-size: 13px; color: var(--text-2); }
-
-    .theme-btn {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        color: var(--text);
-        box-shadow: var(--shadow-sm);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .side {
+        width: 248px;
         flex-shrink: 0;
-        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease;
-    }
-    .theme-btn:active { transform: scale(0.88); }
-
-    @media (prefers-reduced-motion: no-preference) {
-        .icon-spin { animation: iconSpin 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
-        @keyframes iconSpin { from { transform: rotate(-90deg) scale(0.7); opacity: 0; } }
-    }
-
-    /* ---------- Collapsing mini header ---------- */
-    .mini-header {
-        position: fixed;
-        top: 0; left: 0; right: 0;
-        z-index: 40;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        min-height: 46px;
-        padding-top: env(safe-area-inset-top);
-        background: color-mix(in srgb, var(--bg) 80%, transparent);
-        -webkit-backdrop-filter: blur(20px) saturate(1.6);
-        backdrop-filter: blur(20px) saturate(1.6);
-        border-bottom: 0.5px solid var(--hairline);
-        cursor: pointer;
-        opacity: 0;
-        transform: translateY(-10px);
-        pointer-events: none;
-        transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .mini-header.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .mini-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
-    .mini-version {
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--tint-text);
-        background: var(--tint-bg);
-        border-radius: 999px;
-        padding: 2px 8px;
-    }
-    .mini-version:empty { display: none; }
-
-    @media (prefers-reduced-motion: reduce) {
-        .mini-header { transition: none; }
-    }
-
-    /* ---------- Announcement banner ---------- */
-    .announce {
-        display: none;
-        align-items: flex-start;
-        gap: 10px;
-        border-radius: 15px;
-        box-shadow: var(--shadow-sm);
-        padding: 12px 8px 12px 14px;
-        margin-top: 16px;
-    }
-    .announce.show { display: flex; }
-    .announce > svg { flex-shrink: 0; color: var(--tint); margin-top: 1px; }
-    .announce-text { flex: 1; font-size: 13.5px; line-height: 1.5; color: var(--text-2); }
-    .announce-close {
-        border: none;
-        background: none;
-        color: var(--text-3);
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        border-radius: 50%;
-        transition: background-color 0.2s ease;
-    }
-    .announce-close:active { background: var(--search-bg); }
-
-    /* ---------- Featured hero card (signature) ---------- */
-    .hero {
-        position: relative;
-        margin: 18px 0 24px;
-        border-radius: 24px;
-        padding: 22px 22px 20px;
-        color: #fff;
-        background:
-            radial-gradient(120% 160% at 8% 0%, var(--hero-a), transparent 60%),
-            radial-gradient(130% 170% at 100% 20%, var(--hero-c), transparent 55%),
-            linear-gradient(140deg, var(--hero-a), var(--hero-b) 55%, var(--hero-c));
-        box-shadow:
-            0 2px 8px rgba(37, 99, 235, 0.22),
-            0 18px 44px rgba(109, 40, 217, 0.28),
-            inset 0 1px 0 rgba(255, 255, 255, 0.28);
-        border: 0.5px solid rgba(255, 255, 255, 0.22);
-        overflow: hidden;
-    }
-
-    /* Fine film grain keeps the big gradients from banding */
-    .hero::after, .spotlight::after {
-        content: "";
-        position: absolute;
-        top: 0; right: 0; bottom: 0; left: 0;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-        opacity: 0.055;
-        mix-blend-mode: overlay;
-        pointer-events: none;
-    }
-
-    /* Ghost version numeral - the card's signature */
-    .hero-ghost {
-        position: absolute;
-        right: -6px;
-        bottom: -34px;
-        font-size: 148px;
-        font-weight: 800;
-        letter-spacing: -0.05em;
-        line-height: 1;
-        color: rgba(255, 255, 255, 0.13);
-        pointer-events: none;
-        -webkit-user-select: none;
-        user-select: none;
-    }
-
-    .hero::before {
-        content: "";
-        position: absolute;
-        top: -70%;
-        left: 18%;
-        width: 46%;
-        height: 240%;
-        background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.16), transparent);
-        transform: rotate(22deg);
-        pointer-events: none;
-    }
-
-    .hero-eyebrow {
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        opacity: 0.78;
-    }
-
-    .hero-title {
-        font-size: 25px;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        margin-top: 5px;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-    }
-
-    .hero-list {
-        list-style: none;
-        margin-top: 13px;
+        box-sizing: border-box;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        height: 100dvh;
+        overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        position: relative;
-    }
-
-    .hero-list li {
-        display: flex;
-        gap: 9px;
-        align-items: flex-start;
-        font-size: 14px;
-        line-height: 1.45;
-        opacity: 0.96;
-    }
-
-    .hero-list li svg { flex-shrink: 0; margin-top: 2px; opacity: 0.9; }
-
-    .hero-note { font-size: 12.5px; opacity: 0.82; margin-top: 13px; position: relative; }
-
-    /* ---------- Search ---------- */
-    .search-wrap { position: relative; margin: 0 0 13px; }
-
-    .search-icon {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-3);
-        pointer-events: none;
-    }
-
-    .search-input {
-        width: 100%;
-        border: 0.5px solid transparent;
-        background: var(--search-bg);
-        color: var(--text);
-        border-radius: 13px;
-        padding: 12px 42px 12px 38px;
-        font-size: 16px;
-        font-family: inherit;
-        -webkit-appearance: none;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-    }
-    .search-input::placeholder { color: var(--text-3); }
-    .search-input::-webkit-search-cancel-button { display: none; }
-    .search-input:focus {
-        border-color: color-mix(in srgb, var(--tint) 55%, transparent);
-        box-shadow: 0 0 0 3.5px color-mix(in srgb, var(--tint) 16%, transparent);
-        background: var(--bg-solid);
-    }
-
-    .search-clear {
-        position: absolute;
-        right: 4px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 40px;
-        height: 40px;
-        border: none;
-        background: none;
-        color: var(--text-3);
-        display: none;
-        align-items: center;
-        justify-content: center;
-    }
-    .search-clear.show { display: flex; }
-
-    /* ---------- Category chips ---------- */
-    .chips {
-        display: flex;
-        gap: 8px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding: 2px 2px 12px;
+        gap: 22px;
+        padding: calc(22px + env(safe-area-inset-top)) 16px calc(18px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+        background: var(--side);
+        border-right: 1px solid var(--side-line);
         scrollbar-width: none;
-        --fade-l: 0px;
-        --fade-r: 0px;
-        -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent 100%);
-        mask-image: linear-gradient(90deg, transparent 0, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent 100%);
     }
-    .chips::-webkit-scrollbar { display: none; }
+    .side::-webkit-scrollbar { display: none; }
 
-    .chip {
-        flex-shrink: 0;
-        font-family: inherit;
-        font-size: 13px;
-        font-weight: 600;
-        min-height: 36px;
-        padding: 0 15px;
-        border-radius: 999px;
-        color: var(--text-2);
-        box-shadow: var(--shadow-sm);
-        transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 6px; min-width: 0; }
+    .brand-tile {
+        width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+        background: var(--brand-bg); color: var(--brand-fg);
+        display: flex; align-items: center; justify-content: center;
     }
-    .chip:active { transform: scale(0.94); }
-    .chip.active {
-        background: var(--tint);
-        border-color: transparent;
-        color: #fff;
-        box-shadow: 0 4px 14px color-mix(in srgb, var(--tint) 40%, transparent);
-    }
+    .brand-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .brand-name { font-family: var(--f-display); font-weight: 800; font-size: 18px; letter-spacing: -0.02em; }
+    .brand-ver { font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
 
-    /* ---------- Section header ---------- */
-    .section-head {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        margin: 14px 2px 11px;
+    .nav-group { display: flex; flex-direction: column; gap: 4px; }
+    .nav-btn {
+        display: flex; align-items: center; gap: 12px;
+        height: 44px; padding: 0 12px;
+        border: 0; border-radius: 11px;
+        background: transparent; color: var(--ink-2);
+        font-size: 15px; font-weight: 600; text-align: left;
+    }
+    .nav-btn .lbl { flex: 1; }
+    .nav-btn[aria-current="page"] { background: var(--nav-on); box-shadow: var(--nav-on-shadow); color: var(--ink); }
+    .nav-btn[aria-current="page"] svg { stroke: var(--accent); }
+    .nav-count { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+    .nav-badge {
+        min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; box-sizing: border-box;
+        background: var(--accent); color: var(--on-accent);
+        font-size: 12px; font-weight: 700;
+        display: inline-flex; align-items: center; justify-content: center;
     }
 
-    .section-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
-    .section-tools { display: flex; align-items: center; gap: 10px; }
-    .sort-btn {
-        border: none;
-        background: none;
-        font-family: inherit;
-        font-size: 12.5px;
-        font-weight: 700;
-        color: var(--tint-text);
-        min-height: 36px;
-        padding: 0 4px;
+    .cats { display: flex; flex-direction: column; gap: 2px; }
+    .side-label {
+        padding: 0 12px 8px;
+        font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+        color: var(--muted);
     }
-    .section-count { font-size: 12px; font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; }
+    .cat-btn {
+        display: flex; align-items: center; gap: 12px;
+        height: 38px; padding: 0 12px;
+        border: 0; border-radius: 10px;
+        background: transparent; color: var(--ink-2);
+        font-size: 14px; font-weight: 500; text-align: left;
+    }
+    .cat-btn[aria-pressed="true"] { background: var(--nav-on); box-shadow: var(--nav-on-shadow); color: var(--ink); font-weight: 600; }
+    .cat-dot { width: 8px; height: 8px; border-radius: 3px; flex-shrink: 0; background: var(--c); }
+    [data-theme="dark"] .cat-dot { background: var(--cd); }
+    .cat-name { flex: 1; }
+    .cat-count { font-family: var(--f-mono); font-size: 12px; color: var(--muted-2); }
 
-    /* ---------- Spotlight feature card ---------- */
-    .spotlight {
-        position: relative;
-        border-radius: 24px;
-        padding: 18px 18px 20px;
-        margin: 4px 0 16px;
-        color: #fff;
-        overflow: hidden;
-        cursor: pointer;
-        box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.28);
-        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    .side-foot { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
+    .sync-card {
+        display: flex; align-items: center; gap: 11px;
+        padding: 10px;
+        border: 1px solid var(--sync-card-line); border-radius: 13px;
+        background: var(--sync-card); color: var(--ink); text-align: left;
     }
-    .spotlight:active { transform: scale(0.98); }
-    .spotlight::before {
-        content: "";
-        position: absolute;
-        top: -70%;
-        left: 24%;
-        width: 40%;
-        height: 240%;
-        background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.14), transparent);
-        transform: rotate(22deg);
-        pointer-events: none;
+    .sync-avatar {
+        width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+        background: var(--sync-avatar); color: var(--ink-2);
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--f-display); font-weight: 800; font-size: 16px;
     }
-    .spotlight-eyebrow {
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        opacity: 0.85;
-    }
-    .spotlight-body {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-top: 13px;
-        position: relative;
-    }
-    .spotlight-icon {
-        width: 66px;
-        height: 66px;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.22);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
-    }
-    .spotlight-info { flex: 1; min-width: 0; }
-    .spotlight-name {
-        font-size: 20px;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-    }
-    .spotlight-desc {
-        font-size: 13.5px;
-        line-height: 1.45;
-        opacity: 0.92;
-        margin-top: 3px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .spotlight .btn-get, .spotlight .btn-update { background: #fff; color: #0f172a; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18); }
-    .spotlight .btn-installed { border-color: rgba(255, 255, 255, 0.55); color: rgba(255, 255, 255, 0.9); }
+    .sync-avatar.is-initial { background: var(--brand-bg); color: var(--brand-fg); }
+    .sync-text { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+    .sync-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sync-sub { font-size: 12px; color: var(--muted); }
+    .sync-sub.is-alert, .set-sub.is-alert { color: var(--accent-ink); font-weight: 600; }
 
-    /* ---------- Inset grouped list ---------- */
-    .list {
-        border-radius: 20px;
-        box-shadow: var(--shadow-md);
-        overflow: hidden;
+    /* Settings sidebar */
+    .side-settings { gap: 18px; padding-bottom: calc(22px + env(safe-area-inset-bottom)); }
+    .back-btn {
+        align-self: flex-start;
+        display: flex; align-items: center; gap: 6px;
+        height: 40px; padding: 0 10px 0 6px;
+        border: 0; border-radius: 10px;
+        background: transparent; color: var(--link);
+        font-size: 15px; font-weight: 700;
     }
+    .set-title { margin: 0 6px; font-family: var(--f-display); font-weight: 800; font-size: 30px; letter-spacing: -0.03em; }
+    .set-items { display: flex; flex-direction: column; gap: 4px; }
+    .set-item {
+        display: flex; align-items: center; gap: 12px;
+        min-height: 52px; padding: 6px 12px;
+        border: 0; border-radius: 11px;
+        background: transparent; color: var(--ink-2); text-align: left;
+    }
+    .set-item[aria-current="page"] { background: var(--nav-on); box-shadow: var(--nav-on-shadow); color: var(--ink); }
+    .set-tile {
+        width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .t-brand { background: var(--brand-bg); color: var(--brand-fg); }
+    .t-accent { background: var(--accent); color: var(--on-accent); }
+    .t-gray { background: #6E6E78; color: #FFFFFF; }
+    .set-text { display: flex; flex-direction: column; gap: 1px; }
+    .set-name { font-size: 15px; font-weight: 600; }
+    .set-sub { font-size: 12px; color: var(--muted); }
 
-    .row {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        padding: 15px 16px;
-        position: relative;
-        cursor: pointer;
-        transition: background-color 0.18s ease;
-    }
-    .row:active { background: var(--search-bg); }
-    .row + .row::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 88px;
-        right: 0;
-        height: 0.5px;
-        background: var(--separator);
-    }
-    .row.eol .row-icon, .row.eol .row-name { opacity: 0.5; }
-    .row.eol .row-icon { filter: saturate(0.3); -webkit-filter: saturate(0.3); }
+    /* Phone-width header and tabs (shown below 760px only) */
+    .topbar, .tabs, .cat-strip { display: none; }
 
-    .row-icon {
-        width: 58px;
-        height: 58px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        flex-shrink: 0;
-        position: relative;
-        box-shadow:
-            0 4px 10px rgba(15, 23, 42, 0.18),
-            inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    /* ================= Shared pieces ================= */
+
+    .view { flex: 1; min-width: 0; min-height: 100vh; min-height: 100dvh; box-sizing: border-box; display: flex; flex-direction: column; }
+    .h1 { font-family: var(--f-display); font-weight: 800; font-size: 38px; letter-spacing: -0.03em; line-height: 1; }
+    .eyebrow, .mono-label {
+        font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+        color: var(--muted);
     }
-    .row-icon::after {
-        content: "";
-        position: absolute;
-        top: 0; right: 0; bottom: 0; left: 0;
-        border-radius: inherit;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 52%);
-        pointer-events: none;
+    .eyebrow { font-size: 11.5px; }
+    .mono-count { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+    .card { background: var(--card); border: 1px solid var(--card-line); border-radius: 16px; }
+
+    .icon-btn {
+        width: 44px; height: 44px; flex-shrink: 0; padding: 0;
+        border-radius: 12px; border: 1px solid var(--field-line);
+        background: var(--field); color: var(--ink);
+        display: flex; align-items: center; justify-content: center;
     }
 
-    .row-info { flex: 1; min-width: 0; }
-
-    .row-name {
-        font-size: 16px;
-        font-weight: 650;
-        letter-spacing: -0.01em;
-        line-height: 1.25;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+    .tile {
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        background: var(--t); color: #FFFFFF;
     }
-
-    .row-desc {
-        font-size: 13px;
-        color: var(--text-2);
-        line-height: 1.4;
-        margin-top: 2.5px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+    [data-theme="dark"] .tile { background: var(--td, var(--t)); }
+    .tile.has-img { overflow: hidden; }
+    .tile-img {
+        width: 100%; height: 100%;
+        object-fit: cover; border-radius: inherit; display: block;
+        pointer-events: none; -webkit-user-select: none; user-select: none;
     }
-
-    .row-cat {
-        font-size: 10.5px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--text-3);
-        margin-top: 4.5px;
-    }
+    /* Retired tools keep their icon, faded the way the list always showed them */
+    .row.is-eol .tile, .ret-card .tile.has-img { opacity: 0.5; filter: saturate(0.3); -webkit-filter: saturate(0.3); }
+    .tile-40 { width: 40px; height: 40px; border-radius: 10px; }
+    .tile-44 { width: 44px; height: 44px; border-radius: 11px; }
+    .tile-52 { width: 52px; height: 52px; border-radius: 13px; }
+    .tile-56 { width: 56px; height: 56px; border-radius: 14px; }
+    .tile-60 { width: 60px; height: 60px; border-radius: 15px; }
+    .tile-84 { width: 84px; height: 84px; border-radius: 21px; }
 
     .badge-new {
-        display: inline-block;
-        vertical-align: 2px;
-        margin-left: 7px;
-        font-size: 10px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        color: #fff;
-        background: linear-gradient(135deg, #ff375f, #ff9f0a);
-        border-radius: 5px;
-        padding: 2.5px 5.5px;
-        box-shadow: 0 2px 6px rgba(255, 55, 95, 0.35);
+        font-family: var(--f-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em;
+        padding: 4px 7px; border-radius: 5px;
+        background: var(--lime); color: #17171B;
     }
+    .badge-new.sm { font-size: 10px; padding: 3px 5px; border-radius: 4px; flex-shrink: 0; }
+    .badge-new.tight { letter-spacing: 0; } /* the detail panel's badge is drawn without tracking */
 
-    /* ---------- Action buttons ---------- */
-    .btn {
-        flex-shrink: 0;
-        border: none;
-        font-family: inherit;
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 0.02em;
-        border-radius: 999px;
-        min-width: 78px;
-        min-height: 32px;
-        padding: 7px 16px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
+    /* Install buttons and status pills */
+    .pill {
+        box-sizing: border-box;
+        display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+        border: 0; border-radius: 999px;
+        font-weight: 700; text-decoration: none; white-space: nowrap;
+        min-width: 76px; height: 36px; padding: 0 16px; font-size: 13.5px;
     }
-    a.btn:active { transform: scale(0.92); opacity: 0.75; }
+    .pill-get, .pill-get:hover { background: var(--accent-soft); color: var(--accent-soft-ink); }
+    .pill-upd, .pill-upd:hover { background: var(--accent); color: var(--on-accent); }
+    .pill-inst, .pill-ret { min-width: 0; padding: 0 12px; font-size: 13px; font-weight: 600; }
+    .pill-inst { border: 1px solid var(--pill-line); color: var(--pill-ink); background: transparent; }
+    .pill-ret { border: 1px dashed var(--retired-line); color: var(--retired); background: transparent; }
+    .pill.sz-spot { min-width: 80px; height: 38px; padding: 0 18px; font-size: 14px; }
+    .pill.sz-spot.pill-inst, .pill.sz-spot.pill-ret { min-width: 0; padding: 0 12px; font-size: 13px; }
+    .pill.sz-sm { min-width: 68px; padding: 0 14px; }
+    .pill.sz-sm.pill-inst, .pill.sz-sm.pill-ret { min-width: 0; padding: 0 12px; }
+    .pill.sz-xl { min-width: 96px; height: 42px; padding: 0 20px; font-size: 14px; }
 
-    .btn-get { background: var(--tint-bg); color: var(--tint-text); }
-    .btn-update {
-        background: var(--tint);
-        color: #fff;
-        box-shadow: 0 4px 12px color-mix(in srgb, var(--tint) 38%, transparent);
-    }
-    .btn-installed { background: none; color: var(--text-3); border: 1.5px solid var(--separator); cursor: default; }
-    .btn-eol { background: none; color: var(--red); border: 1.5px solid currentColor; opacity: 0.75; cursor: default; }
-
-    /* ---------- Favorites ---------- */
-    .fav-btn {
-        flex-shrink: 0;
-        width: 44px;
-        height: 44px;
-        margin: 0 -6px 0 -4px;
-        border: none;
-        background: none;
-        border-radius: 50%;
-        color: var(--text-3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), color 0.18s ease;
-    }
-    .fav-btn:active { transform: scale(0.85); }
-    .fav-btn.on { color: var(--tint); }
-
-    .chip-fav { display: inline-flex; align-items: center; gap: 6px; padding-right: 9px; }
-    .chip-count {
-        font-size: 11px;
-        font-weight: 700;
-        line-height: 1;
-        padding: 3px 6px;
-        border-radius: 999px;
-        background: var(--search-bg);
-        color: var(--text-3);
-        font-variant-numeric: tabular-nums;
-    }
-    .chip.active .chip-count { background: rgba(255, 255, 255, 0.24); color: #fff; }
-
-    .sheet-fav {
-        width: 100%;
-        margin-top: 10px;
-        min-height: 48px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        border: none;
-        border-radius: 15px;
-        font-family: inherit;
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--text-2);
-        background: var(--search-bg);
-        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), color 0.18s ease, background-color 0.18s ease;
-    }
-    .sheet-fav:active { transform: scale(0.97); }
-    .sheet-fav.on { color: var(--tint-text); background: var(--tint-bg); }
-
-    @media (prefers-reduced-motion: no-preference) {
-        .star-pop { animation: starPop 0.34s cubic-bezier(0.22, 1, 0.36, 1); }
-        @keyframes starPop {
-            0% { transform: scale(0.72); }
-            55% { transform: scale(1.13); }
-            100% { transform: scale(1); }
-        }
-    }
-
-    /* ---------- Account sheet ---------- */
-    .acct-form, .acct-panel { margin-top: 18px; display: flex; flex-direction: column; }
-    .acct-label {
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--text-3);
-        margin-bottom: 6px;
-    }
-    .acct-input {
-        font-family: inherit;
-        font-size: 16px; /* 16px keeps iOS from zooming the page on focus */
-        color: var(--text);
-        background: var(--search-bg);
-        border: 0.5px solid var(--hairline);
-        border-radius: 12px;
-        min-height: 46px;
-        padding: 0 14px;
-        margin-bottom: 14px;
-        -webkit-appearance: none;
-        appearance: none;
-    }
-    .acct-btn {
-        font-family: inherit;
-        font-size: 15px;
-        font-weight: 700;
-        color: #fff;
-        background: var(--tint);
-        border: none;
-        border-radius: 15px;
-        min-height: 48px;
-        box-shadow: 0 4px 12px color-mix(in srgb, var(--tint) 38%, transparent);
-        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
-    }
-    .acct-btn:active { transform: scale(0.97); opacity: 0.9; }
-    .acct-btn[disabled] { opacity: 0.5; box-shadow: none; }
-    .acct-alt {
-        font-family: inherit;
-        font-size: 13.5px;
-        font-weight: 700;
-        color: var(--tint-text);
-        background: none;
-        border: none;
-        min-height: 44px;
-        margin-top: 6px;
-    }
-    .acct-alt.quiet { color: var(--text-3); }
-    .acct-line {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        font-size: 14px;
-        color: var(--text-2);
-        padding: 12px 0;
-        border-bottom: 0.5px solid var(--separator);
-    }
-    .acct-line strong { color: var(--text); font-weight: 650; text-align: right; word-break: break-word; }
-    .acct-panel .acct-btn { margin-top: 20px; }
-    .acct-msg { font-size: 13px; line-height: 1.5; margin-top: 14px; color: var(--text-2); }
-    .acct-msg.error { color: var(--red); }
-    .acct-msg.ok { color: var(--tint-text); }
-
-    /* Six digits read off a phone screen and typed in a hurry, so the field
-       is large, monospaced and spaced out. */
-    .acct-code {
-        text-align: center;
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: 0.35em;
-        text-indent: 0.35em;
-    }
-
-    .acct-backups { margin-top: 22px; }
-    .acct-backups-head {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 8px;
-    }
-    .acct-backups-head span {
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--text-3);
-    }
-    .acct-backups-head strong {
-        font-size: 12px;
-        font-weight: 650;
-        color: var(--text-3);
-        font-variant-numeric: tabular-nums;
-    }
-    .backup-list { list-style: none; margin: 0; padding: 0; }
-    .backup-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        padding: 11px 0;
-        border-bottom: 0.5px solid var(--separator);
-    }
-    .backup-row:last-child { border-bottom: none; }
-    .backup-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-    .backup-info strong {
-        font-size: 14px;
-        font-weight: 650;
-        color: var(--text);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    .backup-info span { font-size: 12px; color: var(--text-3); }
-    .backup-actions { display: flex; gap: 6px; flex-shrink: 0; }
-    .backup-act {
-        font-family: inherit;
-        font-size: 12.5px;
-        font-weight: 700;
-        color: var(--tint-text);
-        background: var(--tint-bg);
-        border: none;
-        border-radius: 10px;
-        min-height: 34px;
-        padding: 0 11px;
-        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .backup-act:active { transform: scale(0.95); }
-    .backup-act.danger { color: var(--red); background: color-mix(in srgb, var(--red) 12%, transparent); }
-    /* Armed is the half second where one more tap does the thing, so it has to
-       read as a different button, not the same one with a new label. */
-    .backup-act.armed { color: #fff; background: var(--red); }
-    .backup-empty {
-        font-size: 13px;
-        line-height: 1.5;
-        color: var(--text-3);
-        padding: 4px 0 2px;
-    }
-    .acct-panel .acct-btn.ghost {
-        color: var(--tint-text);
-        background: var(--tint-bg);
-        box-shadow: none;
-        margin-top: 14px;
-        min-height: 44px;
-    }
-
-    /* ---------- Skeleton loading ---------- */
-    .skeleton-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; }
-    .sk { background: var(--skeleton); border-radius: 8px; }
-    .sk-icon { width: 58px; height: 58px; border-radius: 14px; flex-shrink: 0; }
-    .sk-lines { flex: 1; display: flex; flex-direction: column; gap: 7px; }
-    .sk-line-1 { height: 13px; width: 55%; }
-    .sk-line-2 { height: 10px; width: 85%; }
-    .sk-btn { width: 78px; height: 32px; border-radius: 999px; flex-shrink: 0; }
-
-    @media (prefers-reduced-motion: no-preference) {
-        .sk { animation: pulse 1.4s ease-in-out infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-    }
-
-    /* ---------- Detail sheet ---------- */
-    .sheet-overlay {
-        position: fixed;
-        top: 0; right: 0; bottom: 0; left: 0;
-        background: var(--overlay);
-        -webkit-backdrop-filter: blur(8px);
-        backdrop-filter: blur(8px);
-        z-index: 50;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.28s ease;
-    }
-    .sheet-overlay.open { opacity: 1; pointer-events: auto; }
-
-    .sheet {
-        position: fixed;
-        left: 0; right: 0; bottom: 0;
-        z-index: 51;
-        max-width: 680px;
-        margin: 0 auto;
-        background: var(--bg-solid);
-        border: 0.5px solid var(--hairline);
-        border-bottom: none;
-        border-radius: 26px 26px 0 0;
-        padding: 14px 22px calc(26px + env(safe-area-inset-bottom));
-        max-height: 85vh;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
-        transform: translateY(105%);
-        transition: transform 0.38s cubic-bezier(0.32, 0.72, 0.24, 1);
-        box-shadow: 0 -12px 60px rgba(0, 0, 0, 0.3);
-    }
-    .sheet.open { transform: translateY(0); }
-
-    @media (prefers-reduced-motion: reduce) {
-        .sheet, .sheet-overlay { transition: none; }
-    }
-
-    .sheet-grabber { width: 38px; height: 5px; border-radius: 3px; background: var(--separator); margin: 0 auto 18px; }
-    .sheet-close {
-        position: absolute;
-        top: 14px; right: 14px;
-        width: 38px; height: 38px;
-        border: none;
-        border-radius: 50%;
-        background: var(--search-bg);
-        color: var(--text-3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .sheet-head { display: flex; gap: 16px; align-items: center; }
-    .sheet-icon {
-        width: 76px; height: 76px;
-        border-radius: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        flex-shrink: 0;
-        position: relative;
-        box-shadow:
-            0 8px 22px rgba(15, 23, 42, 0.25),
-            inset 0 1px 0 rgba(255, 255, 255, 0.35);
-    }
-    .sheet-icon::after {
-        content: "";
-        position: absolute;
-        top: 0; right: 0; bottom: 0; left: 0;
-        border-radius: inherit;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 52%);
-        pointer-events: none;
-    }
-    .sheet-name { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
-    .sheet-cat { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); margin-top: 4px; }
-    .sheet-desc { font-size: 14.5px; line-height: 1.6; color: var(--text-2); margin-top: 15px; }
-    .sheet-action { margin-top: 20px; }
-
-    /* ---------- About sheet extras ---------- */
-    .about-heading {
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: -0.01em;
-        margin-top: 22px;
-        padding-top: 18px;
-        border-top: 0.5px solid var(--separator);
-    }
-    .about-bio { margin-top: 7px; font-size: 13.5px; }
-    .about-links { display: flex; gap: 8px; margin-top: 14px; }
-    .about-link {
-        flex: 1;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--tint-text);
-        background: var(--tint-bg);
-        border-radius: 11px;
-        min-height: 40px;
-        padding: 8px 10px;
-        text-decoration: none;
-        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
-    }
-    .about-link:active { transform: scale(0.95); opacity: 0.8; }
-    .sheet-copyright {
-        font-size: 11px;
-        color: var(--text-3);
-        text-align: center;
-        margin-top: 18px;
-        line-height: 1.5;
-    }
-    .sheet-action .btn { width: 100%; min-height: 48px; font-size: 15px; border-radius: 15px; }
-
-    /* ---------- Confirm alert ---------- */
-    .alert-overlay {
-        position: fixed;
-        top: 0; right: 0; bottom: 0; left: 0;
-        background: var(--overlay);
-        -webkit-backdrop-filter: blur(6px);
-        backdrop-filter: blur(6px);
-        z-index: 60;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.22s ease;
-    }
-    .alert-overlay.open { opacity: 1; pointer-events: auto; }
-
-    .alert {
-        position: fixed;
-        top: 50%; left: 50%;
-        z-index: 61;
-        width: 304px;
-        background: var(--bg-card);
-        -webkit-backdrop-filter: blur(24px) saturate(1.4);
-        backdrop-filter: blur(24px) saturate(1.4);
-        border: 0.5px solid var(--hairline);
-        border-radius: 24px;
-        box-shadow: var(--shadow-md);
-        text-align: center;
-        padding: 24px 20px 18px;
-        overflow: hidden;
-        opacity: 0;
-        pointer-events: none;
-        transform: translate(-50%, -50%) scale(1.08);
-        transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .alert.open { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
-
-    @media (prefers-reduced-motion: reduce) {
-        .alert, .alert-overlay { transition: none; }
-    }
-
-    .alert-icon {
-        width: 58px;
-        height: 58px;
-        border-radius: 14px;
-        margin: 0 auto 13px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        position: relative;
-        box-shadow:
-            0 6px 16px rgba(15, 23, 42, 0.22),
-            inset 0 1px 0 rgba(255, 255, 255, 0.35);
-    }
-    .alert-icon::after {
-        content: "";
-        position: absolute;
-        top: 0; right: 0; bottom: 0; left: 0;
-        border-radius: inherit;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 52%);
-        pointer-events: none;
-    }
-    .alert-title { font-size: 17px; font-weight: 800; letter-spacing: -0.015em; }
-    .alert-msg { font-size: 13.5px; color: var(--text-2); line-height: 1.5; margin-top: 6px; }
-    .alert-buttons { display: flex; gap: 9px; margin-top: 19px; }
-    .alert-btn {
-        flex: 1;
-        border: none;
-        font-family: inherit;
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--text);
-        background: var(--search-bg);
-        border-radius: 999px;
-        min-height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.18s ease;
-    }
-    .alert-btn:active { transform: scale(0.95); opacity: 0.8; }
-    .alert-btn-primary {
-        background: var(--tint);
-        color: #fff;
-        box-shadow: 0 4px 12px color-mix(in srgb, var(--tint) 38%, transparent);
-    }
-
-    /* ---------- Header actions ---------- */
-    .header-actions { display: flex; gap: 8px; flex-shrink: 0; }
-
-    /* ---------- Empty / footer ---------- */
-    .empty {
-        display: none;
-        text-align: center;
-        color: var(--text-2);
-        padding: 44px 20px;
-        font-size: 14px;
-        line-height: 1.6;
-    }
-    .empty strong { color: var(--text); }
-    .empty-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        background: var(--search-bg);
-        color: var(--text-3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 14px;
-    }
-    .empty-clear {
-        border: none;
-        background: var(--tint-bg);
-        color: var(--tint-text);
-        font-family: inherit;
-        font-size: 13px;
-        font-weight: 700;
-        border-radius: 999px;
-        min-height: 34px;
-        padding: 7px 18px;
-        margin-top: 14px;
-        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .empty-clear:active { transform: scale(0.94); }
-
-    .footer {
-        text-align: center;
-        font-size: 11.5px;
-        color: var(--text-3);
-        margin-top: 30px;
-        line-height: 1.7;
-    }
-    .abelid-view {
-        appearance: none;
-        border: 0;
-        cursor: pointer;
-        font: inherit;
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 11px;
-        margin-top: 10px;
-        color: var(--tint-text);
-        background: var(--tint-bg);
-        border-radius: 8px;
-        padding: 5px 10px;
-        word-break: break-all;
-    }
-
-    /* ---------- Pointer (iPad trackpad / mouse) hover states ---------- */
-    @media (hover: hover) and (pointer: fine) {
-        .row:hover { background: var(--search-bg); }
-        .chip:hover { color: var(--text); }
-        .chip.active:hover { color: #fff; }
-        a.btn:hover { transform: translateY(-1px); }
-        .btn-get:hover { background: color-mix(in srgb, var(--tint) 20%, transparent); }
-        .spotlight .btn-get:hover, .spotlight .btn-update:hover { background: #fff; }
-        .theme-btn:hover { box-shadow: var(--shadow-md); }
-        .announce-close:hover { background: var(--search-bg); }
-        .sheet-close:hover { color: var(--text); }
-        .sort-btn:hover, .about-link:hover, .empty-clear:hover, .alert-btn:hover { opacity: 0.8; }
-        .spotlight:hover { transform: translateY(-2px); }
-    }
-
-    /* ---------- Real shortcut icon tiles ---------- */
-    .tile-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: inherit;
-        display: block;
-        pointer-events: none;
-        -webkit-user-select: none;
-        user-select: none;
-    }
-    .has-img { overflow: hidden; }
-    /* Real art carries its own lighting - drop the synthetic gloss overlay */
-    .row-icon.has-img::after,
-    .sheet-icon.has-img::after,
-    .alert-icon.has-img::after,
-    .spotlight-icon.has-img::after { display: none; }
-    .row-icon.has-img {
-        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.16), inset 0 0 0 0.5px rgba(0, 0, 0, 0.05);
-    }
-    .sheet-icon.has-img {
-        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.25), inset 0 0 0 0.5px rgba(0, 0, 0, 0.05);
-    }
-    .alert-icon.has-img {
-        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22), inset 0 0 0 0.5px rgba(0, 0, 0, 0.05);
-    }
-    .spotlight-icon.has-img {
-        background: rgba(255, 255, 255, 0.16);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22), inset 0 0 0 0.5px rgba(255, 255, 255, 0.25);
-    }
-
-    /* ---------- Appearance panel ---------- */
-    .appearance-label {
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--text-3);
-        margin-top: 20px;
-    }
-    .appearance-label:first-of-type { margin-top: 4px; }
-
-    .seg {
-        display: flex;
-        gap: 4px;
-        background: var(--search-bg);
-        border-radius: 13px;
-        padding: 4px;
-        margin-top: 10px;
-    }
+    .seg { display: flex; gap: 2px; padding: 3px; border-radius: 11px; background: var(--seg); }
     .seg-btn {
-        flex: 1;
-        border: none;
-        background: none;
-        font-family: inherit;
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--text-2);
-        border-radius: 10px;
-        min-height: 38px;
-        transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        height: 34px; padding: 0 14px;
+        border: 0; border-radius: 8px;
+        background: transparent; color: var(--seg-off);
+        font-size: 13px; font-weight: 600;
     }
-    .seg-btn.active {
-        background: var(--bg-solid);
-        color: var(--text);
-        box-shadow: var(--shadow-sm);
+    .seg-btn[aria-pressed="true"] { background: var(--seg-on); box-shadow: var(--seg-on-shadow); color: var(--ink); font-weight: 700; }
+
+    .btn-ink, .btn-2 {
+        height: 46px; padding: 0 22px; border-radius: 12px;
+        font-size: 15px; font-weight: 700;
+    }
+    .btn-ink { border: 0; background: var(--ink-btn); color: var(--ink-btn-fg); }
+    .btn-2 { border: 1px solid var(--btn2-line); background: var(--btn2); color: var(--ink); }
+    .btn-lime { height: 42px; border-radius: 11px; border: 0; background: var(--lime); color: #17171B; font-size: 14px; font-weight: 700; }
+    .btn-quiet {
+        height: 44px; padding: 0 12px;
+        border: 0; border-radius: 10px;
+        background: transparent; color: var(--ink-3);
+        font-size: 14px; font-weight: 700;
     }
 
-    .swatches {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 14px;
-        margin-top: 12px;
+    @keyframes star-pop { 0% { transform: scale(1); } 40% { transform: scale(1.28); } 100% { transform: scale(1); } }
+    @media (prefers-reduced-motion: no-preference) {
+        .star-pop svg { animation: star-pop 0.32s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    }
+
+    /* ================= Discover ================= */
+
+    .view-discover { gap: 18px; padding: calc(26px + env(safe-area-inset-top)) calc(34px + env(safe-area-inset-right)) calc(34px + env(safe-area-inset-bottom)) 34px; }
+    .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+    .head-titles { display: flex; flex-direction: column; gap: 4px; }
+    .head-tools { display: flex; align-items: center; gap: 10px; }
+    .search { position: relative; display: flex; align-items: center; width: 300px; }
+    .search svg { position: absolute; left: 14px; color: var(--search-ic); pointer-events: none; }
+    .search input {
+        width: 100%; height: 44px; padding: 0 14px 0 40px;
+        border-radius: 12px; border: 1px solid var(--field-line);
+        background: var(--field); color: var(--ink);
+        font-size: 15px; font-weight: 500;
+        -webkit-appearance: none; appearance: none;
+    }
+
+    /* The artboard draws this bar 36px tall (its column squeezes it), so
+       that is the height here; longer notices grow around the text. */
+    .notice {
+        display: flex; align-items: center; gap: 12px;
+        min-height: 36px; padding: 0 8px 0 16px;
+        border-radius: 12px;
+        background: var(--notice); color: var(--notice-ink);
+    }
+    .notice-tag {
+        flex-shrink: 0;
+        font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+        padding: 4px 7px; border-radius: 5px;
+        background: var(--lime); color: #17171B;
+    }
+    .notice-text { flex: 1; font-size: 14px; padding: 9px 0; }
+    .notice-x {
+        width: 36px; height: 36px; flex-shrink: 0; padding: 0;
+        border: 0; border-radius: 9px;
+        background: transparent; color: var(--notice-x);
+        display: flex; align-items: center; justify-content: center;
+    }
+
+    .update-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .update-grid.n1 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .update-grid.n0 { grid-template-columns: minmax(0, 1fr); }
+    .whatsnew { display: flex; flex-direction: column; gap: 12px; padding: 18px 20px; }
+    .wn-head { display: flex; align-items: baseline; justify-content: space-between; }
+    .wn-ver { font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
+    .wn-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .wn-list li { display: flex; gap: 10px; font-size: 14px; line-height: 1.4; }
+    .wn-list svg { flex-shrink: 0; margin-top: 2px; color: var(--accent); }
+    .wn-foot { margin-top: auto; font-size: 12.5px; color: var(--muted); }
+
+    .spot {
+        display: flex; flex-direction: column; gap: 12px;
+        padding: 18px 20px; border-radius: 16px;
+        background: var(--s1); border: 1px solid var(--s2);
+        cursor: pointer;
+    }
+    [data-theme="dark"] .spot { background: var(--s3); border-color: var(--s4); }
+    .spot-top { display: flex; align-items: center; justify-content: space-between; }
+    .spot-body { display: flex; flex-direction: column; gap: 4px; }
+    .spot-name { font-family: var(--f-display); font-weight: 700; font-size: 19px; letter-spacing: -0.015em; }
+    .spot-desc { font-size: 13.5px; line-height: 1.45; color: var(--ink-2); }
+    .spot-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .spot-meta { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+
+    .all { display: flex; flex-direction: column; gap: 12px; padding-top: 6px; }
+    .list-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .list-title { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+    .list-title h2 { font-family: var(--f-display); font-weight: 700; font-size: 22px; letter-spacing: -0.02em; }
+
+    .list {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px;
+        padding: 4px 18px; border-radius: 16px;
+        background: var(--card); border: 1px solid var(--card-line);
+    }
+    .row {
+        display: flex; align-items: center; gap: 13px;
+        min-height: 70px; min-width: 0; box-sizing: border-box;
+        border-bottom: 1px solid var(--row-line);
+        cursor: pointer;
+    }
+    .row-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .row-top { display: flex; align-items: center; gap: 7px; min-width: 0; }
+    .row-name { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .row-sub { font-size: 13px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .star-btn {
+        width: 40px; height: 40px; flex-shrink: 0; padding: 0;
+        border: 0; border-radius: 10px;
+        background: transparent; color: var(--star-off);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .star-btn.on { color: var(--accent); }
+    .row-act { width: 104px; flex-shrink: 0; display: flex; justify-content: flex-end; }
+
+    .sk { background: var(--ghost); border-radius: 6px; }
+    .sk-tile { width: 44px; height: 44px; border-radius: 11px; flex-shrink: 0; }
+    .sk-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .sk-l1 { height: 13px; width: 55%; }
+    .sk-l2 { height: 11px; width: 80%; }
+    .sk-btn { width: 76px; height: 36px; border-radius: 999px; flex-shrink: 0; }
+    @media (prefers-reduced-motion: no-preference) {
+        .sk { animation: sk-pulse 1.4s ease-in-out infinite; }
+        @keyframes sk-pulse { 50% { opacity: 0.55; } }
+    }
+
+    .list-empty {
+        display: flex; flex-direction: column; align-items: center; gap: 8px;
+        padding: 36px 20px; text-align: center;
+    }
+    .list-empty strong { font-family: var(--f-display); font-weight: 700; font-size: 20px; letter-spacing: -0.015em; }
+    .list-empty p { font-size: 14.5px; color: var(--ink-3); margin-bottom: 8px; }
+
+    /* ================= Favorites ================= */
+
+    .view-favorites { padding: calc(26px + env(safe-area-inset-top)) calc(34px + env(safe-area-inset-right)) calc(34px + env(safe-area-inset-bottom)) 34px; }
+    .fav-headline { display: flex; align-items: baseline; gap: 12px; }
+    .fav-empty {
+        flex: 1;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+        padding: 24px 0; text-align: center;
+    }
+    .fav-art { position: relative; width: 220px; height: 150px; }
+    .fav-art .ghost-l, .fav-art .ghost-r {
+        position: absolute; top: 34px; width: 72px; height: 72px; border-radius: 18px;
+        background: var(--ghost);
+    }
+    .fav-art .ghost-l { left: 10px; transform: rotate(-10deg); }
+    .fav-art .ghost-r { right: 10px; transform: rotate(10deg); }
+    .fav-art .hero {
+        position: absolute; left: 66px; top: 14px; width: 88px; height: 88px; border-radius: 22px;
+        background: var(--brand-bg); color: var(--brand-fg);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 14px 30px rgba(23, 23, 27, 0.18);
+    }
+    .fav-copy { display: flex; flex-direction: column; gap: 8px; max-width: 420px; }
+    .fav-copy h2 { font-family: var(--f-display); font-weight: 700; font-size: 26px; letter-spacing: -0.02em; }
+    .fav-copy p { font-size: 15.5px; line-height: 1.55; color: var(--ink-3); }
+    .fav-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .hint {
+        align-self: center;
+        display: flex; align-items: center; gap: 10px;
+        padding: 12px 16px; border-radius: 12px;
+        background: var(--hint); color: var(--ink-2);
+        font-size: 13.5px;
+    }
+    .hint svg { color: var(--accent); flex-shrink: 0; }
+    .fav-full { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
+
+    /* ================= Library ================= */
+
+    .view-library { gap: 22px; padding: calc(26px + env(safe-area-inset-top)) calc(34px + env(safe-area-inset-right)) calc(34px + env(safe-area-inset-bottom)) 34px; }
+    .lib-head { display: flex; flex-direction: column; gap: 6px; }
+    .lib-head p { font-size: 15px; color: var(--ink-3); }
+    .lib-cols { display: flex; gap: 22px; align-items: flex-start; }
+    .lib-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+    .lib-sec { display: flex; flex-direction: column; gap: 10px; }
+    .lib-h2 {
+        display: flex; align-items: baseline; gap: 8px;
+        font-family: var(--f-display); font-weight: 700; font-size: 20px; letter-spacing: -0.02em;
+    }
+    .lib-h2 span { font-family: var(--f-mono); font-size: 12px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+    .upd-card {
+        display: flex; align-items: center; gap: 16px;
+        padding: 16px 18px; border-radius: 16px;
+        background: var(--card); border: 1.5px solid var(--accent);
+        cursor: pointer;
+    }
+    .upd-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .upd-name { font-size: 16px; font-weight: 700; }
+    .upd-text { font-size: 13.5px; color: var(--ink-3); }
+    .inst-list {
+        display: flex; flex-direction: column;
+        padding: 2px 18px; border-radius: 16px;
+        background: var(--card); border: 1px solid var(--card-line);
+    }
+    .inst-row { display: flex; align-items: center; gap: 14px; min-height: 68px; border-bottom: 1px solid var(--row-line); cursor: pointer; }
+    .inst-row:last-child { border-bottom: 0; }
+    .inst-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .inst-name { font-size: 15px; font-weight: 700; }
+    .inst-cat { font-size: 13px; color: var(--muted); }
+    .st-ready { font-size: 13px; font-weight: 700; color: var(--accent-ink); white-space: nowrap; }
+    .st-ok { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+    .ret-card {
+        display: flex; align-items: center; gap: 14px;
+        padding: 12px 18px; min-height: 68px; border-radius: 16px; box-sizing: border-box;
+        background: transparent; border: 1px dashed var(--ret-card-line);
+        cursor: pointer;
+    }
+    .ret-card .tile { background: var(--ret-tile); }
+    .ret-card .inst-name { color: var(--ink-3); }
+    .st-ret { font-size: 13px; font-weight: 600; color: var(--retired); }
+    .lib-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 26px 24px; }
+    .lib-empty strong { font-family: var(--f-display); font-weight: 700; font-size: 20px; letter-spacing: -0.015em; }
+    .lib-empty p { font-size: 14.5px; line-height: 1.5; color: var(--ink-3); margin-bottom: 8px; }
+
+    .glance {
+        width: 270px; flex-shrink: 0;
+        display: flex; flex-direction: column; gap: 14px;
+        padding: 20px; border-radius: 16px;
+        background: var(--panel); color: var(--panel-ink);
+    }
+    .glance-label { font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--lime); }
+    .glance-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .glance-stat { display: flex; flex-direction: column; gap: 2px; }
+    .glance-num { font-family: var(--f-display); font-weight: 800; font-size: 34px; letter-spacing: -0.03em; }
+    .glance-cap { font-size: 13px; color: var(--panel-muted); }
+    .glance p { font-size: 13px; line-height: 1.5; color: var(--panel-muted); }
+
+    /* ================= Detail slide-over ================= */
+
+    .scrim {
+        position: fixed; inset: 0; z-index: 50;
+        background: var(--scrim);
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.25s ease;
+    }
+    .scrim.open { opacity: 1; pointer-events: auto; }
+    .panel {
+        position: fixed; z-index: 51;
+        top: calc(12px + env(safe-area-inset-top));
+        right: calc(12px + env(safe-area-inset-right));
+        bottom: calc(12px + env(safe-area-inset-bottom));
+        width: 470px; max-width: calc(100vw - 24px);
+        display: flex; flex-direction: column;
+        border-radius: 22px;
+        background: var(--card); box-shadow: var(--sheet-shadow);
+        overflow: hidden; outline: none;
+        transform: translateX(calc(100% + 24px));
+        visibility: hidden;
+        transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0.34s;
+    }
+    [data-theme="dark"] .panel { box-shadow: var(--sheet-shadow), inset 0 0 0 1px var(--sheet-edge); }
+    [data-theme="dark"] .alert { box-shadow: var(--alert-shadow), inset 0 0 0 1px var(--sheet-edge); }
+    .panel.open { transform: none; visibility: visible; transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s; }
+    .p-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 18px 0 28px; }
+    .chip {
+        display: inline-flex; align-items: center; gap: 7px;
+        height: 28px; padding: 0 11px; border-radius: 999px;
+        background: var(--cb); color: var(--ci);
+        font-size: 12.5px; font-weight: 700;
+    }
+    [data-theme="dark"] .chip { background: var(--cbd); color: var(--cd); }
+    .chip .cat-dot { width: 7px; height: 7px; border-radius: 2px; }
+    .close-btn {
+        width: 44px; height: 44px; flex-shrink: 0; padding: 0;
+        border: 0; border-radius: 50%;
+        background: var(--tile-2); color: var(--ink-2);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .p-body {
+        flex: 1;
+        display: flex; flex-direction: column; gap: 22px;
+        padding: 10px 28px 28px;
+        overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+    }
+    .p-top { display: flex; align-items: center; gap: 18px; }
+    .p-top .tile { box-shadow: 0 10px 24px color-mix(in srgb, var(--t) 32%, transparent); }
+    .p-titles { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .p-name { font-family: var(--f-display); font-weight: 800; font-size: 28px; letter-spacing: -0.025em; line-height: 1.05; }
+    .p-status { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; color: var(--st); }
+    .p-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--sd); flex-shrink: 0; }
+    .p-actions { display: flex; gap: 10px; }
+    .p-primary {
+        flex: 1; height: 52px; border-radius: 14px; border: 0;
+        background: var(--accent); color: var(--on-accent);
+        font-size: 16px; font-weight: 700; text-decoration: none;
+        display: flex; align-items: center; justify-content: center; gap: 9px;
+    }
+    .p-primary:hover { color: var(--on-accent); }
+    .p-primary.is-static, .p-primary.is-static:hover { background: var(--tile-2); color: var(--ink-3); cursor: default; }
+    .p-fav {
+        width: 52px; height: 52px; flex-shrink: 0; padding: 0;
+        border: 0; border-radius: 14px;
+        background: var(--tile-2); color: var(--ink-2);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .p-fav.on { background: var(--accent-soft); color: var(--accent); }
+    .p-desc { font-size: 15.5px; line-height: 1.6; color: var(--ink-2); }
+    .facts {
+        margin: 0;
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px;
+        border-radius: 14px; overflow: hidden;
+        background: var(--dl-line); border: 1px solid var(--dl-line);
+    }
+    .fact { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; background: var(--dl); }
+    .fact dt { font-family: var(--f-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em; color: var(--muted); }
+    .fact dd { margin: 0; font-size: 14.5px; font-weight: 600; }
+    .p-sec { display: flex; flex-direction: column; gap: 10px; }
+    .p-h3 { font-family: var(--f-display); font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+    .pair {
+        display: flex; align-items: center; gap: 13px;
+        padding: 12px 14px; border-radius: 14px;
+        border: 1px solid var(--dl-line);
+        cursor: pointer;
+    }
+    .pair-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pair-name { display: flex; align-items: center; gap: 7px; font-size: 14.5px; font-weight: 700; }
+    .pair-note { font-size: 13px; color: var(--muted); }
+    .olds { display: flex; gap: 8px; flex-wrap: wrap; }
+    .old {
+        display: inline-flex; align-items: center; gap: 7px;
+        height: 36px; padding: 0 13px; border-radius: 10px;
+        background: var(--tile-2);
+        font-size: 13.5px; font-weight: 600;
+    }
+    .old span { color: var(--muted); font-weight: 500; }
+
+    /* ================= Install confirm ================= */
+
+    .alert-scrim { z-index: 60; background: var(--scrim-alert); }
+    .alert-wrap {
+        position: fixed; inset: 0; z-index: 61;
+        display: flex; align-items: center; justify-content: center;
+        padding: 16px; pointer-events: none;
+    }
+    .alert {
+        width: 420px; max-width: 100%;
+        display: flex; flex-direction: column; gap: 20px;
+        padding: 28px; border-radius: 24px; box-sizing: border-box;
+        background: var(--card);
+        box-shadow: var(--alert-shadow);
+        opacity: 0; transform: scale(0.96); visibility: hidden;
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+    }
+    .alert.open { opacity: 1; transform: none; visibility: visible; pointer-events: auto; transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s; }
+    .al-head { display: flex; align-items: center; gap: 14px; }
+    .al-titles { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .al-title { font-family: var(--f-display); font-weight: 800; font-size: 22px; letter-spacing: -0.02em; }
+    .al-msg { font-size: 14px; color: var(--ink-3); }
+    .steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; border-radius: 14px; background: var(--steps); }
+    .steps li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; font-size: 14px; border-bottom: 1px solid var(--steps-line); }
+    .steps li:last-child { border-bottom: 0; }
+    .steps strong { font-weight: 700; }
+    .step-n {
+        width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+        background: var(--brand-bg); color: var(--brand-fg);
+        font-family: var(--f-mono); font-size: 12px; font-weight: 600;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .al-btns { display: flex; gap: 10px; }
+    .btn-cancel {
+        flex: 1; height: 50px; border-radius: 13px; border: 0;
+        background: var(--tile-2); color: var(--ink);
+        font-size: 15.5px; font-weight: 700;
+    }
+    .btn-go, .btn-go:hover {
+        flex: 1.4; height: 50px; border-radius: 13px;
+        background: var(--accent); color: var(--on-accent);
+        font-size: 15.5px; font-weight: 700; text-decoration: none;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    /* ================= Settings pages ================= */
+
+    .view-settings { padding: calc(40px + env(safe-area-inset-top)) calc(56px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) 56px; }
+    .view-appearance { gap: 30px; }
+    .set-head { display: flex; flex-direction: column; gap: 6px; }
+    .set-head h2, .sd-head h2, .si-head h2 { font-family: var(--f-display); font-weight: 800; font-size: 34px; letter-spacing: -0.03em; }
+    .set-head p { font-size: 15px; color: var(--ink-3); }
+    .set-sec { display: flex; flex-direction: column; gap: 14px; }
+    .sec-label { font-family: var(--f-mono); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); }
+
+    .theme-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .theme-card {
+        display: flex; flex-direction: column; gap: 12px;
+        padding: 12px; border-radius: 16px;
+        border: 2px solid var(--card-line); background: var(--card);
+        text-align: left; color: var(--ink);
+    }
+    .theme-card[aria-pressed="true"] { border-color: var(--accent); }
+    .tc-preview { display: flex; height: 118px; border-radius: 10px; overflow: hidden; }
+    .tc-preview span { display: flex; }
+    .tc-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .tc-text { display: flex; flex-direction: column; gap: 1px; }
+    .tc-name { font-size: 15px; font-weight: 700; }
+    .tc-sub { font-size: 12.5px; color: var(--muted); }
+    .radio {
+        width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; box-sizing: border-box;
+        border: 2px solid var(--radio-off);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .radio.on { border: 0; background: var(--accent); color: var(--on-accent); }
+
+    .accent-row { display: flex; gap: 22px; align-items: stretch; }
+    .swatch-grid {
+        flex: 1;
+        display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;
+        padding: 16px; border-radius: 16px;
+        background: var(--card); border: 1px solid var(--card-line);
     }
     .swatch {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        position: relative;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 2px 6px rgba(15, 23, 42, 0.18);
-        transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+        display: flex; flex-direction: column; align-items: center; gap: 7px;
+        padding: 8px 4px; border: 0; border-radius: 12px;
+        background: transparent;
     }
-    .swatch:active { transform: scale(0.9); }
-    .swatch.active {
-        box-shadow: 0 0 0 2.5px var(--bg-solid), 0 0 0 5px var(--tint), 0 2px 6px rgba(15, 23, 42, 0.18);
+    .sw-dot {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: var(--sw); color: #FFFFFF;
+        display: flex; align-items: center; justify-content: center;
     }
-    .swatch.active::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 15px;
-        height: 15px;
-        transform: translate(-50%, -50%);
-        background: no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+    .swatch[aria-pressed="true"] .sw-dot { box-shadow: 0 0 0 3px var(--card), 0 0 0 5.5px var(--sw); }
+    .sw-name { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+    .preview-card {
+        width: 300px; flex-shrink: 0; box-sizing: border-box;
+        display: flex; flex-direction: column; gap: 12px;
+        padding: 16px; border-radius: 16px;
+        background: var(--card); border: 1px solid var(--card-line);
+    }
+    .pv-label { font-family: var(--f-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); }
+    .pv-row { display: flex; align-items: center; gap: 11px; }
+    .pv-row .pv-name { flex: 1; font-size: 14.5px; font-weight: 700; }
+    .pv-row > svg { color: var(--accent); }
+    .pv-btns { display: flex; gap: 8px; }
+    .pv-btns span {
+        flex: 1; height: 36px; border-radius: 999px;
+        font-size: 13.5px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .pv-get { background: var(--accent-soft); color: var(--accent-soft-ink); }
+    .pv-upd { background: var(--accent); color: var(--on-accent); }
+    .pv-note { font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+
+    /* About */
+    .view-about { flex-direction: row; gap: 28px; }
+    .about-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+    .about-top { display: flex; align-items: center; gap: 20px; }
+    .about-logo {
+        width: 92px; height: 92px; border-radius: 24px; flex-shrink: 0;
+        background: var(--brand-bg); color: var(--brand-fg);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .about-titles { display: flex; flex-direction: column; gap: 6px; }
+    .about-titles h2 { font-family: var(--f-display); font-weight: 800; font-size: 34px; letter-spacing: -0.03em; line-height: 1; }
+    .about-ver { font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+    .about-p { font-size: 16px; line-height: 1.6; color: var(--ink-2); max-width: 520px; }
+    .dev-card { display: flex; flex-direction: column; gap: 12px; padding: 20px; }
+    .dev-who { display: flex; flex-direction: column; gap: 4px; }
+    .dev-name { font-family: var(--f-display); font-weight: 700; font-size: 20px; letter-spacing: -0.015em; }
+    .dev-bio { font-size: 14.5px; line-height: 1.55; color: var(--ink-3); }
+    .links { display: flex; flex-direction: column; margin-top: 4px; border-top: 1px solid var(--row-line); }
+    .link-row, .link-row:hover {
+        display: flex; align-items: center; gap: 12px;
+        min-height: 50px; border-bottom: 1px solid var(--row-line);
+        color: var(--ink); text-decoration: none;
+    }
+    .link-row:last-child { border-bottom: 0; }
+    .link-row > svg:first-child { color: var(--accent); }
+    .lr-name { flex: 1; font-size: 15px; font-weight: 600; }
+    .lr-host { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); }
+    .lr-arrow { color: var(--muted-2); }
+    .about-side { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+    .id-card {
+        display: flex; flex-direction: column; gap: 12px;
+        padding: 20px; border-radius: 16px;
+        background: var(--panel); color: var(--panel-ink);
+    }
+    .id-card h3 { font-family: var(--f-mono); font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em; color: var(--lime); }
+    .id-block { display: flex; flex-direction: column; gap: 4px; }
+    .id-cap { font-size: 13px; color: var(--panel-muted); }
+    .id-value { font-family: var(--f-mono); font-size: 14px; font-weight: 600; word-break: break-all; }
+    .id-state { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--panel-muted); }
+    .id-state i { width: 8px; height: 8px; border-radius: 50%; background: var(--dot, var(--lime)); }
+    .id-copy {
+        height: 42px; border-radius: 11px;
+        border: 1px solid var(--panel-btn-line); background: var(--panel-btn); color: var(--panel-ink);
+        font-size: 14px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .id-copy:disabled { opacity: 0.5; }
+    .id-note { font-size: 12.5px; line-height: 1.45; color: var(--panel-muted); }
+    .copyright { margin: auto 0 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
+
+    /* Account and Sync */
+    .view-sync { padding: 0; }
+    .si-wrap {
+        flex: 1;
+        display: flex; gap: 32px; align-items: flex-start;
+        padding: calc(40px + env(safe-area-inset-top)) calc(56px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) 56px;
+    }
+    .si-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+    .si-head { display: flex; flex-direction: column; gap: 6px; }
+    .si-head p { font-size: 15.5px; line-height: 1.5; color: var(--ink-3); max-width: 460px; }
+    .si-form {
+        display: flex; flex-direction: column; gap: 16px;
+        padding: 24px; border-radius: 18px; max-width: 480px;
+        background: var(--card); border: 1px solid var(--card-line);
+    }
+    .seg2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; padding: 3px; border-radius: 11px; background: var(--seg-2); }
+    .seg2 button {
+        height: 38px; border: 0; border-radius: 8px;
+        background: transparent; color: var(--seg-off);
+        font-size: 14px; font-weight: 600;
+    }
+    .seg2 button[aria-pressed="true"] { background: var(--seg-on); box-shadow: var(--seg-on-shadow); color: var(--ink); font-weight: 700; }
+    .field { display: flex; flex-direction: column; gap: 7px; }
+    .field label { font-size: 13.5px; font-weight: 700; }
+    .input {
+        width: 100%; height: 50px; padding: 0 16px;
+        border-radius: 12px; border: 1px solid var(--input-line);
+        background: var(--input); color: var(--ink);
+        font-size: 16px;
+        -webkit-appearance: none; appearance: none; outline: none;
+    }
+    .input:focus { border: 1.5px solid var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); background: var(--card); }
+    .pw-wrap { position: relative; display: flex; align-items: center; }
+    .pw-wrap .input { padding-right: 64px; }
+    .pw-show {
+        position: absolute; right: 6px;
+        height: 38px; padding: 0 10px;
+        border: 0; border-radius: 8px;
+        background: transparent; color: var(--accent-ink);
+        font-size: 13.5px; font-weight: 700;
+    }
+    .btn-primary {
+        width: 100%; height: 52px; border-radius: 13px; border: 0;
+        background: var(--accent); color: var(--on-accent);
+        font-size: 16px; font-weight: 700;
+    }
+    .btn-primary:disabled { background: var(--accent-dim); }
+    [data-theme="dark"] .btn-primary:disabled { background: var(--accent); opacity: 0.35; }
+    .si-note { display: flex; gap: 9px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+    .si-note svg { flex-shrink: 0; margin-top: 1px; color: var(--muted-2); }
+    .form-msg {
+        padding: 10px 12px; border-radius: 10px;
+        background: var(--hint); color: var(--ink-2);
+        font-size: 13.5px; line-height: 1.45;
+    }
+    .form-msg.ok { background: var(--ok-bg); color: var(--ok-ink); }
+    .form-msg.error { background: var(--bad-bg); color: var(--bad-ink); }
+    .what-syncs {
+        width: 300px; flex-shrink: 0; margin-top: 98px;
+        display: flex; flex-direction: column; gap: 16px;
+        padding: 22px; border-radius: 18px;
+        background: var(--panel); color: var(--panel-ink);
+    }
+    .ws-label { font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: var(--lime); }
+    .ws-row { display: flex; gap: 12px; }
+    .ws-ic {
+        width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+        background: var(--panel-tile); color: var(--lime);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .ws-text { display: flex; flex-direction: column; gap: 2px; }
+    .ws-title { font-size: 15px; font-weight: 700; }
+    .ws-body { font-size: 13px; line-height: 1.45; color: var(--panel-muted); }
+
+    .code-wrap {
+        flex: 1;
+        display: flex; align-items: center; justify-content: center;
+        padding: calc(40px + env(safe-area-inset-top)) 40px calc(40px + env(safe-area-inset-bottom));
+    }
+    .code-card {
+        width: 480px; max-width: 100%; box-sizing: border-box;
+        display: flex; flex-direction: column; align-items: center; gap: 22px;
+        padding: 36px 36px 28px; border-radius: 22px;
+        background: var(--card); border: 1px solid var(--card-line);
+        text-align: center;
+    }
+    .code-tile {
+        width: 64px; height: 64px; border-radius: 17px;
+        background: var(--brand-bg); color: var(--brand-fg);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .code-copy { display: flex; flex-direction: column; gap: 8px; }
+    .code-copy h2 { font-family: var(--f-display); font-weight: 800; font-size: 28px; letter-spacing: -0.025em; }
+    .code-copy p { font-size: 15px; line-height: 1.5; color: var(--ink-3); }
+    .digits { margin: 0; padding: 0; border: 0; display: flex; gap: 10px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .digit {
+        width: 56px; height: 68px; padding: 0;
+        border-radius: 13px; border: 1px solid var(--input-line);
+        background: var(--input); color: var(--ink);
+        text-align: center;
+        font-family: var(--f-mono); font-size: 28px; font-weight: 600;
+        caret-color: var(--accent);
+        -webkit-appearance: none; appearance: none; outline: none;
+    }
+    .digit:focus { border: 2px solid var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); background: var(--card); }
+    .code-card .form-msg { align-self: stretch; }
+
+    .sd-wrap {
+        display: flex; flex-direction: column; gap: 20px;
+        padding: calc(36px + env(safe-area-inset-top)) calc(48px + env(safe-area-inset-right)) calc(36px + env(safe-area-inset-bottom)) 48px;
+    }
+    .sd-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 41px; }
+    .status-pill {
+        display: inline-flex; align-items: center; gap: 8px;
+        min-height: 38px; padding: 0 14px; border-radius: 999px; box-sizing: border-box;
+        background: var(--hint); color: var(--ink-2);
+        font-size: 14px; font-weight: 700;
+        max-width: 60%;
+    }
+    .status-pill span { padding: 9px 0; } /* one line sits as drawn; a long error wraps inside */
+    .status-pill.ok { background: var(--ok-bg); color: var(--ok-ink); }
+    .status-pill.error { background: var(--bad-bg); color: var(--bad-ink); }
+    .status-pill svg { flex-shrink: 0; }
+    .sd-cols { display: flex; gap: 22px; align-items: flex-start; }
+    .sd-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+    .acct-card { display: flex; flex-direction: column; gap: 18px; padding: 22px; border-radius: 18px; }
+    .acct-top { display: flex; align-items: center; gap: 14px; }
+    .avatar {
+        width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+        background: var(--brand-bg); color: var(--brand-fg);
+        font-family: var(--f-display); font-weight: 800; font-size: 22px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .acct-who { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .acct-email { font-size: 17px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .acct-sub { font-size: 13.5px; color: var(--muted); }
+    .btn-sync {
+        height: 44px; padding: 0 20px; border-radius: 12px; border: 0;
+        background: var(--accent); color: var(--on-accent);
+        font-size: 14.5px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .stats {
+        margin: 0;
+        display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px;
+        border-radius: 13px; overflow: hidden;
+        background: var(--dl-line); border: 1px solid var(--dl-line);
+    }
+    .stat { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; background: var(--dl); }
+    .stat dt { font-family: var(--f-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.07em; color: var(--muted); }
+    .stat dd { margin: 0; font-family: var(--f-display); font-size: 24px; font-weight: 800; }
+    .bk-card { display: flex; flex-direction: column; gap: 14px; padding: 22px; border-radius: 18px; }
+    .bk-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .bk-head h3 { font-family: var(--f-display); font-weight: 700; font-size: 20px; letter-spacing: -0.015em; }
+    .bk-meter { display: flex; align-items: center; gap: 10px; }
+    .slots { display: flex; gap: 4px; }
+    .slot { width: 18px; height: 8px; border-radius: 3px; background: var(--ghost); }
+    .slot.on { background: var(--accent); }
+    .bk-count { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); }
+    .bk-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; }
+    .bk-row { display: flex; align-items: center; gap: 14px; min-height: 64px; border-bottom: 1px solid var(--row-line); }
+    .bk-row:last-child { border-bottom: 0; }
+    .bk-ic {
+        width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+        background: var(--tile-2); color: var(--ink-2);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .bk-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .bk-title { font-size: 15px; font-weight: 700; }
+    .bk-when { font-size: 13px; color: var(--muted); }
+    .bk-when.warn { color: var(--bad-ink); font-weight: 600; }
+    .bk-when.ask { color: var(--accent-ink); font-weight: 600; }
+    .bk-btn { height: 38px; padding: 0 14px; border-radius: 10px; border: 0; font-size: 13.5px; font-weight: 700; flex-shrink: 0; }
+    .bk-btn.restore { background: var(--accent-soft); color: var(--accent-soft-ink); }
+    .bk-btn.remove { background: var(--bad-bg); color: var(--bad-ink); }
+    .bk-btn.restore.armed { background: var(--accent); color: var(--on-accent); }
+    .bk-btn.remove.armed { background: var(--bad-solid); color: #FFFFFF; }
+    .bk-empty { font-size: 14px; line-height: 1.5; color: var(--muted); padding: 4px 0 2px; }
+    .bk-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .btn-add {
+        height: 44px; padding: 0 18px; border-radius: 12px;
+        border: 1px solid var(--btn2-line); background: var(--btn2); color: var(--ink);
+        font-size: 14.5px; font-weight: 700;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .btn-add:disabled { opacity: 0.5; }
+    .how {
+        width: 250px; flex-shrink: 0;
+        display: flex; flex-direction: column; gap: 12px;
+        padding: 20px; border-radius: 18px;
+        background: var(--hint);
+    }
+    [data-theme="dark"] .how { box-shadow: inset 0 0 0 1px var(--card-line); }
+    /* The ink panels sit on a near-black page in dark mode, so they get an edge there */
+    [data-theme="dark"] .glance, [data-theme="dark"] .id-card, [data-theme="dark"] .what-syncs { box-shadow: inset 0 0 0 1px var(--panel-line); }
+    .how p { font-size: 14px; line-height: 1.55; color: var(--ink-2); }
+
+    @media (prefers-reduced-motion: reduce) {
+        .panel, .panel.open, .scrim, .alert, .alert.open { transition: none; }
     }
 
-    /* ---------- Accent themes (blue = default :root) ---------- */
-    :root[data-accent="indigo"] { --tint:#5e5ce6; --tint-bg:rgba(94,92,230,0.12); --tint-text:#4b49c8; --focus-ring:#5e5ce6; --hero-a:#4f46e5; --hero-b:#7c3aed; --hero-c:#2563eb; }
-    [data-theme="dark"][data-accent="indigo"] { --tint:#7d7aff; --tint-bg:rgba(125,122,255,0.20); --tint-text:#a6a3ff; --focus-ring:#7d7aff; --hero-a:#4338ca; --hero-b:#6d28d9; --hero-c:#1d4ed8; }
+    /* ================= Narrower screens =================
+       The artboards are landscape iPad. Portrait iPad keeps the sidebar and
+       stacks the side panels; phone width folds the sidebar into a header. */
 
-    :root[data-accent="purple"] { --tint:#8b3ff0; --tint-bg:rgba(139,63,240,0.12); --tint-text:#7a29d8; --focus-ring:#8b3ff0; --hero-a:#7c3aed; --hero-b:#c026d3; --hero-c:#db2777; }
-    [data-theme="dark"][data-accent="purple"] { --tint:#b57bff; --tint-bg:rgba(181,123,255,0.20); --tint-text:#c99bff; --focus-ring:#b57bff; --hero-a:#6d28d9; --hero-b:#a21caf; --hero-c:#be185d; }
+    @media (max-width: 1060px) {
+        .list { grid-template-columns: minmax(0, 1fr); }
+    }
 
-    :root[data-accent="pink"] { --tint:#e5308a; --tint-bg:rgba(229,48,138,0.12); --tint-text:#cc1f77; --focus-ring:#e5308a; --hero-a:#db2777; --hero-b:#e11d48; --hero-c:#f97316; }
-    [data-theme="dark"][data-accent="pink"] { --tint:#ff5fa8; --tint-bg:rgba(255,95,168,0.20); --tint-text:#ff8bc0; --focus-ring:#ff5fa8; --hero-a:#be185d; --hero-b:#9f1239; --hero-c:#c2410c; }
+    @media (max-width: 980px) {
+        .view-discover, .view-favorites, .view-library { padding-left: 28px; padding-right: calc(28px + env(safe-area-inset-right)); }
+        .update-grid, .update-grid.n1 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .update-grid .whatsnew { grid-column: 1 / -1; }
+        .update-grid.n0 { grid-template-columns: minmax(0, 1fr); }
+        .search { width: 230px; }
+        .lib-cols, .si-wrap, .sd-cols, .view-about, .accent-row { flex-direction: column; align-items: stretch; }
+        .glance, .what-syncs, .how, .about-side, .preview-card { width: auto; }
+        .what-syncs { margin-top: 0; }
+        .glance-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .view-settings, .si-wrap { padding-left: 32px; padding-right: calc(32px + env(safe-area-inset-right)); padding-top: calc(32px + env(safe-area-inset-top)); }
+        .sd-wrap { padding-left: 32px; padding-right: calc(32px + env(safe-area-inset-right)); padding-top: calc(32px + env(safe-area-inset-top)); }
+        .si-form { max-width: none; }
+        .copyright { margin-top: 0; }
+        .view-sync { padding: 0; }
+    }
 
-    :root[data-accent="red"] { --tint:#e0245e; --tint-bg:rgba(224,36,94,0.12); --tint-text:#c4164c; --focus-ring:#e0245e; --hero-a:#e11d48; --hero-b:#db2777; --hero-c:#f97316; }
-    [data-theme="dark"][data-accent="red"] { --tint:#ff5470; --tint-bg:rgba(255,84,112,0.20); --tint-text:#ff8496; --focus-ring:#ff5470; --hero-a:#9f1239; --hero-b:#9d174d; --hero-c:#c2410c; }
+    @media (max-width: 760px) {
+        .app { flex-direction: column; }
+        .side { display: none; }
 
-    :root[data-accent="orange"] { --tint:#f97316; --tint-bg:rgba(249,115,22,0.14); --tint-text:#c2570b; --focus-ring:#f97316; --hero-a:#f97316; --hero-b:#db2777; --hero-c:#7c3aed; }
-    [data-theme="dark"][data-accent="orange"] { --tint:#ff9f47; --tint-bg:rgba(255,159,71,0.22); --tint-text:#ffb877; --focus-ring:#ff9f47; --hero-a:#c2410c; --hero-b:#9d174d; --hero-c:#6d28d9; }
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            position: sticky; top: 0; z-index: 20;
+            padding: calc(12px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 12px calc(16px + env(safe-area-inset-left));
+            background: var(--side); border-bottom: 1px solid var(--side-line);
+        }
+        .tabs {
+            display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px;
+            margin: 14px 16px 0; padding: 3px; border-radius: 11px;
+            background: var(--seg);
+        }
+        .tab {
+            height: 38px; border: 0; border-radius: 8px;
+            background: transparent; color: var(--seg-off);
+            font-size: 14px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .tab[aria-current="page"] { background: var(--seg-on); box-shadow: var(--seg-on-shadow); color: var(--ink); font-weight: 700; }
+        .tab .nav-badge { min-width: 20px; height: 20px; padding: 0 6px; font-size: 11px; }
 
-    :root[data-accent="green"] { --tint:#0f9d58; --tint-bg:rgba(15,157,88,0.13); --tint-text:#0b7f46; --focus-ring:#0f9d58; --hero-a:#059669; --hero-b:#0891b2; --hero-c:#2563eb; }
-    [data-theme="dark"][data-accent="green"] { --tint:#34d17d; --tint-bg:rgba(52,209,125,0.20); --tint-text:#6ee0a2; --focus-ring:#34d17d; --hero-a:#047857; --hero-b:#0e7490; --hero-c:#1d4ed8; }
+        .view { min-height: 0; }
+        .view-discover, .view-favorites, .view-library {
+            padding: 18px calc(16px + env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+        }
+        .h1 { font-size: 32px; }
+        .page-head { flex-direction: column; align-items: stretch; gap: 14px; }
+        .head-tools .search { flex: 1; width: auto; }
 
-    :root[data-accent="graphite"] { --tint:#5b6473; --tint-bg:rgba(91,100,115,0.14); --tint-text:#454c58; --focus-ring:#5b6473; --hero-a:#334155; --hero-b:#475569; --hero-c:#64748b; }
-    [data-theme="dark"][data-accent="graphite"] { --tint:#9aa3b2; --tint-bg:rgba(154,163,178,0.22); --tint-text:#b8c0cd; --focus-ring:#9aa3b2; --hero-a:#334155; --hero-b:#475569; --hero-c:#64748b; }
+        .cat-strip {
+            display: flex; gap: 8px; overflow-x: auto;
+            margin: 0 -16px; padding: 0 16px;
+            scrollbar-width: none;
+        }
+        .cat-strip::-webkit-scrollbar { display: none; }
+        .cat-chip {
+            flex-shrink: 0;
+            display: flex; align-items: center; gap: 8px;
+            height: 38px; padding: 0 13px;
+            border-radius: 10px; border: 1px solid var(--card-line);
+            background: var(--card); color: var(--ink-2);
+            font-size: 14px; font-weight: 500; white-space: nowrap;
+        }
+        .cat-chip[aria-pressed="true"] { background: var(--ink-btn); border-color: var(--ink-btn); color: var(--ink-btn-fg); font-weight: 600; }
+        .cat-chip .cat-count { color: inherit; opacity: 0.7; }
+
+        .update-grid, .update-grid.n1, .update-grid.n0 { grid-template-columns: minmax(0, 1fr); }
+        .list { padding: 2px 14px; }
+        .row { gap: 11px; }
+        .row-act { width: auto; }
+        .fav-empty { padding: 40px 0; }
+        .glance-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .upd-card { flex-wrap: wrap; }
+
+        .panel {
+            top: calc(48px + env(safe-area-inset-top)); left: 0; right: 0; bottom: 0;
+            width: auto; max-width: none;
+            border-radius: 22px 22px 0 0;
+            transform: translateY(100%);
+        }
+        .p-head { padding: 16px 16px 0 22px; }
+        .p-body { padding: 10px 22px calc(28px + env(safe-area-inset-bottom)); }
+        .p-name { font-size: 24px; }
+        .alert { padding: 22px; }
+
+        .side-settings {
+            display: flex; position: static;
+            width: auto; height: auto; overflow: visible;
+            gap: 10px; border-right: 0; border-bottom: 1px solid var(--side-line);
+            padding: calc(12px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left));
+        }
+        .set-title { font-size: 26px; }
+        .set-items { flex-direction: row; gap: 6px; overflow-x: auto; margin: 0 -16px; padding: 0 16px; scrollbar-width: none; }
+        .set-items::-webkit-scrollbar { display: none; }
+        .set-item { flex-shrink: 0; }
+        .view-settings, .si-wrap, .sd-wrap {
+            padding: 22px calc(16px + env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+        }
+        .set-head h2, .sd-head h2, .si-head h2, .about-titles h2 { font-size: 28px; }
+        .theme-grid { grid-template-columns: minmax(0, 1fr); }
+        .about-top { gap: 16px; }
+        .about-logo { width: 72px; height: 72px; border-radius: 19px; }
+        .code-wrap { padding: 22px 16px; }
+        .code-card { padding: 28px 18px 22px; }
+        .digits { gap: 8px; width: 100%; }
+        .digit { flex: 1; width: auto; min-width: 0; height: 60px; font-size: 24px; }
+        .sd-head { flex-direction: column; align-items: flex-start; }
+        .status-pill { max-width: 100%; }
+        .acct-top { flex-wrap: wrap; }
+        .btn-sync { width: 100%; }
+        .stats { grid-template-columns: minmax(0, 1fr); }
+        .bk-row { flex-wrap: wrap; padding: 10px 0; }
+        .view-sync { padding: 0; }
+    }
 </style>
 <!-- Shared AbelDeviceID gate (loaded from the canonical origin so it works
      whether the installer runs same-origin under achenkunju.com or is rendered
@@ -1303,9 +1272,17 @@
     // the installer to run without protection.
     function block() {
         var o = document.createElement('div');
-        o.setAttribute('role', 'dialog');
-        o.style.cssText = 'position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:24px;background:#05070f;color:#eef2fb;text-align:center;font-family:system-ui,sans-serif';
-        o.innerHTML = '<div style="max-width:420px"><div style="font-size:34px;margin-bottom:14px">&#128274;</div><h1 style="font-size:20px;margin:0 0 8px">Identity check unavailable</h1><p style="color:#a8b5cd;font-size:15px;margin:0 0 20px">' + p + ' could not load the AbelDeviceID gate, so it cannot verify this device. Check your connection and reload.</p><button style="font:inherit;font-weight:600;border:0;border-radius:12px;padding:12px 20px;cursor:pointer;color:#05070f;background:#6aa5ff">Reload</button></div>';
+        o.setAttribute('role', 'alertdialog');
+        o.setAttribute('aria-labelledby', 'gateLockTitle');
+        o.style.cssText = 'position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:24px;background:#111114;color:#F2F1EE;font-family:Figtree,-apple-system,system-ui,sans-serif';
+        o.innerHTML =
+            '<section style="width:440px;max-width:100%;display:flex;flex-direction:column;gap:22px;padding:34px;box-sizing:border-box;border-radius:24px;background:#1B1B20;border:1px solid #2A2A31">' +
+            '<span style="font-family:\'JetBrains Mono\',ui-monospace,monospace;font-size:11px;font-weight:600;letter-spacing:0.08em;color:#9C9CA6">IDENTITY CHECK UNAVAILABLE</span>' +
+            '<div style="width:64px;height:64px;border-radius:17px;background:#2A2A31;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F08A65" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10.5" width="16" height="10.5" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5M12 14.5v3"/></svg></div>' +
+            '<div style="display:flex;flex-direction:column;gap:8px"><h2 id="gateLockTitle" style="margin:0;font-family:\'Bricolage Grotesque\',-apple-system,system-ui,sans-serif;font-weight:800;font-size:28px;letter-spacing:-0.025em;line-height:1.1">Can\'t verify this iPad</h2>' +
+            '<p style="margin:0;font-size:15px;line-height:1.55;color:#B6B6BF">' + p + ' couldn\'t load the AbelDeviceID check, so it\'s staying locked. Check your connection and try again.</p></div>' +
+            '<button type="button" style="height:52px;border-radius:13px;border:1px solid #3A3A42;background:#24242A;color:#F2F1EE;font:inherit;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg>Try again</button>' +
+            '</section>';
         o.querySelector('button').addEventListener('click', function () { location.reload(); });
         (document.body || document.documentElement).appendChild(o);
     }
@@ -1313,247 +1290,525 @@
 })('Abel Tools');</script>
 </head>
 <body>
-<div class="atmosphere" aria-hidden="true"></div>
-<header class="mini-header" id="miniHeader" aria-hidden="true">
-    <span class="mini-title">Abel Tools Installer</span>
-    <span class="mini-version" id="miniVersion"></span>
-</header>
-<div class="container">
+<div class="app">
 
-    <p class="eyebrow rise" id="dateEyebrow"></p>
-    <div class="header-row rise">
-        <h1 class="large-title">Abel Tools Installer</h1>
-        <div class="header-actions">
-            <button class="theme-btn surface" id="aboutBtn" aria-label="About Abel Tools Installer">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            </button>
-            <button class="theme-btn surface" id="accountBtn" aria-label="Account and sync">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            </button>
-            <button class="theme-btn surface" id="appearanceBtn" aria-label="Appearance and themes">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 5-5 5h-1.8a2 2 0 0 0-1.5 3.3l.2.2a2 2 0 0 1-1.4 3.3z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>
-            </button>
-            <button class="theme-btn surface" id="themeBtn" aria-label="Toggle dark mode">
-                <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
-            </button>
-        </div>
-    </div>
-    <div class="header-meta rise d1">
-        <span class="version-pill" id="versionPill">v&hellip;</span>
-        <span class="subtitle">Shortcut installer for iPad</span>
-    </div>
-
-    <div class="announce surface" id="announce" role="status">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <p class="announce-text" id="announceText"></p>
-        <button class="announce-close" id="announceClose" aria-label="Dismiss announcement">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-    </div>
-
-    <section class="hero rise d2" aria-labelledby="heroTitle">
-        <span class="hero-ghost" id="heroGhost" aria-hidden="true"></span>
-        <p class="hero-eyebrow">What&rsquo;s new</p>
-        <h2 class="hero-title" id="heroTitle">Latest update</h2>
-        <ul class="hero-list" id="heroList">
-            <li><span>Loading changelog&hellip;</span></li>
-        </ul>
-        <p class="hero-note">Everything installs as a normal Apple Shortcut.</p>
-    </section>
-
-    <div class="search-wrap rise d3">
-        <span class="search-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </span>
-        <input class="search-input" id="searchInput" type="search" placeholder="Search shortcuts" aria-label="Search shortcuts" autocomplete="off" autocorrect="off" autocapitalize="off">
-        <button class="search-clear" id="searchClear" aria-label="Clear search">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-    </div>
-
-    <div class="chips rise d4" id="chips" role="tablist" aria-label="Categories"></div>
-
-    <div id="spotlights"></div>
-
-    <div class="section-head rise d4">
-        <h2 class="section-title">Shortcuts</h2>
-        <span class="section-tools">
-            <button class="sort-btn" id="sortBtn" aria-label="Change sort order">Sort: Featured</button>
-            <span class="section-count" id="sectionCount"></span>
-        </span>
-    </div>
-
-    <div class="list surface rise d5" id="list">
-        <div class="skeleton-row"><div class="sk sk-icon"></div><div class="sk-lines"><div class="sk sk-line-1"></div><div class="sk sk-line-2"></div></div><div class="sk sk-btn"></div></div>
-        <div class="skeleton-row"><div class="sk sk-icon"></div><div class="sk-lines"><div class="sk sk-line-1"></div><div class="sk sk-line-2"></div></div><div class="sk sk-btn"></div></div>
-        <div class="skeleton-row"><div class="sk sk-icon"></div><div class="sk-lines"><div class="sk sk-line-1"></div><div class="sk sk-line-2"></div></div><div class="sk sk-btn"></div></div>
-        <div class="skeleton-row"><div class="sk sk-icon"></div><div class="sk-lines"><div class="sk sk-line-1"></div><div class="sk sk-line-2"></div></div><div class="sk sk-btn"></div></div>
-    </div>
-    <div class="empty" id="empty">
-        <div class="empty-icon" id="emptyIcon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </div>
-        <strong id="emptyTitle">No results</strong><br><span id="emptyText">Try a different search or category.</span><br><button class="empty-clear" id="emptyClear">Clear filters</button>
-    </div>
-
-    <p class="footer">
-        Abel Tools Installer &middot; Tap GET to install through the installer engine.<br>
-        Shortcuts remain normal Apple Shortcuts on your device.<br>
-        &copy; 2026 Abel Tools Installer by Abel Achenkunju. All rights reserved.<br>
-        <button class="abelid-view" id="abelid-view" type="button" title="Tap to copy your AbelDeviceID">AbelDeviceID: checking&hellip;</button>
-    </p>
-</div>
-
-<div class="sheet-overlay" id="sheetOverlay"></div>
-<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName">
-    <div class="sheet-grabber"></div>
-    <button class="sheet-close" id="sheetClose" aria-label="Close">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div class="sheet-head">
-        <div class="sheet-icon" id="sheetIcon"></div>
-        <div>
-            <div class="sheet-name" id="sheetName"></div>
-            <div class="sheet-cat" id="sheetCat"></div>
-        </div>
-    </div>
-    <p class="sheet-desc" id="sheetDesc"></p>
-    <div class="sheet-action" id="sheetAction"></div>
-    <button class="sheet-fav" id="sheetFav" type="button" aria-pressed="false"></button>
-</div>
-
-<div class="sheet" id="aboutSheet" role="dialog" aria-modal="true" aria-labelledby="aboutName">
-    <div class="sheet-grabber"></div>
-    <button class="sheet-close" id="aboutClose" aria-label="Close">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div class="sheet-head">
-        <div class="sheet-icon" style="background: linear-gradient(140deg, #2563eb, #7c3aed 55%, #db2777);">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3L10.7 10a6 6 0 0 1 8-8l-4 4Z"/></svg>
-        </div>
-        <div>
-            <div class="sheet-name" id="aboutName">Abel Tools Installer</div>
-            <div class="sheet-cat" id="aboutVersion">Version &hellip;</div>
-        </div>
-    </div>
-    <p class="sheet-desc">
-        Abel Tools is a collection of Apple Shortcuts for iPad, made by Abel.
-        This installer keeps everything in one place: browse the catalog, install
-        shortcuts with one tap, and get updates as soon as they ship. Every tool
-        installs as a normal Apple Shortcut on your device.
-    </p>
-    <h3 class="about-heading">About the developer</h3>
-    <p class="sheet-desc about-bio">
-        Abel Achenkunju builds tools, shortcuts, and whatever comes next -
-        including Abel Tools, Abel&rsquo;s Countdown, and a browser-based file converter.
-    </p>
-    <div class="about-links">
-        <a class="about-link" href="https://achenkunju.com" target="_blank" rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
-            Website
-        </a>
-        <a class="about-link" href="https://blog.achenkunju.com" target="_blank" rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            Blog
-        </a>
-        <a class="about-link" href="https://github.com/therealabela" target="_blank" rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-            GitHub
-        </a>
-    </div>
-    <p class="sheet-copyright">&copy; 2026 Abel Tools Installer by Abel Achenkunju. All rights reserved.</p>
-</div>
-
-<div class="sheet" id="appearanceSheet" role="dialog" aria-modal="true" aria-labelledby="appearanceName">
-    <div class="sheet-grabber"></div>
-    <button class="sheet-close" id="appearanceClose" aria-label="Close">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div class="sheet-head">
-        <div class="sheet-icon" style="background: linear-gradient(140deg, var(--hero-a), var(--hero-b) 55%, var(--hero-c));">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 5-5 5h-1.8a2 2 0 0 0-1.5 3.3l.2.2a2 2 0 0 1-1.4 3.3z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>
-        </div>
-        <div>
-            <div class="sheet-name" id="appearanceName">Appearance</div>
-            <div class="sheet-cat">Make it yours</div>
-        </div>
-    </div>
-    <p class="appearance-label">Theme</p>
-    <div class="seg" id="modeSeg" role="group" aria-label="Theme mode">
-        <button class="seg-btn" data-mode="auto">Auto</button>
-        <button class="seg-btn" data-mode="light">Light</button>
-        <button class="seg-btn" data-mode="dark">Dark</button>
-    </div>
-    <p class="appearance-label">Accent color</p>
-    <div class="swatches" id="swatches" role="group" aria-label="Accent color"></div>
-</div>
-
-<div class="sheet" id="accountSheet" role="dialog" aria-modal="true" aria-labelledby="accountName">
-    <div class="sheet-grabber"></div>
-    <button class="sheet-close" id="accountClose" aria-label="Close">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div class="sheet-head">
-        <div class="sheet-icon" style="background: linear-gradient(140deg, var(--hero-a), var(--hero-b) 55%, var(--hero-c));">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <div>
-            <div class="sheet-name" id="accountName">Abel Tools Sync</div>
-            <div class="sheet-cat" id="acctStatus">Not signed in</div>
-        </div>
-    </div>
-    <p class="sheet-desc" id="acctIntro">
-        Sign in to keep your favorites, theme and accent color on every device you use Abel Tools on.
-        Your shortcuts stay exactly where they are.
-    </p>
-
-    <form class="acct-form" id="acctForm">
-        <label class="acct-label" for="acctEmail">Email</label>
-        <input class="acct-input" id="acctEmail" type="email" autocomplete="username" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false" required>
-        <label class="acct-label" for="acctPassword">Password</label>
-        <input class="acct-input" id="acctPassword" type="password" autocomplete="current-password" required>
-        <button class="acct-btn" id="acctSubmit" type="submit">Sign in</button>
-        <button class="acct-alt" id="acctToggle" type="button">Create an account instead</button>
-    </form>
-
-    <form class="acct-form" id="acctMfaForm" hidden>
-        <label class="acct-label" for="acctMfaCode">Authentication code</label>
-        <input class="acct-input acct-code" id="acctMfaCode" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" placeholder="000000" required>
-        <button class="acct-btn" id="acctMfaSubmit" type="submit">Verify</button>
-        <button class="acct-alt quiet" id="acctMfaCancel" type="button">Sign in as someone else</button>
-    </form>
-
-    <div class="acct-panel" id="acctPanel" hidden>
-        <div class="acct-line"><span>Account</span><strong id="acctWho"></strong></div>
-        <div class="acct-line"><span>Favorites</span><strong id="acctFavCount">0</strong></div>
-        <div class="acct-line"><span>Last synced</span><strong id="acctLastSync">never</strong></div>
-        <button class="acct-btn" id="acctSync" type="button">Sync now</button>
-
-        <div class="acct-backups">
-            <div class="acct-backups-head">
-                <span>Backups</span>
-                <strong id="acctBackupCount">0 of 5</strong>
+    <!-- Phone width: the sidebar folds into this header and tab strip -->
+    <header class="topbar" id="topbar">
+        <div class="brand">
+            <div class="brand-tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3L10.7 10a6 6 0 0 1 8-8l-4 4Z"/></svg></div>
+            <div class="brand-text">
+                <span class="brand-name">Abel Tools</span>
+                <span class="brand-ver" data-fill="installer">Installer &middot; v&hellip;</span>
             </div>
-            <ul class="backup-list" id="backupList"></ul>
-            <p class="backup-empty" id="backupEmpty">No backups yet. A backup is a saved copy of your favorites and look that stays put until you remove it, so syncing a device can never take it away.</p>
-            <button class="acct-btn ghost" id="acctBackup" type="button">Back up now</button>
+        </div>
+        <button class="icon-btn" id="topSettings" type="button" aria-label="Settings">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+        </button>
+    </header>
+    <nav class="tabs" id="tabs" aria-label="Main">
+        <button class="tab" type="button" data-go="discover">Discover</button>
+        <button class="tab" type="button" data-go="favorites">Favorites <span class="nav-count" data-fill="favcount"></span></button>
+        <button class="tab" type="button" data-go="library">Library <span class="nav-badge" data-fill="updbadge" hidden></span></button>
+    </nav>
+
+    <!-- Sidebar -->
+    <nav class="side" id="mainSide" aria-label="Main">
+        <div class="brand">
+            <div class="brand-tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3L10.7 10a6 6 0 0 1 8-8l-4 4Z"/></svg></div>
+            <div class="brand-text">
+                <span class="brand-name">Abel Tools</span>
+                <span class="brand-ver" data-fill="installer">Installer &middot; v&hellip;</span>
+            </div>
         </div>
 
-        <button class="acct-alt quiet" id="acctSignOut" type="button">Sign out of this device</button>
-    </div>
+        <div class="nav-group">
+            <button class="nav-btn" type="button" data-go="discover">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>
+                <span class="lbl">Discover</span>
+            </button>
+            <button class="nav-btn" type="button" data-go="favorites">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.6 14.3 8.9 20.9 9.1 15.7 13.2 17.5 19.6 12 15.9 6.5 19.6 8.3 13.2 3.1 9.1 9.7 8.9Z"/></svg>
+                <span class="lbl">Favorites</span>
+                <span class="nav-count" data-fill="favcount"></span>
+            </button>
+            <button class="nav-btn" type="button" data-go="library">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h4v16H4zM10 4h4v16h-4zM16.5 4.5l3.8 1 -3.9 15.4-3.8-1z"/></svg>
+                <span class="lbl">Library</span>
+                <span class="nav-badge" data-fill="updbadge" hidden></span>
+            </button>
+        </div>
 
-    <p class="acct-msg" id="acctMsg" hidden></p>
+        <div class="cats" id="catGroup" hidden>
+            <span class="side-label">CATEGORIES</span>
+            <div class="cats" id="catList"></div>
+        </div>
+
+        <div class="side-foot">
+            <button class="sync-card" id="syncCard" type="button">
+                <span class="sync-avatar" id="syncAvatar"></span>
+                <span class="sync-text">
+                    <span class="sync-title" id="syncTitle">Sign in to Sync</span>
+                    <span class="sync-sub" id="syncSub">Favorites on every iPad</span>
+                </span>
+            </button>
+            <button class="nav-btn" id="settingsBtn" type="button">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+                <span class="lbl">Settings</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Settings sidebar -->
+    <nav class="side side-settings" id="setSide" aria-label="Settings" hidden>
+        <button class="back-btn" id="setBack" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            <span id="setBackLabel">Discover</span>
+        </button>
+        <h1 class="set-title">Settings</h1>
+        <div class="set-items">
+            <button class="set-item" type="button" data-page="sync">
+                <span class="set-tile t-brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12a9 9 0 0 1 15.5-6.2M18.5 2v4h-4M5.5 22v-4h4"/></svg></span>
+                <span class="set-text"><span class="set-name">Account &amp; Sync</span><span class="set-sub" id="setSyncSub">Not signed in</span></span>
+            </button>
+            <button class="set-item" type="button" data-page="appearance">
+                <span class="set-tile t-accent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 5-5 5h-1.8a2 2 0 0 0-1.5 3.3l.2.2a2 2 0 0 1-1.4 3.3z"/></svg></span>
+                <span class="set-text"><span class="set-name">Appearance</span><span class="set-sub" data-fill="look">Auto &middot; Blue</span></span>
+            </button>
+            <button class="set-item" type="button" data-page="about">
+                <span class="set-tile t-gray"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></span>
+                <span class="set-text"><span class="set-name">About</span><span class="set-sub" data-fill="version">Version &hellip;</span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ================= Discover ================= -->
+    <main class="view view-discover" id="viewDiscover">
+        <header class="page-head">
+            <div class="head-titles">
+                <span class="eyebrow" id="dateEyebrow"></span>
+                <h1 class="h1" id="discoverTitle">Discover</h1>
+            </div>
+            <div class="head-tools">
+                <label class="search">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7.5"/><path d="m20.5 20.5-4.2-4.2"/></svg>
+                    <input id="searchInput" type="search" placeholder="Search shortcuts" aria-label="Search shortcuts" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                </label>
+                <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch to dark mode">
+                    <svg id="themeIcon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="cat-strip" id="catStrip" role="group" aria-label="Categories"></div>
+
+        <div class="notice" id="notice" role="status" hidden>
+            <span class="notice-tag">NOTICE</span>
+            <span class="notice-text" id="noticeText"></span>
+            <button class="notice-x" id="noticeClose" type="button" aria-label="Dismiss announcement">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <section class="update-grid n0" id="updateGrid" aria-label="This update">
+            <div class="card whatsnew">
+                <div class="wn-head">
+                    <span class="mono-label">WHAT'S NEW</span>
+                    <span class="wn-ver" data-fill="vtag"></span>
+                </div>
+                <ul class="wn-list" id="wnList"><li><span>Loading changelog&hellip;</span></li></ul>
+                <span class="wn-foot">Everything installs as a normal Apple Shortcut.</span>
+            </div>
+        </section>
+
+        <section class="all" aria-labelledby="listTitle">
+            <div class="list-head">
+                <div class="list-title">
+                    <h2 id="listTitle">All shortcuts</h2>
+                    <span class="mono-count" id="listCount"></span>
+                </div>
+                <div class="seg" id="sortSeg" role="group" aria-label="Sort">
+                    <button class="seg-btn" type="button" data-sort="0" aria-pressed="true">Featured</button>
+                    <button class="seg-btn" type="button" data-sort="1" aria-pressed="false">A&ndash;Z</button>
+                    <button class="seg-btn" type="button" data-sort="2" aria-pressed="false">Category</button>
+                </div>
+            </div>
+            <div class="list" id="list" aria-busy="true">
+                <div class="row" aria-hidden="true"><div class="sk sk-tile"></div><div class="sk-lines"><div class="sk sk-l1"></div><div class="sk sk-l2"></div></div><div class="sk sk-btn"></div></div>
+                <div class="row" aria-hidden="true"><div class="sk sk-tile"></div><div class="sk-lines"><div class="sk sk-l1"></div><div class="sk sk-l2"></div></div><div class="sk sk-btn"></div></div>
+                <div class="row" aria-hidden="true"><div class="sk sk-tile"></div><div class="sk-lines"><div class="sk sk-l1"></div><div class="sk sk-l2"></div></div><div class="sk sk-btn"></div></div>
+                <div class="row" aria-hidden="true"><div class="sk sk-tile"></div><div class="sk-lines"><div class="sk sk-l1"></div><div class="sk sk-l2"></div></div><div class="sk sk-btn"></div></div>
+                <div class="row" aria-hidden="true"><div class="sk sk-tile"></div><div class="sk-lines"><div class="sk sk-l1"></div><div class="sk sk-l2"></div></div><div class="sk sk-btn"></div></div>
+                <div class="row" aria-hidden="true"><div class="sk sk-tile"></div><div class="sk-lines"><div class="sk sk-l1"></div><div class="sk sk-l2"></div></div><div class="sk sk-btn"></div></div>
+            </div>
+            <div class="card list-empty" id="listEmpty" hidden>
+                <strong>No results</strong>
+                <p>Try a different search or category.</p>
+                <button class="btn-2" id="emptyClear" type="button">Clear filters</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= Favorites ================= -->
+    <main class="view view-favorites" id="viewFavorites" hidden>
+        <div class="fav-headline">
+            <h1 class="h1">Favorites</h1>
+            <span class="mono-count" id="favHeadCount"></span>
+        </div>
+
+        <div class="fav-empty" id="favEmpty">
+            <div class="fav-art" aria-hidden="true">
+                <div class="ghost-l"></div>
+                <div class="ghost-r"></div>
+                <div class="hero">
+                    <svg width="42" height="42" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2.6 14.3 8.9 20.9 9.1 15.7 13.2 17.5 19.6 12 15.9 6.5 19.6 8.3 13.2 3.1 9.1 9.7 8.9Z"/></svg>
+                </div>
+            </div>
+            <div class="fav-copy">
+                <h2>No favorites yet</h2>
+                <p>Tap the star on any shortcut and it lands here, so the tools you reach for are one tap away.</p>
+            </div>
+            <div class="fav-btns">
+                <button class="btn-ink" type="button" data-go="discover">Browse shortcuts</button>
+                <button class="btn-2" type="button" data-settings="sync">Restore from Sync</button>
+            </div>
+        </div>
+
+        <section class="fav-full" id="favFull" aria-label="Your favorites" hidden>
+            <div class="list" id="favList"></div>
+        </section>
+
+        <div class="hint" id="favHint">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12a9 9 0 0 1 15.5-6.2M18.5 2v4h-4M5.5 22v-4h4"/></svg>
+            Signed in? Favorites, theme and accent follow you to every iPad.
+        </div>
+    </main>
+
+    <!-- ================= Library ================= -->
+    <main class="view view-library" id="viewLibrary" hidden>
+        <header class="lib-head">
+            <h1 class="h1">Library</h1>
+            <p>Abel Tools shortcuts on this iPad, as reported when the installer opened.</p>
+        </header>
+
+        <div class="lib-cols">
+            <div class="lib-main">
+                <section class="lib-sec" id="libUpdates" aria-labelledby="updHead">
+                    <h2 class="lib-h2" id="updHead">Updates <span id="libUpdCount"></span></h2>
+                    <div class="lib-sec" id="libUpdList"></div>
+                </section>
+                <section class="lib-sec" id="libInstalled" aria-labelledby="instHead">
+                    <h2 class="lib-h2" id="instHead">Installed <span id="libInstCount"></span></h2>
+                    <div class="inst-list" id="libInstList"></div>
+                </section>
+                <section class="lib-sec" id="libRetired" aria-labelledby="retHead">
+                    <h2 class="lib-h2" id="retHead">Retired <span id="libRetCount"></span></h2>
+                    <div class="lib-sec" id="libRetList"></div>
+                </section>
+                <div class="card lib-empty" id="libEmpty" hidden>
+                    <strong>Nothing installed yet</strong>
+                    <p>Shortcuts you install with Abel Tools show up here, along with any updates waiting for them.</p>
+                    <button class="btn-ink" type="button" data-go="discover">Browse shortcuts</button>
+                </div>
+            </div>
+
+            <aside class="glance" aria-label="At a glance">
+                <span class="glance-label">AT A GLANCE</span>
+                <div class="glance-grid">
+                    <div class="glance-stat"><span class="glance-num" id="glInstalled">0</span><span class="glance-cap">installed</span></div>
+                    <div class="glance-stat"><span class="glance-num" id="glUpdates">0</span><span class="glance-cap" id="glUpdatesCap">updates ready</span></div>
+                    <div class="glance-stat"><span class="glance-num" id="glMissing">0</span><span class="glance-cap">not installed</span></div>
+                    <div class="glance-stat"><span class="glance-num" id="glFavs">0</span><span class="glance-cap" id="glFavsCap">favorites</span></div>
+                </div>
+                <p>Every tool installs as a normal Apple Shortcut, so removing one happens in the Shortcuts app.</p>
+                <button class="btn-lime" id="glBrowse" type="button" data-go="discover">Browse all</button>
+            </aside>
+        </div>
+    </main>
+
+    <!-- ================= Settings: Account & Sync ================= -->
+    <main class="view view-settings view-sync" id="pageSync" hidden>
+
+        <div class="si-wrap" id="syncSignIn">
+            <div class="si-main">
+                <header class="si-head">
+                    <h2>Abel Tools Sync</h2>
+                    <p>Keep your favorites and look on every iPad you use Abel Tools on. Your shortcuts stay exactly where they are.</p>
+                </header>
+                <form class="si-form" id="acctForm" novalidate>
+                    <div class="seg2" role="group" aria-label="Account mode">
+                        <button type="button" id="modeSignIn" aria-pressed="true">Sign in</button>
+                        <button type="button" id="modeSignUp" aria-pressed="false">Create account</button>
+                    </div>
+                    <div class="field">
+                        <label for="acctEmail">Email</label>
+                        <input class="input" id="acctEmail" type="email" autocomplete="username" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+                    </div>
+                    <div class="field">
+                        <label for="acctPassword">Password</label>
+                        <div class="pw-wrap">
+                            <input class="input" id="acctPassword" type="password" autocomplete="current-password" required>
+                            <button class="pw-show" id="pwShow" type="button" aria-pressed="false" aria-label="Show password">Show</button>
+                        </div>
+                    </div>
+                    <button class="btn-primary" id="acctSubmit" type="submit">Sign in</button>
+                    <p class="form-msg" id="signInMsg" role="status" hidden></p>
+                    <p class="si-note">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+                        The Shortcuts app keeps its own sign in, so signing in on achenkunju.com in Safari doesn't carry over here.
+                    </p>
+                </form>
+            </div>
+
+            <aside class="what-syncs" aria-label="What syncs">
+                <span class="ws-label">WHAT SYNCS</span>
+                <div class="ws-row">
+                    <span class="ws-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.6 14.3 8.9 20.9 9.1 15.7 13.2 17.5 19.6 12 15.9 6.5 19.6 8.3 13.2 3.1 9.1 9.7 8.9Z"/></svg></span>
+                    <span class="ws-text"><span class="ws-title">Favorites</span><span class="ws-body">The first sync merges both lists, so nothing is lost.</span></span>
+                </div>
+                <div class="ws-row">
+                    <span class="ws-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 5-5 5h-1.8a2 2 0 0 0-1.5 3.3l.2.2a2 2 0 0 1-1.4 3.3z"/></svg></span>
+                    <span class="ws-text"><span class="ws-title">Theme &amp; accent</span><span class="ws-body">Pick a look once, see it everywhere.</span></span>
+                </div>
+                <div class="ws-row">
+                    <span class="ws-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h20v5H2zM4 8v12h16V8M10 12h4"/></svg></span>
+                    <span class="ws-text"><span class="ws-title">Backups</span><span class="ws-body">Up to 5 saved copies you can restore any time.</span></span>
+                </div>
+            </aside>
+        </div>
+
+        <div class="code-wrap" id="syncCode" hidden>
+            <form class="code-card" id="acctMfaForm" novalidate>
+                <div class="code-tile">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <div class="code-copy">
+                    <h2>Enter your code</h2>
+                    <p>Your account has two-factor sign in. Open your authenticator app and type the 6-digit code for Abel Tools.</p>
+                </div>
+                <fieldset class="digits">
+                    <legend class="sr-only">Authentication code</legend>
+                    <input class="digit" aria-label="Digit 1" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*">
+                    <input class="digit" aria-label="Digit 2" inputmode="numeric" autocomplete="off" pattern="[0-9]*">
+                    <input class="digit" aria-label="Digit 3" inputmode="numeric" autocomplete="off" pattern="[0-9]*">
+                    <input class="digit" aria-label="Digit 4" inputmode="numeric" autocomplete="off" pattern="[0-9]*">
+                    <input class="digit" aria-label="Digit 5" inputmode="numeric" autocomplete="off" pattern="[0-9]*">
+                    <input class="digit" aria-label="Digit 6" inputmode="numeric" autocomplete="off" pattern="[0-9]*">
+                </fieldset>
+                <button class="btn-primary" id="acctMfaSubmit" type="submit" disabled>Verify</button>
+                <p class="form-msg" id="codeMsg" role="status" hidden></p>
+                <button class="btn-quiet" id="acctMfaCancel" type="button">Sign in as someone else</button>
+            </form>
+        </div>
+
+        <div class="sd-wrap" id="syncSignedIn" hidden>
+            <header class="sd-head">
+                <h2>Account &amp; Sync</h2>
+                <div class="status-pill" id="syncPill" role="status" hidden></div>
+            </header>
+            <div class="sd-cols">
+                <div class="sd-main">
+                    <section class="card acct-card" aria-label="Account">
+                        <div class="acct-top">
+                            <span class="avatar" id="acctAvatar" aria-hidden="true"></span>
+                            <div class="acct-who">
+                                <span class="acct-email" id="acctWho"></span>
+                                <span class="acct-sub" id="acctWhoSub">Signed in on this iPad</span>
+                            </div>
+                            <button class="btn-sync" id="acctSync" type="button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12a9 9 0 0 1 15.5-6.2M18.5 2v4h-4M5.5 22v-4h4"/></svg>
+                                Sync now
+                            </button>
+                        </div>
+                        <dl class="stats">
+                            <div class="stat"><dt>FAVORITES</dt><dd id="statFav">0</dd></div>
+                            <div class="stat"><dt>LAST SYNCED</dt><dd id="statLast">Never</dd></div>
+                            <div class="stat"><dt>LOOK</dt><dd data-fill="look">Auto &middot; Blue</dd></div>
+                        </dl>
+                    </section>
+
+                    <section class="card bk-card" aria-labelledby="bkHead">
+                        <div class="bk-head">
+                            <h3 id="bkHead">Backups</h3>
+                            <div class="bk-meter">
+                                <div class="slots" id="bkSlots" aria-hidden="true"></div>
+                                <span class="bk-count" id="acctBackupCount">0 of 5 slots</span>
+                            </div>
+                        </div>
+                        <ul class="bk-list" id="backupList"></ul>
+                        <p class="bk-empty" id="backupEmpty">No backups yet. Back up now to keep a copy of your favorites and look that syncing can never take away.</p>
+                        <div class="bk-foot">
+                            <button class="btn-add" id="acctBackup" type="button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                                <span id="acctBackupLabel">Back up now</span>
+                            </button>
+                            <button class="btn-quiet" id="acctSignOut" type="button">Sign out of this device</button>
+                        </div>
+                    </section>
+                </div>
+
+                <aside class="how" aria-label="How backups work">
+                    <span class="mono-label">HOW BACKUPS WORK</span>
+                    <p>A backup is a saved copy of your favorites and look. Syncing never touches it, only you can restore or remove one.</p>
+                    <p>Restoring replaces this iPad's favorites and look, then saves them to your account so other iPads follow.</p>
+                    <p>Signing out keeps your favorites on this iPad.</p>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= Settings: Appearance ================= -->
+    <main class="view view-settings view-appearance" id="pageAppearance" hidden>
+        <header class="set-head">
+            <h2>Appearance</h2>
+            <p>Your look syncs with your favorites when you're signed in.</p>
+        </header>
+
+        <section class="set-sec" aria-labelledby="themeHead">
+            <h3 class="sec-label" id="themeHead">THEME</h3>
+            <div class="theme-grid" id="modeCards" role="group" aria-label="Theme">
+                <button class="theme-card" type="button" data-mode="auto" aria-pressed="false">
+                    <span class="tc-preview" aria-hidden="true" style="border: 1px solid #E6E2D9">
+                        <span style="flex: 1; background: #F4F2ED"><span style="width: 34%; background: #ECE9E2"></span><span style="flex: 1; flex-direction: column; gap: 6px; padding: 10px"><span style="height: 8px; width: 60%; border-radius: 3px; background: #17171B"></span><span style="height: 22px; border-radius: 5px; background: #FFFFFF"></span><span style="height: 22px; border-radius: 5px; background: #FFFFFF"></span></span></span>
+                        <span style="flex: 1; background: #111114"><span style="width: 34%; background: #16161A"></span><span style="flex: 1; flex-direction: column; gap: 6px; padding: 10px"><span style="height: 8px; width: 60%; border-radius: 3px; background: #F2F1EE"></span><span style="height: 22px; border-radius: 5px; background: #1B1B20"></span><span style="height: 22px; border-radius: 5px; background: #1B1B20"></span></span></span>
+                    </span>
+                    <span class="tc-row">
+                        <span class="tc-text"><span class="tc-name">Auto</span><span class="tc-sub">Follows your iPad</span></span>
+                        <span class="radio"></span>
+                    </span>
+                </button>
+                <button class="theme-card" type="button" data-mode="light" aria-pressed="false">
+                    <span class="tc-preview" aria-hidden="true" style="border: 1px solid #E6E2D9; background: #F4F2ED"><span style="width: 34%; background: #ECE9E2"></span><span style="flex: 1; flex-direction: column; gap: 6px; padding: 10px"><span style="height: 8px; width: 50%; border-radius: 3px; background: #17171B"></span><span style="height: 22px; border-radius: 5px; background: #FFFFFF"></span><span style="height: 22px; border-radius: 5px; background: #FFFFFF"></span><span style="height: 22px; border-radius: 5px; background: #FFFFFF"></span></span></span>
+                    <span class="tc-row">
+                        <span class="tc-text"><span class="tc-name">Light</span><span class="tc-sub">Paper and ink</span></span>
+                        <span class="radio"></span>
+                    </span>
+                </button>
+                <button class="theme-card" type="button" data-mode="dark" aria-pressed="false">
+                    <span class="tc-preview" aria-hidden="true" style="border: 1px solid #2A2A31; background: #111114"><span style="width: 34%; background: #16161A"></span><span style="flex: 1; flex-direction: column; gap: 6px; padding: 10px"><span style="height: 8px; width: 50%; border-radius: 3px; background: #F2F1EE"></span><span style="height: 22px; border-radius: 5px; background: #1B1B20"></span><span style="height: 22px; border-radius: 5px; background: #1B1B20"></span><span style="height: 22px; border-radius: 5px; background: #1B1B20"></span></span></span>
+                    <span class="tc-row">
+                        <span class="tc-text"><span class="tc-name">Dark</span><span class="tc-sub">Easy at night</span></span>
+                        <span class="radio"></span>
+                    </span>
+                </button>
+            </div>
+        </section>
+
+        <section class="set-sec" aria-labelledby="accHead">
+            <h3 class="sec-label" id="accHead">ACCENT COLOR</h3>
+            <div class="accent-row">
+                <div class="swatch-grid" id="swatches" role="group" aria-label="Accent color"></div>
+                <div class="preview-card">
+                    <span class="pv-label">PREVIEW</span>
+                    <div class="pv-row">
+                        <div id="pvTile"></div>
+                        <span class="pv-name">Quickscreen</span>
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.6 14.3 8.9 20.9 9.1 15.7 13.2 17.5 19.6 12 15.9 6.5 19.6 8.3 13.2 3.1 9.1 9.7 8.9Z"/></svg>
+                    </div>
+                    <div class="pv-btns" aria-hidden="true"><span class="pv-get">Get</span><span class="pv-upd">Update</span></div>
+                    <span class="pv-note">Buttons, stars, the selected tab and badges take the accent. Everything else stays ink.</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= Settings: About ================= -->
+    <main class="view view-settings view-about" id="pageAbout" hidden>
+        <div class="about-main">
+            <div class="about-top">
+                <div class="about-logo">
+                    <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3L10.7 10a6 6 0 0 1 8-8l-4 4Z"/></svg>
+                </div>
+                <div class="about-titles">
+                    <h2>Abel Tools Installer</h2>
+                    <span class="about-ver"><span data-fill="version">Version &hellip;</span> &middot; Shortcut installer for iPad</span>
+                </div>
+            </div>
+
+            <p class="about-p">Abel Tools is a collection of Apple Shortcuts for iPad. This installer keeps them in one place: browse the catalog, install with one tap, and get updates as soon as they ship. Every tool installs as a normal Apple Shortcut.</p>
+
+            <section class="card dev-card" aria-labelledby="devHead">
+                <h3 class="sec-label" id="devHead">THE DEVELOPER</h3>
+                <div class="dev-who">
+                    <span class="dev-name">Abel Achenkunju</span>
+                    <span class="dev-bio">Builds tools, shortcuts, and whatever comes next, including Abel Tools, Abel's Countdown, and a browser-based file converter.</span>
+                </div>
+                <div class="links">
+                    <a class="link-row" href="https://achenkunju.com" target="_blank" rel="noopener noreferrer">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
+                        <span class="lr-name">Website</span>
+                        <span class="lr-host">achenkunju.com</span>
+                        <svg class="lr-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+                    </a>
+                    <a class="link-row" href="https://blog.achenkunju.com" target="_blank" rel="noopener noreferrer">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        <span class="lr-name">Blog</span>
+                        <span class="lr-host">blog.achenkunju.com</span>
+                        <svg class="lr-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+                    </a>
+                    <a class="link-row" href="https://github.com/therealabela" target="_blank" rel="noopener noreferrer">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4.5 2-5-2-7-2M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5a5.4 5.4 0 0 0-1-3.5 5 5 0 0 0 0-3.5s-1 0-3 1.5a10.4 10.4 0 0 0-8 0C5 2 4 2 4 2a5 5 0 0 0 0 3.5A5.4 5.4 0 0 0 3 9c0 3.5 3 5.5 6 5.5-.4.5-.7 1-.8 1.7-.2.6-.2 1.2-.2 1.8v4"/></svg>
+                        <span class="lr-name">GitHub</span>
+                        <span class="lr-host">therealabela</span>
+                        <svg class="lr-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <aside class="about-side">
+            <section class="id-card" aria-labelledby="idHead">
+                <h3 id="idHead">THIS IPAD</h3>
+                <div class="id-block">
+                    <span class="id-cap">AbelDeviceID</span>
+                    <span class="id-value" id="abelIdValue">Checking&hellip;</span>
+                </div>
+                <span class="id-state" id="abelIdState"><i></i><span>Checking</span></span>
+                <button class="id-copy" id="abelIdCopy" type="button" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 9h11v11H9zM5 15H4V4h11v1"/></svg>
+                    <span id="abelIdCopyLabel">Copy ID</span>
+                </button>
+                <span class="id-note">Share this when you ask for help with Abel Tools.</span>
+            </section>
+            <p class="copyright">&copy; 2026 Abel Tools Installer by Abel Achenkunju. All rights reserved.</p>
+        </aside>
+    </main>
 </div>
 
-<div class="alert-overlay" id="alertOverlay"></div>
-<div class="alert" id="alert" role="alertdialog" aria-modal="true" aria-labelledby="alertTitle">
-    <div class="alert-icon" id="alertIcon" aria-hidden="true"></div>
-    <p class="alert-title" id="alertTitle">Do you want to continue?</p>
-    <p class="alert-msg" id="alertMsg"></p>
-    <div class="alert-buttons">
-        <button class="alert-btn" id="alertCancel">Cancel</button>
-        <a class="alert-btn alert-btn-primary" id="alertContinue" href="#">Continue</a>
+<!-- ================= Shortcut detail ================= -->
+<div class="scrim" id="sheetScrim"></div>
+<section class="panel" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName" tabindex="-1">
+    <div class="p-head">
+        <span class="chip" id="sheetChip"><span class="cat-dot"></span><span id="sheetChipText"></span></span>
+        <button class="close-btn" id="sheetClose" type="button" aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
     </div>
+    <div class="p-body" id="sheetBody"></div>
+</section>
+
+<!-- ================= Install confirm ================= -->
+<div class="scrim alert-scrim" id="alertScrim"></div>
+<div class="alert-wrap">
+    <section class="alert" id="alert" role="alertdialog" aria-modal="true" aria-labelledby="alertTitle" aria-describedby="alertMsg">
+        <div class="al-head">
+            <div id="alertIcon"></div>
+            <div class="al-titles">
+                <h2 class="al-title" id="alertTitle"></h2>
+                <p class="al-msg" id="alertMsg">It opens in the Shortcuts app to finish.</p>
+            </div>
+        </div>
+        <ol class="steps">
+            <li><span class="step-n">1</span>Shortcuts opens with the shortcut</li>
+            <li><span class="step-n">2</span>Tap <strong>Add Shortcut</strong></li>
+            <li><span class="step-n">3</span>Come back here for the rest</li>
+        </ol>
+        <div class="al-btns">
+            <button class="btn-cancel" id="alertCancel" type="button">Cancel</button>
+            <a class="btn-go" id="alertContinue" href="#">Open Shortcuts
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </a>
+        </div>
+    </section>
 </div>
 
 <script>
@@ -1566,22 +1821,25 @@
        shared AbelDeviceID module can run). If it is ever loaded some other way
        - e.g. an old string-injected/opaque-origin web view, or a saved copy -
        show a short "get the shortcut" message instead of a broken installer. */
+    var SHORTCUT_LINK = 'https://www.icloud.com/shortcuts/5ef518ebbbca40039df5325b264e9fb0';
     var isSupportedRuntime =
         location.origin === 'https://achenkunju.com' &&
         window.isSecureContext === true &&
         !!(window.crypto && window.crypto.subtle);
     if (!isSupportedRuntime) {
         document.documentElement.innerHTML =
-            '<body style="margin:0;min-height:100vh;display:flex;align-items:center;' +
-            'justify-content:center;padding:24px;background:#05070f;color:#eef2fb;' +
-            'text-align:center;font-family:-apple-system,system-ui,sans-serif;line-height:1.6">' +
-            '<div style="max-width:420px"><div style="font-size:34px;margin-bottom:14px">&#128241;</div>' +
-            '<h1 style="font-size:20px;margin:0 0 8px">Open this in the Abel Tools Installer</h1>' +
-            '<p style="color:#a8b5cd;font-size:15px;margin:0 0 20px">Run the Abel Tools Installer ' +
-            'shortcut to open this installer. If you don’t have it yet, add the shortcut first.</p>' +
-            '<a href="https://www.icloud.com/shortcuts/5ef518ebbbca40039df5325b264e9fb0" ' +
-            'style="display:block;text-decoration:none;font-weight:600;color:#05070f;background:#6aa5ff;' +
-            'border-radius:12px;padding:13px 22px">Get the Abel Tools Installer</a></div></body>';
+            '<head><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">' +
+            '<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Figtree:wght@400;700&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet"></head>' +
+            '<body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;' +
+            'background:#111114;color:#F2F1EE;font-family:Figtree,-apple-system,system-ui,sans-serif">' +
+            '<section style="width:440px;max-width:100%;display:flex;flex-direction:column;gap:22px;padding:34px;box-sizing:border-box;border-radius:24px;background:#1B1B20;border:1px solid #2A2A31">' +
+            '<span style="font-family:\'JetBrains Mono\',ui-monospace,monospace;font-size:11px;font-weight:600;letter-spacing:0.08em;color:#9C9CA6">OPENED OUTSIDE THE SHORTCUT</span>' +
+            '<div style="width:64px;height:64px;border-radius:17px;background:#CDEB52;display:flex;align-items:center;justify-content:center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#17171B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3L10.7 10a6 6 0 0 1 8-8l-4 4Z"/></svg></div>' +
+            '<div style="display:flex;flex-direction:column;gap:8px"><h1 style="margin:0;font-family:\'Bricolage Grotesque\',-apple-system,system-ui,sans-serif;font-weight:800;font-size:28px;letter-spacing:-0.025em;line-height:1.1">Open this in the Abel Tools Installer</h1>' +
+            '<p style="margin:0;font-size:15px;line-height:1.55;color:#B6B6BF">The installer runs from its shortcut. Run it from the Shortcuts app, or add it first if you don\'t have it yet.</p></div>' +
+            '<a href="' + SHORTCUT_LINK + '" style="height:52px;border-radius:13px;background:#8090FF;color:#0C0F2B;font-size:16px;font-weight:700;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px">Get the installer shortcut' +
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>' +
+            '</section></body>';
         return;
     }
 
@@ -1592,27 +1850,59 @@
     var params = new URLSearchParams(location.search);
     var SELF_NAME = params.get('self') || 'Abel Tools Installer';
 
-    /* ================= Icon set (stroke SVG, 24x24) ================= */
+    function $(id) { return document.getElementById(id); }
+
+    function el(tag, className, text) {
+        var node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text) node.textContent = text;
+        return node;
+    }
+
+    /* ================= Icons =================
+       Interface icons and the shortcut glyphs, all stroke paths on a 24 grid
+       as drawn in the redesign. Tiles are a flat color with a white glyph. */
 
     var ICONS = {
-        split: '<rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/>',
-        layers: '<path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 12 10 5 10-5"/><path d="m2 17 10 5 10-5"/>',
-        batteryBolt: '<rect x="2" y="7" width="16" height="10" rx="2"/><line x1="21" y1="10.5" x2="21" y2="13.5"/><path d="m11 9-2.5 3h4L10 15"/>',
-        battery: '<rect x="2" y="7" width="16" height="10" rx="2"/><line x1="21" y1="10.5" x2="21" y2="13.5"/><line x1="6" y1="10.5" x2="6" y2="13.5"/>',
-        scissors: '<circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><line x1="20" y1="4" x2="8.1" y2="15.9"/><line x1="14.5" y1="14.5" x2="20" y2="20"/><line x1="8.1" y1="8.1" x2="12" y2="12"/>',
-        image: '<rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
-        leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6C9.5 14.5 12 13 13 12"/>',
-        sparkle: '<path d="M12 2.5 14 9l6.5 2L14 13.5 12 20l-2-6.5L3.5 11 10 9Z"/>',
-        cube: '<path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"/><path d="m3.3 7 8.7 5 8.7-5"/><line x1="12" y1="22" x2="12" y2="12"/>',
-        tablet: '<rect x="4" y="2" width="16" height="20" rx="2.5"/><line x1="10.5" y1="18.5" x2="13.5" y2="18.5"/>',
-        broom: '<path d="m13 11 8-8"/><path d="M13 11 5.5 13.6a2 2 0 0 0-1.3 1.5L3 21l5.9-1.2a2 2 0 0 0 1.5-1.3L13 11Z"/><path d="m6.5 14.5 3 3"/>',
-        terminal: '<polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>',
-        archive: '<rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><line x1="10" y1="12" x2="14" y2="12"/>',
-        wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3L10.7 10a6 6 0 0 1 8-8l-4 4Z"/>',
-        sun: '<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/>',
+        check: '<path d="M20 6 9 17l-5-5"/>',
+        x: '<path d="M18 6 6 18M6 6l12 12"/>',
         moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>',
-        link: '<path d="M9 15 15 9"/><path d="M11 6.5 12.8 4.7a4.6 4.6 0 0 1 6.5 6.5L17.5 13"/><path d="M13 17.5 11.2 19.3a4.6 4.6 0 0 1-6.5-6.5L6.5 11"/>',
-        check: '<polyline points="20 6 9 17 4 12"/>'
+        sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+        download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+        user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        archive: '<path d="M2 3h20v5H2zM4 8v12h16V8M10 12h4"/>',
+        alert: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5h.01"/>'
+    };
+
+    var STAR_PATH = 'M12 2.6 14.3 8.9 20.9 9.1 15.7 13.2 17.5 19.6 12 15.9 6.5 19.6 8.3 13.2 3.1 9.1 9.7 8.9Z';
+
+    function icon(name, size, sw) {
+        return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' +
+            (sw || 2) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
+    }
+
+    function starSvg(size, filled, sw) {
+        return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="' +
+            (filled ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="' + (sw || 1.8) + '" ' +
+            'stroke-linejoin="round" aria-hidden="true"><path d="' + STAR_PATH + '"/></svg>';
+    }
+
+    var GLYPHS = {
+        link: 'M9 15 15 9M11 6.5l1.8-1.8a4.6 4.6 0 0 1 6.5 6.5L17.5 13M13 17.5l-1.8 1.8a4.6 4.6 0 0 1-6.5-6.5L6.5 11',
+        bolt: 'M3 8h14v8H3zM20 11v2M11 9.5 9 12h3l-2 2.5',
+        battery: 'M3 8h14v8H3zM20 11v2M6.5 11v2',
+        split: 'M4 5h6v14H4zM14 5h6v14h-6z',
+        layers: 'M12 3 3 8l9 5 9-5-9-5zM3 13l9 5 9-5M3 17.5l9 4.5 9-4.5',
+        scissors: 'M6 3.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5zM6 15.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5zM20 4 8 16M14.5 14.5 20 20M8 8l4 4',
+        image: 'M4 4h16v16H4zM9 7.5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 1 0 0-3zM20 15l-5-5L4 20',
+        leaf: 'M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10ZM2 21c0-3 1.9-5.4 5.1-6C9.5 14.5 12 13 13 12',
+        sparkle: 'M12 2.5 14 9l6.5 2L14 13.5 12 20l-2-6.5L3.5 11 10 9Z',
+        cube: 'M21 8 12 3 3 8v8l9 5 9-5zM3.3 7.5 12 12.5l8.7-5M12 22V12.5',
+        tablet: 'M5 2.5h14v19H5zM10.5 18.5h3',
+        broom: 'm13 11 8-8M13 11 5.5 13.6a2 2 0 0 0-1.3 1.5L3 21l5.9-1.2a2 2 0 0 0 1.5-1.3L13 11ZM6.5 14.5l3 3',
+        terminal: 'M4 17l6-6-6-6M12 19h8',
+        archive: 'M2 3h20v5H2zM4 8v12h16V8M10 12h4',
+        wrench: 'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-8 8l-6.9 6.9a2.1 2.1 0 0 1-3-3L10.7 10a6 6 0 0 1 8-8l-4 4Z'
     };
 
     /* ================= Real shortcut icons (embedded WebP) =================
@@ -1658,52 +1948,177 @@
         "abel's url compressor": '#3c82fc',
     };
 
-    function iconSvg(name, size) {
-        return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || ICONS.wrench) + '</svg>';
-    }
+    // Tile size -> glyph size, as drawn on each artboard
+    var GLYPH_SIZE = { 40: 20, 44: 22, 52: 26, 56: 28, 60: 30, 84: 40 };
 
-    /* Paint an icon tile with the shortcut's real icon when we have one,
-       otherwise fall back to the generated glyph on its gradient.
-       opts.keepBg leaves the element's own background (used by spotlight). */
-    function fillTile(node, item, size, opts) {
-        opts = opts || {};
+    // A shortcut's tile is its real icon, filling the tile on the icon's own
+    // dominant color, as the installer has drawn them since v47. A shortcut
+    // without one yet gets a glyph on its catalog color instead.
+    function tile(item, size) {
+        var node = el('div', 'tile tile-' + size);
         var img = ICON_IMG[item.key];
         if (img) {
             node.classList.add('has-img');
-            if (!opts.keepBg) node.style.background = ICON_TINT[item.key] || 'transparent';
+            node.style.setProperty('--t', ICON_TINT[item.key] || item.tint);
             node.innerHTML = '<img class="tile-img" src="' + img + '" alt="" draggable="false">';
-        } else {
-            node.classList.remove('has-img');
-            if (!opts.keepBg) node.style.background = item.gradient;
-            node.innerHTML = iconSvg(item.icon, size);
+            return node;
         }
+        node.style.setProperty('--t', item.tint);
+        if (item.tintDark) node.style.setProperty('--td', item.tintDark);
+        node.innerHTML = '<svg width="' + GLYPH_SIZE[size] + '" height="' + GLYPH_SIZE[size] +
+            '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (size >= 84 ? 1.8 : 1.9) +
+            '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' +
+            (GLYPHS[item.glyph] || GLYPHS.wrench) + '"/></svg>';
+        return node;
     }
 
     /* ================= Catalog metadata =================
        shortcutslist.md decides WHICH shortcuts exist; this map decorates
-       known names. Unknown names get sensible defaults. */
+       known names. Unknown names get sensible defaults.
+
+       short  the one-line pitch in a list row
+       pitch  the longer line on a "new this update" card (falls back to short)
+       desc   the full description in the detail panel
+       soft   spotlight card [light bg, light border, dark bg, dark border]
+       pairs  shortcuts that work with this one; older: earlier versions */
 
     var META = {
-        'quickscreen': { icon: 'split', gradient: 'linear-gradient(135deg,#0a84ff,#5e5ce6)', category: 'Productivity', desc: 'Split screen your apps and resize windows with ease. Perfect for iPad multitasking.', link: 'https://www.icloud.com/shortcuts/419b76c98a474c35b11c8497529b3d36' },
-        'anythingbutglass': { icon: 'layers', gradient: 'linear-gradient(135deg,#5e5ce6,#bf5af2)', category: 'Customization', desc: 'Removes the Liquid Glass look from iOS 26 for a cleaner, classic appearance.', link: 'https://www.icloud.com/shortcuts/66d53e172121493e9d834df6a5062f25' },
-        'savemybattery v2.2': { icon: 'batteryBolt', gradient: 'linear-gradient(135deg,#5a90f8,#0a84ff)', category: 'Battery', desc: 'The newest SaveMyBattery. Squeeze more out of every charge in one tap, with the latest tweaks for iOS 26.', link: 'https://www.icloud.com/shortcuts/53346b499365410c8f4109ff3bc56e5b' },
-        'savemybattery v2.2 automation': { icon: 'batteryBolt', gradient: 'linear-gradient(135deg,#ff375f,#ff9f0a)', category: 'Battery', desc: 'Runs SaveMyBattery V2.2 for you the moment your battery drops to a percentage you pick. Needs iOS 27 and SaveMyBattery V2.2 installed first.', link: 'https://www.icloud.com/shortcuts/780ac51dcc514b9ba12e04f78e9ef53b' },
-        'savemybattery v2.1': { icon: 'batteryBolt', gradient: 'linear-gradient(135deg,#30d158,#0a84ff)', category: 'Battery', desc: 'Optimize battery life in one tap: low power mode, reduced transparency and motion.', link: 'https://www.icloud.com/shortcuts/32e766396219425e8d29eaf0e4c4a161' },
-        'savemybattery v1': { icon: 'battery', gradient: 'linear-gradient(135deg,#8e8e93,#48484a)', category: 'Battery', desc: 'The original SaveMyBattery. Kept for older setups.', link: 'https://www.icloud.com/shortcuts/594fff3adae8400faf5a903167f0854d' },
-        'coolbgremover': { icon: 'scissors', gradient: 'linear-gradient(135deg,#ff9f0a,#ff375f)', category: 'Images', desc: 'Remove backgrounds from images instantly.', link: 'https://www.icloud.com/shortcuts/c9d90103e0eb4a56bcde227b8006c9b7' },
-        'coolimageeditor': { icon: 'image', gradient: 'linear-gradient(135deg,#bf5af2,#ff375f)', category: 'Images', desc: 'Quick image editing: crop, convert, resize and more.', link: 'https://www.icloud.com/shortcuts/b9d34799af7248e084e08671549c297d' },
-        'leaf blower w/ google search': { icon: 'leaf', gradient: 'linear-gradient(135deg,#30d158,#64d2ff)', category: 'Voice', desc: 'A very dumb Siri alternative. Search the web using just your voice via Google Search.', link: 'https://www.icloud.com/shortcuts/a52c67fa1d68460abee42b63831bbae5' },
-        'leaf blower w/ google gemini': { icon: 'sparkle', gradient: 'linear-gradient(135deg,#64d2ff,#5e5ce6)', category: 'Voice', desc: 'Leaf Blower powered by Google Gemini for smarter voice answers.', link: 'https://www.icloud.com/shortcuts/9a3c7bc343cb474e94b8ac83828f494b' },
-        'editable materials': { icon: 'cube', gradient: 'linear-gradient(135deg,#ff9f0a,#ffd60a)', category: 'Productivity', desc: 'Edit files in the Materials section of Google Classroom.', link: 'https://www.icloud.com/shortcuts/d5e5fe1db65745a891e6e81038ed238f' },
-        'editable matrials': { icon: 'cube', gradient: 'linear-gradient(135deg,#ff9f0a,#ffd60a)', category: 'Productivity', desc: 'Edit files in the Materials section of Google Classroom.', link: 'https://www.icloud.com/shortcuts/d5e5fe1db65745a891e6e81038ed238f' },
-        'deviceinfo': { icon: 'tablet', gradient: 'linear-gradient(135deg,#48484a,#8e8e93)', category: 'Utilities', desc: 'See detailed information about your device at a glance.', link: 'https://www.icloud.com/shortcuts/ca35bc3d75814583af3461518c8badf8' },
-        'moo cleanup tool': { icon: 'broom', gradient: 'linear-gradient(135deg,#ff375f,#ff9f0a)', category: 'Utilities', desc: 'Clean up leftovers and junk. New in version 44!', link: 'https://www.icloud.com/shortcuts/fa85f39337b049d4b175ca978d9a9966' },
-        '[api] notarobot api v1.1': { icon: 'terminal', gradient: 'linear-gradient(135deg,#0a84ff,#64d2ff)', category: 'Developer', desc: 'NotARobot verification API for shortcut developers.', link: 'https://www.icloud.com/shortcuts/642810ae87534d64873d19a5498948f4' },
-        'kool menu': { icon: 'archive', gradient: 'linear-gradient(135deg,#636366,#3a3a3c)', category: 'Legacy', desc: 'The original Kool Menu. No longer maintained.', link: 'https://www.icloud.com/shortcuts/9c0322bfe63647fb9782128d388325f7' },
-        'abel\'s url compressor': { icon: 'link', gradient: 'linear-gradient(135deg,#5aa2ff,#2563eb)', category: 'Utilities', desc: 'Shrink long links into short, shareable TinyURLs in one tap. Paste or share a URL and get a compact link back.', link: 'https://www.icloud.com/shortcuts/9b3fadd93afa4c0c8e051223ce70f6ce' }
+        'quickscreen': {
+            glyph: 'split', tint: '#0A7AE8', soft: ['#E4EEF7', '#CFDFEE', '#132639', '#203B56'], category: 'Productivity',
+            short: 'Split screen your apps and resize windows with ease.',
+            desc: 'Split screen your apps and resize windows with ease. Perfect for iPad multitasking.',
+            link: 'https://www.icloud.com/shortcuts/419b76c98a474c35b11c8497529b3d36'
+        },
+        'anythingbutglass': {
+            glyph: 'layers', tint: '#5E5CE6', soft: ['#F5E8EF', '#ECD6E0', '#341B29', '#4F2C3F'], category: 'Customization',
+            short: 'Removes the Liquid Glass look from iOS 26.',
+            desc: 'Removes the Liquid Glass look from iOS 26 for a cleaner, classic appearance.',
+            link: 'https://www.icloud.com/shortcuts/66d53e172121493e9d834df6a5062f25'
+        },
+        'savemybattery v2.2': {
+            glyph: 'bolt', tint: '#3D7BF7', soft: ['#E6ECFB', '#D3DCF5', '#1A2340', '#2A3660'], category: 'Battery',
+            short: 'Squeeze more out of every charge in one tap.',
+            desc: 'The newest SaveMyBattery. Squeeze more out of every charge in one tap, with the latest tweaks for iOS 26.',
+            pairs: [{ key: 'savemybattery v2.2 automation', label: 'V2.2 Automation', note: 'Runs this for you at a battery level you pick · iOS 27' }],
+            older: [{ key: 'savemybattery v2.1', label: 'V2.1', note: 'previous version' }, { key: 'savemybattery v1', label: 'V1', note: 'for older setups' }],
+            link: 'https://www.icloud.com/shortcuts/53346b499365410c8f4109ff3bc56e5b'
+        },
+        'savemybattery v2.2 automation': {
+            glyph: 'bolt', tint: '#E8455F', soft: ['#FBE7EA', '#F3D0D6', '#361A21', '#52272F'], category: 'Battery', needs: 'iOS 27',
+            short: 'Runs V2.2 when your battery drops to a level you pick.',
+            pitch: 'Runs V2.2 for you when your battery drops to a level you pick.',
+            desc: 'Runs SaveMyBattery V2.2 for you the moment your battery drops to a percentage you pick. Needs iOS 27 and SaveMyBattery V2.2 installed first.',
+            pairs: [{ key: 'savemybattery v2.2', label: 'SaveMyBattery V2.2', note: 'Install this first · it does the saving' }],
+            link: 'https://www.icloud.com/shortcuts/780ac51dcc514b9ba12e04f78e9ef53b'
+        },
+        'savemybattery v2.1': {
+            glyph: 'bolt', tint: '#2E9E63', soft: ['#F9E8E5', '#F2D5D0', '#3B1915', '#592922'], category: 'Battery',
+            short: 'Low power mode, less transparency and motion.',
+            desc: 'Optimize battery life in one tap: low power mode, reduced transparency and motion.',
+            link: 'https://www.icloud.com/shortcuts/32e766396219425e8d29eaf0e4c4a161'
+        },
+        'savemybattery v1': {
+            glyph: 'battery', tint: '#7C7C85', soft: ['#FAE8E5', '#F3D5D0', '#3B1915', '#592922'], category: 'Battery',
+            short: 'The original. Kept for older setups.',
+            desc: 'The original SaveMyBattery. Kept for older setups.',
+            link: 'https://www.icloud.com/shortcuts/594fff3adae8400faf5a903167f0854d'
+        },
+        'coolbgremover': {
+            glyph: 'scissors', tint: '#E58300', soft: ['#E6ECFC', '#D3DCF7', '#192242', '#293563'], category: 'Images',
+            short: 'Remove backgrounds from images instantly.',
+            desc: 'Remove backgrounds from images instantly.',
+            link: 'https://www.icloud.com/shortcuts/c9d90103e0eb4a56bcde227b8006c9b7'
+        },
+        'coolimageeditor': {
+            glyph: 'image', tint: '#A64AE8', soft: ['#E6ECFC', '#D3DCF7', '#192242', '#293563'], category: 'Images',
+            short: 'Crop, convert, resize and more.',
+            desc: 'Quick image editing: crop, convert, resize and more.',
+            link: 'https://www.icloud.com/shortcuts/b9d34799af7248e084e08671549c297d'
+        },
+        'leaf blower w/ google search': {
+            title: 'Leaf Blower w/ Google Search',
+            glyph: 'leaf', tint: '#2F9E55', soft: ['#E4F0E6', '#CEE3D3', '#0E2C18', '#184327'], category: 'Voice',
+            short: 'A very dumb Siri alternative. Search by voice.',
+            desc: 'A very dumb Siri alternative. Search the web using just your voice via Google Search.',
+            link: 'https://www.icloud.com/shortcuts/a52c67fa1d68460abee42b63831bbae5'
+        },
+        'leaf blower w/ google gemini': {
+            title: 'Leaf Blower w/ Google Gemini',
+            glyph: 'sparkle', tint: '#2E95C7', soft: ['#E4F0E6', '#CEE3D3', '#0E2C18', '#184327'], category: 'Voice',
+            short: 'Leaf Blower with Gemini for smarter answers.',
+            desc: 'Leaf Blower powered by Google Gemini for smarter voice answers.',
+            link: 'https://www.icloud.com/shortcuts/9a3c7bc343cb474e94b8ac83828f494b'
+        },
+        'editable materials': {
+            glyph: 'cube', tint: '#D49500', soft: ['#E6ECFB', '#D3DCF6', '#1A2241', '#2A3661'], category: 'Productivity',
+            short: 'Edit files in Google Classroom Materials.',
+            desc: 'Edit files in the Materials section of Google Classroom.',
+            link: 'https://www.icloud.com/shortcuts/d5e5fe1db65745a891e6e81038ed238f'
+        },
+        'deviceinfo': {
+            glyph: 'tablet', tint: '#55555C', soft: ['#E6ECFC', '#D3DCF6', '#1A2241', '#2A3562'], category: 'Utilities',
+            short: 'Detailed info about your device at a glance.',
+            desc: 'See detailed information about your device at a glance.',
+            link: 'https://www.icloud.com/shortcuts/ca35bc3d75814583af3461518c8badf8'
+        },
+        'moo cleanup tool': {
+            glyph: 'broom', tint: '#D9384F', soft: ['#E6ECFC', '#D2DCF8', '#192243', '#293564'], category: 'Utilities',
+            short: 'Clean up leftovers and junk.',
+            desc: 'Clean up leftovers and junk. New in version 44!',
+            link: 'https://www.icloud.com/shortcuts/fa85f39337b049d4b175ca978d9a9966'
+        },
+        '[api] notarobot api v1.1': {
+            glyph: 'terminal', tint: '#1F7AE0', soft: ['#E6ECFC', '#D3DCF7', '#192242', '#293563'], category: 'Developer',
+            short: 'Verification API for shortcut developers.',
+            desc: 'NotARobot verification API for shortcut developers.',
+            link: 'https://www.icloud.com/shortcuts/642810ae87534d64873d19a5498948f4'
+        },
+        'kool menu': {
+            title: 'Kool Menu',
+            glyph: 'archive', tint: '#8E8E93', tintDark: '#6E6E76', soft: ['#E6ECFC', '#D3DCF6', '#1A2241', '#2A3562'], category: 'Legacy',
+            short: 'The original Kool Menu. No longer maintained.',
+            desc: 'The original Kool Menu. No longer maintained.',
+            link: 'https://www.icloud.com/shortcuts/9c0322bfe63647fb9782128d388325f7'
+        },
+        'abel\'s url compressor': {
+            glyph: 'link', tint: '#2F6FE8', soft: ['#E6ECFC', '#D3DCF7', '#1A2242', '#2A3563'], category: 'Utilities',
+            short: 'Shrink long links into short, shareable TinyURLs.',
+            pitch: 'Shrink long links into short, shareable TinyURLs in one tap.',
+            desc: 'Shrink long links into short, shareable TinyURLs in one tap. Paste or share a URL and get a compact link back.',
+            link: 'https://www.icloud.com/shortcuts/9b3fadd93afa4c0c8e051223ce70f6ce'
+        }
+    };
+    META['editable matrials'] = META['editable materials']; // older spelling in some lists
+
+    var DEFAULT_META = {
+        glyph: 'wrench', tint: '#55555C', soft: ['#ECECED', '#DDDCDE', '#252426', '#39383B'], category: 'Other',
+        short: 'An Abel Tools shortcut.', desc: 'An Abel Tools shortcut.'
     };
 
-    var DEFAULT_META = { icon: 'wrench', gradient: 'linear-gradient(135deg,#8e8e93,#3a3a3c)', category: 'Other', desc: 'An Abel Tools shortcut.' };
+    // Category colors: [dot, dark dot, chip background, chip text, dark chip background]
+    var CATS = {
+        'Productivity': ['#0A7AE8', '#3B93F0', '#EBF2FF', '#185AA7', '#1F2C41'],
+        'Customization': ['#5E5CE6', '#8583F0', '#F0F0FF', '#4C4CAC', '#2B283F'],
+        'Battery': ['#2E9E63', '#3FBF7A', '#EAF5EF', '#1D6B43', '#173226'],
+        'Images': ['#E58300', '#F09A2A', '#FAF0E6', '#844B03', '#382913'],
+        'Voice': ['#2E95C7', '#4AB3E0', '#EBF3FA', '#1D6285', '#1D2E39'],
+        'Utilities': ['#55555C', '#9C9CA6', '#F2F2F2', '#5A5A5F', '#2C2B2D'],
+        'Developer': ['#1F7AE0', '#4B95EA', '#EBF2FF', '#215AA2', '#212C3F'],
+        'Legacy': ['#A1401C', '#F08A65', '#FBEFEA', '#8A442B', '#3B261C'],
+        'Other': ['#55555C', '#9C9CA6', '#F2F2F2', '#5A5A5F', '#2C2B2D']
+    };
+    var CAT_ORDER = ['Productivity', 'Customization', 'Battery', 'Images', 'Voice', 'Utilities', 'Developer'];
+
+    function catColors(name) { return CATS[name] || CATS.Other; }
+
+    function paintCat(node, name) {
+        var c = catColors(name);
+        node.style.setProperty('--c', c[0]);
+        node.style.setProperty('--cd', c[1]);
+        node.style.setProperty('--cb', c[2]);
+        node.style.setProperty('--ci', c[3]);
+        node.style.setProperty('--cbd', c[4]);
+    }
 
     /* ================= State ================= */
 
@@ -1716,11 +2131,12 @@
     var installed = parseNameList(params.get('installed'));
     var updates = parseNameList(params.get('updates'));
     var catalog = [];
+    var catalogByKey = Object.create(null);
+    var catalogReady = false;
     var newNames = [];
     var activeCategory = 'All';
     var searchQuery = '';
     var sortMode = 0; // 0 = Featured, 1 = A-Z, 2 = Category
-    var SORT_LABELS = ['Featured', 'A\u2013Z', 'Category'];
 
     function statusFor(item) {
         if (item.eol) return 'EOL';
@@ -1729,32 +2145,23 @@
         return 'GET';
     }
 
+    // The shortcut reports what this device has; a retired one still counts
+    // as being on it.
+    function isOnDevice(item) {
+        return installed.indexOf(item.key) !== -1 || updates.indexOf(item.key) !== -1;
+    }
+
     function deepLink(item) {
         return 'shortcuts://run-shortcut?name=' + encodeURIComponent(SELF_NAME) +
                '&input=text&text=' + encodeURIComponent('install:' + item.name);
     }
 
-    function el(tag, className, text) {
-        var node = document.createElement(tag);
-        if (className) node.className = className;
-        if (text) node.textContent = text;
-        return node;
-    }
-
     /* ================= Favorites =================
-       Kept on the device under one versioned envelope. Abel Tools SYNC will
-       send this exact shape to the account and merge whatever comes back, so
-       nothing in here changes when sync lands (see the sync seam at the end). */
+       Kept on the device under one versioned envelope. Abel Tools SYNC sends
+       this exact shape to the account and merges whatever comes back (see the
+       sync seam near the end). */
 
     var FAV_KEY = 'abeltools-favorites';
-    var FAV_FILTER = 'Favorites';
-    var STAR_PATH = 'M12 2.6 14.3 8.9 20.9 9.1 15.7 13.2 17.5 19.6 12 15.9 6.5 19.6 8.3 13.2 3.1 9.1 9.7 8.9Z';
-
-    function starSvg(size, filled) {
-        return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="' +
-            (filled ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.7" ' +
-            'stroke-linejoin="round" aria-hidden="true"><path d="' + STAR_PATH + '"/></svg>';
-    }
 
     function readFavorites() {
         try {
@@ -1845,20 +2252,20 @@
 
     /* ================= Header date ================= */
 
-    document.getElementById('dateEyebrow').textContent =
+    $('dateEyebrow').textContent =
         new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }).toUpperCase();
 
     /* ================= Theme ================= */
 
-    var themeBtn = document.getElementById('themeBtn');
-    var themeIcon = document.getElementById('themeIcon');
+    var themeBtn = $('themeBtn');
+    var themeIcon = $('themeIcon');
     var root = document.documentElement;
 
     var ACCENTS = ['blue', 'indigo', 'purple', 'pink', 'red', 'orange', 'green', 'graphite'];
-    // Swatch previews (mid-tone, readable in both themes)
+    // Swatch colors are the light accents, so a swatch looks the same in both themes
     var ACCENT_SWATCH = {
-        blue: '#0a84ff', indigo: '#5e5ce6', purple: '#a24bff', pink: '#e5308a',
-        red: '#e0245e', orange: '#f97316', green: '#12b866', graphite: '#7b8494'
+        blue: '#2742E8', indigo: '#5B4FE0', purple: '#8B3FF0', pink: '#D6307F',
+        red: '#D42A4B', orange: '#E0640F', green: '#138A55', graphite: '#4F5663'
     };
 
     function systemDark() {
@@ -1866,6 +2273,7 @@
     }
 
     function isMode(m) { return m === 'auto' || m === 'light' || m === 'dark'; }
+    function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 
     // Order matters: what this device chose wins, then the cookie mirror, and
     // only then ?theme= / ?accent= from the shortcut. Those params used to be
@@ -1905,13 +2313,10 @@
     }
 
     function applyTheme(theme) {
-        if (theme === 'dark') {
-            root.setAttribute('data-theme', 'dark');
-            themeIcon.innerHTML = ICONS.sun;
-        } else {
-            root.removeAttribute('data-theme');
-            themeIcon.innerHTML = ICONS.moon;
-        }
+        if (theme === 'dark') root.setAttribute('data-theme', 'dark');
+        else root.removeAttribute('data-theme');
+        themeIcon.innerHTML = theme === 'dark' ? ICONS.sun : ICONS.moon;
+        themeBtn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
     }
 
     function applyAccent(name) {
@@ -1925,6 +2330,8 @@
         currentTheme = resolvedTheme();
         applyTheme(currentTheme);
     }
+
+    function lookLabel() { return cap(themeMode) + ' · ' + cap(currentAccent); }
 
     applyAccent(currentAccent);
     syncTheme();
@@ -1951,9 +2358,6 @@
         saveLook();
         touchPrefs();
         syncTheme();
-        themeIcon.classList.remove('icon-spin');
-        void themeIcon.offsetWidth; // restart the animation
-        themeIcon.classList.add('icon-spin');
         updateAppearanceUI();
     }
 
@@ -1970,475 +2374,754 @@
         setMode(currentTheme === 'dark' ? 'light' : 'dark');
     });
 
-    /* ================= Appearance sheet ================= */
+    /* ================= Appearance page ================= */
 
-    var appearanceSheet = document.getElementById('appearanceSheet');
-    var modeSeg = document.getElementById('modeSeg');
-    var swatchesEl = document.getElementById('swatches');
+    var modeCards = $('modeCards');
+    var swatchesEl = $('swatches');
 
     ACCENTS.forEach(function (name) {
         var b = el('button', 'swatch');
         b.type = 'button';
-        b.style.background = ACCENT_SWATCH[name];
         b.setAttribute('data-accent', name);
-        b.setAttribute('aria-label', name.charAt(0).toUpperCase() + name.slice(1) + ' accent');
+        b.setAttribute('aria-label', cap(name) + ' accent');
+        b.style.setProperty('--sw', ACCENT_SWATCH[name]);
+        b.innerHTML = '<span class="sw-dot"></span>';
+        b.appendChild(el('span', 'sw-name', cap(name)));
         b.addEventListener('click', function () { setAccent(name); });
         swatchesEl.appendChild(b);
     });
 
-    Array.prototype.forEach.call(modeSeg.querySelectorAll('.seg-btn'), function (btn) {
+    Array.prototype.forEach.call(modeCards.querySelectorAll('.theme-card'), function (btn) {
         btn.addEventListener('click', function () { setMode(btn.getAttribute('data-mode')); });
     });
 
+    $('pvTile').replaceWith(tile({ key: 'quickscreen', tint: META.quickscreen.tint, glyph: META.quickscreen.glyph }, 40));
+
+    function fillAll(name, text) {
+        Array.prototype.forEach.call(document.querySelectorAll('[data-fill="' + name + '"]'), function (node) {
+            node.textContent = text;
+        });
+    }
+
     function updateAppearanceUI() {
-        Array.prototype.forEach.call(modeSeg.querySelectorAll('.seg-btn'), function (btn) {
+        Array.prototype.forEach.call(modeCards.querySelectorAll('.theme-card'), function (btn) {
             var on = btn.getAttribute('data-mode') === themeMode;
-            btn.classList.toggle('active', on);
             btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            var radio = btn.querySelector('.radio');
+            radio.classList.toggle('on', on);
+            radio.innerHTML = on ? icon('check', 13, 3.2) : '';
         });
         Array.prototype.forEach.call(swatchesEl.querySelectorAll('.swatch'), function (btn) {
-            btn.classList.toggle('active', btn.getAttribute('data-accent') === currentAccent);
+            var on = btn.getAttribute('data-accent') === currentAccent;
+            btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            btn.querySelector('.sw-dot').innerHTML = on ? icon('check', 16, 3.2) : '';
         });
+        fillAll('look', lookLabel());
     }
     updateAppearanceUI();
 
-    function openAppearance() {
-        appearanceSheet.classList.add('open');
-        sheetOverlay.classList.add('open');
-        document.body.style.overflow = 'hidden';
+    /* ================= Navigation =================
+       Three main views share the sidebar; Settings swaps in its own sidebar
+       and pages. The body scrolls, the sidebar stays put. */
+
+    var mainSide = $('mainSide');
+    var setSide = $('setSide');
+    var topbar = $('topbar');
+    var tabs = $('tabs');
+    var VIEWS = { discover: $('viewDiscover'), favorites: $('viewFavorites'), library: $('viewLibrary') };
+    var PAGES = { sync: $('pageSync'), appearance: $('pageAppearance'), about: $('pageAbout') };
+    var VIEW_NAMES = { discover: 'Discover', favorites: 'Favorites', library: 'Library' };
+    var currentView = 'discover';
+    var lastMainView = 'discover';
+    var settingsPage = 'appearance';
+
+    function showView(name) {
+        currentView = name;
+        var inSettings = name === 'settings';
+        if (!inSettings) lastMainView = name;
+
+        mainSide.hidden = inSettings;
+        topbar.hidden = inSettings;
+        tabs.hidden = inSettings;
+        setSide.hidden = !inSettings;
+        Object.keys(VIEWS).forEach(function (k) { VIEWS[k].hidden = k !== name; });
+        Object.keys(PAGES).forEach(function (k) { PAGES[k].hidden = !(inSettings && k === settingsPage); });
+
+        Array.prototype.forEach.call(document.querySelectorAll('.nav-btn[data-go], .tab[data-go]'), function (b) {
+            if (b.getAttribute('data-go') === name) b.setAttribute('aria-current', 'page');
+            else b.removeAttribute('aria-current');
+        });
+        Array.prototype.forEach.call(setSide.querySelectorAll('.set-item'), function (b) {
+            if (b.getAttribute('data-page') === settingsPage) b.setAttribute('aria-current', 'page');
+            else b.removeAttribute('aria-current');
+        });
+        $('setBackLabel').textContent = VIEW_NAMES[lastMainView];
+        $('catGroup').hidden = name === 'library' || !catalogReady;
+
+        renderCurrent();
+        window.scrollTo(0, 0);
     }
-    function closeAppearance() {
-        appearanceSheet.classList.remove('open');
-        sheetOverlay.classList.remove('open');
-        document.body.style.overflow = '';
+
+    // Repaint whatever is on screen without moving it, for data that arrives
+    // in the background (the catalog, a sync).
+    function renderCurrent() {
+        if (currentView === 'discover') renderDiscover();
+        else if (currentView === 'favorites') renderFavorites();
+        else if (currentView === 'library') renderLibrary();
+        else if (settingsPage === 'sync') renderAccount();
     }
-    document.getElementById('appearanceBtn').addEventListener('click', openAppearance);
-    document.getElementById('appearanceClose').addEventListener('click', closeAppearance);
 
-    /* ================= Collapsing mini header ================= */
-
-    var miniHeader = document.getElementById('miniHeader');
-    var headerRow = document.querySelector('.header-row');
-
-    function onScroll() {
-        miniHeader.classList.toggle('show',
-            window.scrollY > headerRow.offsetTop + headerRow.offsetHeight);
+    function openSettings(page) {
+        settingsPage = page;
+        showView('settings');
     }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
 
-    miniHeader.addEventListener('click', function () {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Anything with data-go switches main view; Discover from the nav also
+    // steps out of a category.
+    document.addEventListener('click', function (e) {
+        var go = e.target.closest('[data-go]');
+        if (go) {
+            if (go.getAttribute('data-go') === 'discover') { activeCategory = 'All'; }
+            showView(go.getAttribute('data-go'));
+            return;
+        }
+        var s = e.target.closest('[data-settings]');
+        if (s) openSettings(s.getAttribute('data-settings'));
     });
 
-    /* ================= Rendering ================= */
+    Array.prototype.forEach.call(setSide.querySelectorAll('.set-item'), function (b) {
+        b.addEventListener('click', function () { openSettings(b.getAttribute('data-page')); });
+    });
+    $('setBack').addEventListener('click', function () { showView(lastMainView); });
+    $('settingsBtn').addEventListener('click', function () { openSettings('appearance'); });
+    $('topSettings').addEventListener('click', function () { openSettings('appearance'); });
+    $('syncCard').addEventListener('click', function () { openSettings('sync'); });
 
-    var listEl = document.getElementById('list');
-    var emptyEl = document.getElementById('empty');
-    var emptyIcon = document.getElementById('emptyIcon');
-    var emptyTitle = document.getElementById('emptyTitle');
-    var emptyText = document.getElementById('emptyText');
-    var EMPTY_SEARCH_ICON = emptyIcon.innerHTML; // keep the markup that shipped in the HTML
-    var countEl = document.getElementById('sectionCount');
-    var chipsEl = document.getElementById('chips');
+    /* ================= Sidebar counts and categories ================= */
 
-    // Edge fades signal that the chip strip scrolls; hide each fade at its end.
-    function updateChipFade() {
-        var maxScroll = chipsEl.scrollWidth - chipsEl.clientWidth;
-        chipsEl.style.setProperty('--fade-l', chipsEl.scrollLeft > 6 ? '24px' : '0px');
-        chipsEl.style.setProperty('--fade-r', chipsEl.scrollLeft < maxScroll - 6 ? '24px' : '0px');
-    }
-    chipsEl.addEventListener('scroll', updateChipFade, { passive: true });
-    window.addEventListener('resize', updateChipFade);
+    var catList = $('catList');
+    var catStrip = $('catStrip');
 
-    function buildChips() {
-        var cats = ['All'];
-        catalog.forEach(function (item) {
-            if (cats.indexOf(item.category) === -1) cats.push(item.category);
+    function categoryCounts() {
+        var counts = Object.create(null);
+        catalog.forEach(function (item) { counts[item.category] = (counts[item.category] || 0) + 1; });
+        var order = CAT_ORDER.filter(function (c) { return counts[c]; });
+        Object.keys(counts).forEach(function (c) {
+            if (order.indexOf(c) === -1 && c !== 'Legacy') order.push(c);
         });
-        // Favorites leads the strip once there is something in it, and stays put
-        // while it is the active filter so the view cannot vanish mid-tap.
-        var favCount = favoriteCount();
-        if (favCount > 0 || activeCategory === FAV_FILTER) cats.unshift(FAV_FILTER);
-        chipsEl.innerHTML = '';
-        cats.forEach(function (cat) {
-            var chip = el('button', 'chip surface' + (cat === activeCategory ? ' active' : ''),
-                cat === FAV_FILTER ? '' : cat);
-            if (cat === FAV_FILTER) {
-                chip.classList.add('chip-fav');
-                chip.innerHTML = starSvg(13, true) + '<span>' + FAV_FILTER + '</span>' +
-                    '<span class="chip-count">' + favCount + '</span>';
-            }
-            chip.type = 'button';
-            chip.setAttribute('role', 'tab');
-            chip.setAttribute('aria-selected', cat === activeCategory ? 'true' : 'false');
-            chip.addEventListener('click', function () {
-                activeCategory = cat;
-                buildChips();
-                render();
+        if (counts.Legacy) order.push('Legacy'); // retired tools always sit last
+        return order.map(function (c) { return { name: c, count: counts[c] }; });
+    }
+
+    function pickCategory(name) {
+        activeCategory = activeCategory === name ? 'All' : name;
+        if (currentView !== 'discover') showView('discover');
+        else renderDiscover();
+    }
+
+    function renderCategories() {
+        var cats = categoryCounts();
+        catList.innerHTML = '';
+        catStrip.innerHTML = '';
+        $('catGroup').hidden = cats.length === 0 || currentView === 'library';
+
+        var all = el('button', 'cat-chip');
+        all.type = 'button';
+        all.setAttribute('data-cat', 'All');
+        all.appendChild(el('span', null, 'All'));
+        all.appendChild(el('span', 'cat-count', String(catalog.length)));
+        all.addEventListener('click', function () { activeCategory = 'All'; renderDiscover(); });
+        catStrip.appendChild(all);
+
+        cats.forEach(function (c) {
+            [['cat-btn', catList], ['cat-chip', catStrip]].forEach(function (pair) {
+                var b = el('button', pair[0]);
+                b.type = 'button';
+                b.setAttribute('data-cat', c.name);
+                paintCat(b, c.name);
+                b.appendChild(el('span', 'cat-dot'));
+                b.appendChild(el('span', 'cat-name', c.name));
+                b.appendChild(el('span', 'cat-count', String(c.count)));
+                b.addEventListener('click', function () { pickCategory(c.name); });
+                pair[1].appendChild(b);
             });
-            chipsEl.appendChild(chip);
         });
-        updateChipFade();
+        paintCategoryUI();
     }
 
-    function matchesFilters(item) {
-        if (activeCategory === FAV_FILTER) {
-            if (!isFavorite(item.key)) return false;
-        } else if (activeCategory !== 'All' && item.category !== activeCategory) return false;
-        if (searchQuery && item.name.toLowerCase().indexOf(searchQuery) === -1 &&
-            item.category.toLowerCase().indexOf(searchQuery) === -1 &&
-            item.desc.toLowerCase().indexOf(searchQuery) === -1) return false;
-        return true;
+    function paintCategoryUI() {
+        Array.prototype.forEach.call(document.querySelectorAll('[data-cat]'), function (b) {
+            var on = currentView === 'discover' && b.getAttribute('data-cat') === activeCategory;
+            b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
     }
 
-    var rowStars = Object.create(null); // item key -> that item's star button in the list
+    function renderNavCounts() {
+        var favs = favoriteCount();
+        var upd = catalog.filter(function (i) { return statusFor(i) === 'UPDATE'; }).length;
+        fillAll('favcount', favs > 0 ? String(favs) : '');
+        Array.prototype.forEach.call(document.querySelectorAll('[data-fill="updbadge"]'), function (b) {
+            b.textContent = String(upd);
+            b.hidden = upd === 0;
+        });
+    }
+
+    /* ================= Rows and buttons ================= */
+
+    // GET/UPDATE open the confirm, whose link does the installing; installed
+    // and retired are labels only.
+    function actionButton(item, size) {
+        var status = statusFor(item);
+        var sz = size ? ' sz-' + size : '';
+        if (status === 'EOL') return el('span', 'pill pill-ret' + sz, 'Retired');
+        if (status === 'INSTALLED') {
+            var s = el('span', 'pill pill-inst' + sz);
+            s.innerHTML = icon('check', 14, 2.6) + 'Installed';
+            return s;
+        }
+        // The cards on Discover use the solid button for GET as well
+        var solid = status === 'UPDATE' || size === 'spot';
+        var b = el('button', 'pill ' + (solid ? 'pill-upd' : 'pill-get') + sz, status === 'UPDATE' ? 'Update' : 'Get');
+        b.type = 'button';
+        b.setAttribute('aria-label', (status === 'UPDATE' ? 'Update ' : 'Get ') + item.title);
+        b.addEventListener('click', function (e) {
+            e.stopPropagation();
+            openConfirm(item);
+        });
+        return b;
+    }
+
+    var starsByList = { discover: Object.create(null), favorites: Object.create(null) };
 
     function favLabel(item, on) {
-        return on ? 'Remove ' + item.name + ' from favorites'
-                  : 'Add ' + item.name + ' to favorites';
+        return on ? 'Remove ' + item.title + ' from favorites' : 'Add ' + item.title + ' to favorites';
     }
 
     function paintStar(btn, item) {
         var on = isFavorite(item.key);
         btn.classList.toggle('on', on);
-        btn.innerHTML = starSvg(21, on);
+        btn.innerHTML = starSvg(20, on);
         btn.setAttribute('aria-pressed', on ? 'true' : 'false');
         btn.setAttribute('aria-label', favLabel(item, on));
     }
 
-    function buildStar(item) {
-        var btn = el('button', 'fav-btn');
+    function buildStar(item, listName) {
+        var btn = el('button', 'star-btn');
         btn.type = 'button';
         paintStar(btn, item);
         btn.addEventListener('click', function (e) {
-            e.stopPropagation(); // the rest of the row opens the detail sheet
+            e.stopPropagation(); // the rest of the row opens the detail panel
             toggleFavorite(item.key);
             popStar(btn);
             favoritesChanged(item);
         });
+        starsByList[listName][item.key] = btn;
         return btn;
     }
 
-    // Single place that repaints everything a favorite touches: the chip count,
-    // the list (a row leaves the Favorites view when unfavorited) and the sheet.
+    // Single place that repaints everything a favorite touches.
     function favoritesChanged(item) {
-        buildChips();
-        if (activeCategory === FAV_FILTER) render();
-        else if (rowStars[item.key]) paintStar(rowStars[item.key], item);
-        if (sheetItem && sheetItem.key === item.key) paintSheetFav();
-    }
-
-    function buildButton(item, status) {
-        if (status === 'EOL') return el('span', 'btn btn-eol', 'EOL');
-        if (status === 'INSTALLED') return el('span', 'btn btn-installed', 'INSTALLED');
-        var a = el('a', status === 'UPDATE' ? 'btn btn-update' : 'btn btn-get', status);
-        // iCloud links open natively in any web view; deep link is the fallback
-        a.href = item.link || deepLink(item);
-        a.setAttribute('aria-label', (status === 'UPDATE' ? 'Update ' : 'Get ') + item.name);
-        a.addEventListener('click', function (e) {
-            e.preventDefault();
-            openConfirm(item, a.href);
+        renderNavCounts();
+        if (currentView === 'favorites') renderFavorites();
+        Object.keys(starsByList).forEach(function (n) {
+            var b = starsByList[n][item.key];
+            if (b && b.isConnected) paintStar(b, item);
         });
-        return a;
+        if (sheetItem && sheetItem.key === item.key) paintSheetFav();
+        if (currentView === 'library') renderLibrary();
+        renderAccount();
     }
 
-    function sortedCatalog() {
-        var items = catalog.filter(matchesFilters);
+    function openOnActivate(node, item) {
+        node.addEventListener('click', function (e) {
+            if (e.target.closest('.pill') || e.target.closest('.star-btn')) return;
+            openSheet(item);
+        });
+        node.addEventListener('keydown', function (e) {
+            if (e.target !== node) return;
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(item); }
+        });
+    }
+
+    function buildRow(item, listName) {
+        var row = el('div', 'row' + (item.eol ? ' is-eol' : ''));
+        row.setAttribute('role', 'button');
+        row.setAttribute('tabindex', '0');
+        row.setAttribute('aria-label', 'View details for ' + item.title);
+
+        var info = el('div', 'row-info');
+        var top = el('div', 'row-top');
+        top.appendChild(el('span', 'row-name', item.title));
+        if (item.isNew && !item.eol) top.appendChild(el('span', 'badge-new sm', 'NEW'));
+        info.appendChild(top);
+        info.appendChild(el('span', 'row-sub', item.category + ' · ' + item.short));
+
+        var act = el('div', 'row-act');
+        act.appendChild(actionButton(item));
+
+        row.appendChild(tile(item, 44));
+        row.appendChild(info);
+        row.appendChild(buildStar(item, listName));
+        row.appendChild(act);
+        openOnActivate(row, item);
+        return row;
+    }
+
+    /* ================= Discover ================= */
+
+    var listEl = $('list');
+    var listEmpty = $('listEmpty');
+    var updateGrid = $('updateGrid');
+
+    function matchesFilters(item) {
+        if (activeCategory !== 'All' && item.category !== activeCategory) return false;
+        if (searchQuery && item.title.toLowerCase().indexOf(searchQuery) === -1 &&
+            item.name.toLowerCase().indexOf(searchQuery) === -1 &&
+            item.category.toLowerCase().indexOf(searchQuery) === -1 &&
+            item.desc.toLowerCase().indexOf(searchQuery) === -1) return false;
+        return true;
+    }
+
+    function featuredSort(items) {
+        // Featured: NEW shortcuts first, EOL last, otherwise list order
+        return items.sort(function (a, b) {
+            return (b.isNew - a.isNew) || (a.eol - b.eol) || (a.order - b.order);
+        });
+    }
+
+    function sortedCatalog(items) {
         if (sortMode === 1) {
-            items.sort(function (a, b) { return a.name.localeCompare(b.name); });
-        } else if (sortMode === 2) {
-            items.sort(function (a, b) {
-                return a.category.localeCompare(b.category) || a.name.localeCompare(b.name);
-            });
-        } else {
-            // Featured: NEW shortcuts first, EOL last, otherwise list order
-            items.sort(function (a, b) {
-                return (b.isNew - a.isNew) || (a.eol - b.eol);
+            return items.sort(function (a, b) { return a.title.localeCompare(b.title); });
+        }
+        if (sortMode === 2) {
+            var rank = function (c) { var i = CAT_ORDER.indexOf(c); return c === 'Legacy' ? 99 : (i === -1 ? 50 : i); };
+            return items.sort(function (a, b) {
+                return (rank(a.category) - rank(b.category)) || a.title.localeCompare(b.title);
             });
         }
-        return items;
+        return featuredSort(items);
     }
-
-    var spotEl = document.getElementById('spotlights');
 
     function renderSpotlights() {
-        spotEl.innerHTML = '';
-        // Spotlights only decorate the default browse view
-        if (activeCategory !== 'All' || searchQuery) return;
-
-        catalog.filter(function (i) { return i.isNew && !i.eol; })
-            .slice(0, 2)
-            .forEach(function (item) {
-                var card = el('div', 'spotlight');
-                card.style.background = item.gradient;
-                card.setAttribute('role', 'button');
-                card.setAttribute('tabindex', '0');
-                card.setAttribute('aria-label', 'View details for ' + item.name);
-
-                card.appendChild(el('p', 'spotlight-eyebrow', 'New this update'));
-
-                var icon = el('div', 'spotlight-icon');
-                fillTile(icon, item, 32, { keepBg: true });
-
-                var info = el('div', 'spotlight-info');
-                info.appendChild(el('div', 'spotlight-name', item.name));
-                info.appendChild(el('div', 'spotlight-desc', item.desc));
-
-                var body = el('div', 'spotlight-body');
-                body.appendChild(icon);
-                body.appendChild(info);
-                body.appendChild(buildButton(item, statusFor(item)));
-                card.appendChild(body);
-
-                card.addEventListener('click', function (e) {
-                    if (e.target.closest('.btn')) return;
-                    openSheet(item);
-                });
-                card.addEventListener('keydown', function (e) {
-                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(item); }
-                });
-
-                spotEl.appendChild(card);
-            });
-    }
-
-    function render() {
-        renderSpotlights();
-        listEl.innerHTML = '';
-        rowStars = Object.create(null);
-        var items = sortedCatalog();
-
-        items.forEach(function (item) {
-            var status = statusFor(item);
-            var row = el('div', 'row' + (item.eol ? ' eol' : ''));
-            row.setAttribute('role', 'button');
-            row.setAttribute('tabindex', '0');
-            row.setAttribute('aria-label', 'View details for ' + item.name);
-
-            var icon = el('div', 'row-icon');
-            fillTile(icon, item, 25);
-
-            var name = el('div', 'row-name', item.name);
-            if (item.isNew && !item.eol) name.appendChild(el('span', 'badge-new', 'NEW'));
-
-            var info = el('div', 'row-info');
-            info.appendChild(name);
-            info.appendChild(el('div', 'row-desc', item.desc));
-            info.appendChild(el('div', 'row-cat', item.category));
-
-            var star = buildStar(item);
-            rowStars[item.key] = star;
-
-            row.appendChild(icon);
-            row.appendChild(info);
-            row.appendChild(star);
-            row.appendChild(buildButton(item, status));
-
-            row.addEventListener('click', function (e) {
-                // GET/UPDATE and the star keep their own actions
-                if (e.target.closest('.btn') || e.target.closest('.fav-btn')) return;
-                openSheet(item);
-            });
-            row.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSheet(item); }
-            });
-
-            listEl.appendChild(row);
+        Array.prototype.slice.call(updateGrid.querySelectorAll('.spot')).forEach(function (n) {
+            updateGrid.removeChild(n);
         });
+        var fresh = catalog.filter(function (i) { return i.isNew && !i.eol; }).slice(0, 2);
+        updateGrid.className = 'update-grid n' + fresh.length;
 
-        countEl.textContent = items.length + ' of ' + catalog.length;
-        listEl.style.display = items.length === 0 ? 'none' : 'block';
-        emptyEl.style.display = items.length === 0 ? 'block' : 'none';
-        if (items.length === 0) renderEmptyState();
+        fresh.forEach(function (item) {
+            var card = el('div', 'spot');
+            card.style.setProperty('--s1', item.soft[0]);
+            card.style.setProperty('--s2', item.soft[1]);
+            card.style.setProperty('--s3', item.soft[2]);
+            card.style.setProperty('--s4', item.soft[3]);
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('aria-label', 'View details for ' + item.title);
+
+            var top = el('div', 'spot-top');
+            top.appendChild(tile(item, 52));
+            top.appendChild(el('span', 'badge-new', 'NEW'));
+
+            var body = el('div', 'spot-body');
+            body.appendChild(el('span', 'spot-name', item.title));
+            body.appendChild(el('span', 'spot-desc', item.pitch));
+
+            var foot = el('div', 'spot-foot');
+            foot.appendChild(el('span', 'spot-meta', item.category + (item.needs ? ' · Needs ' + item.needs : '')));
+            foot.appendChild(actionButton(item, 'spot'));
+
+            card.appendChild(top);
+            card.appendChild(body);
+            card.appendChild(foot);
+            openOnActivate(card, item);
+            updateGrid.appendChild(card);
+        });
     }
 
-    // An empty Favorites view is a first-run state, not a failed search.
-    function renderEmptyState() {
-        var noFavorites = activeCategory === FAV_FILTER && !searchQuery;
-        emptyIcon.innerHTML = noFavorites ? starSvg(24, false) : EMPTY_SEARCH_ICON;
-        emptyTitle.textContent = noFavorites ? 'No favorites yet' : 'No results';
-        emptyText.textContent = noFavorites
-            ? 'Tap the star on any shortcut to keep it here.'
-            : 'Try a different search or category.';
+    function renderDiscover() {
+        paintCategoryUI();
+        if (!catalogReady) return;
+
+        // The update cards decorate the default browse view only
+        var browsing = activeCategory === 'All' && !searchQuery;
+        updateGrid.hidden = !browsing;
+        if (browsing) renderSpotlights();
+
+        var items = sortedCatalog(catalog.filter(matchesFilters));
+        $('listTitle').textContent = searchQuery ? 'Search results'
+            : (activeCategory !== 'All' ? activeCategory : 'All shortcuts');
+        $('listCount').textContent = String(items.length);
+
+        listEl.innerHTML = '';
+        listEl.removeAttribute('aria-busy');
+        starsByList.discover = Object.create(null);
+        items.forEach(function (item) { listEl.appendChild(buildRow(item, 'discover')); });
+        listEl.hidden = items.length === 0;
+        listEmpty.hidden = items.length !== 0;
     }
 
-    /* ================= Search ================= */
+    /* ================= Search and sort ================= */
 
-    var searchInput = document.getElementById('searchInput');
-    var searchClear = document.getElementById('searchClear');
+    var searchInput = $('searchInput');
 
-    function setSearch(value) {
-        searchQuery = value.trim().toLowerCase();
-        searchClear.classList.toggle('show', searchQuery.length > 0);
-        render();
-    }
-
-    searchInput.addEventListener('input', function () { setSearch(searchInput.value); });
-    searchClear.addEventListener('click', function () {
-        searchInput.value = '';
-        setSearch('');
-        searchInput.focus();
+    searchInput.addEventListener('input', function () {
+        searchQuery = searchInput.value.trim().toLowerCase();
+        renderDiscover();
     });
 
-    document.getElementById('emptyClear').addEventListener('click', function () {
+    $('emptyClear').addEventListener('click', function () {
         searchInput.value = '';
         searchQuery = '';
-        searchClear.classList.remove('show');
-        activeCategory = 'All'; // also steps out of the Favorites view
-        buildChips();
-        render();
+        activeCategory = 'All';
+        renderDiscover();
     });
 
-    /* ================= Sort toggle ================= */
-
-    var sortBtn = document.getElementById('sortBtn');
-    sortBtn.addEventListener('click', function () {
-        sortMode = (sortMode + 1) % SORT_LABELS.length;
-        sortBtn.textContent = 'Sort: ' + SORT_LABELS[sortMode];
-        render();
+    var sortSeg = $('sortSeg');
+    Array.prototype.forEach.call(sortSeg.querySelectorAll('.seg-btn'), function (btn) {
+        btn.addEventListener('click', function () {
+            sortMode = Number(btn.getAttribute('data-sort'));
+            Array.prototype.forEach.call(sortSeg.querySelectorAll('.seg-btn'), function (b) {
+                b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+            });
+            renderDiscover();
+        });
     });
 
-    /* ================= Detail sheet ================= */
+    /* ================= Favorites view ================= */
 
-    var sheet = document.getElementById('sheet');
-    var sheetOverlay = document.getElementById('sheetOverlay');
-    var sheetFav = document.getElementById('sheetFav');
-    var sheetItem = null; // the item the sheet is currently showing
+    function renderFavorites() {
+        if (!catalogReady) return;
+        var items = featuredSort(catalog.filter(function (i) { return isFavorite(i.key); }));
+        var none = items.length === 0;
+        $('favEmpty').hidden = !none;
+        $('favHint').hidden = !none;
+        $('favFull').hidden = none;
+        $('favHeadCount').textContent = none ? '' : String(items.length);
+
+        var favList = $('favList');
+        favList.innerHTML = '';
+        starsByList.favorites = Object.create(null);
+        items.forEach(function (item) { favList.appendChild(buildRow(item, 'favorites')); });
+    }
+
+    /* ================= Library view ================= */
+
+    function libRow(item) {
+        var status = statusFor(item);
+        var row = el('div', 'inst-row');
+        row.setAttribute('role', 'button');
+        row.setAttribute('tabindex', '0');
+        row.setAttribute('aria-label', 'View details for ' + item.title);
+        var info = el('div', 'inst-info');
+        info.appendChild(el('span', 'inst-name', item.title));
+        info.appendChild(el('span', 'inst-cat', item.category));
+        row.appendChild(tile(item, 44));
+        row.appendChild(info);
+        if (status === 'UPDATE') {
+            row.appendChild(el('span', 'st-ready', 'Update ready'));
+        } else {
+            var ok = el('span', 'st-ok');
+            ok.innerHTML = icon('check', 14, 2.6) + 'Up to date';
+            row.appendChild(ok);
+        }
+        openOnActivate(row, item);
+        return row;
+    }
+
+    function renderLibrary() {
+        if (!catalogReady) return;
+        var onDevice = catalog.filter(function (i) { return !i.eol && isOnDevice(i); });
+        var waiting = onDevice.filter(function (i) { return statusFor(i) === 'UPDATE'; });
+        // As drawn, Retired lists every retired tool, and counts never treat
+        // one as installed.
+        var retired = catalog.filter(function (i) { return i.eol; });
+        var favs = favoriteCount();
+
+        $('libUpdates').hidden = waiting.length === 0;
+        $('libInstalled').hidden = onDevice.length === 0;
+        $('libRetired').hidden = retired.length === 0;
+        $('libEmpty').hidden = onDevice.length > 0;
+
+        $('libUpdCount').textContent = String(waiting.length);
+        var updList = $('libUpdList');
+        updList.innerHTML = '';
+        waiting.forEach(function (item) {
+            var card = el('div', 'upd-card');
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('aria-label', 'View details for ' + item.title);
+            var info = el('div', 'upd-info');
+            info.appendChild(el('span', 'upd-name', item.title));
+            info.appendChild(el('span', 'upd-text', 'A newer version is ready. Your favorites and settings stay as they are.'));
+            card.appendChild(tile(item, 56));
+            card.appendChild(info);
+            card.appendChild(actionButton(item, 'xl'));
+            openOnActivate(card, item);
+            updList.appendChild(card);
+        });
+
+        $('libInstCount').textContent = String(onDevice.length);
+        var instList = $('libInstList');
+        instList.innerHTML = '';
+        // Updates lead, the rest keep catalog order
+        onDevice.slice().sort(function (a, b) {
+            return (statusFor(a) === 'UPDATE' ? 0 : 1) - (statusFor(b) === 'UPDATE' ? 0 : 1) || a.order - b.order;
+        }).forEach(function (item) { instList.appendChild(libRow(item)); });
+
+        $('libRetCount').textContent = String(retired.length);
+        var retList = $('libRetList');
+        retList.innerHTML = '';
+        retired.forEach(function (item) {
+            var card = el('div', 'ret-card');
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('aria-label', 'View details for ' + item.title);
+            var info = el('div', 'inst-info');
+            info.appendChild(el('span', 'inst-name', item.title));
+            info.appendChild(el('span', 'inst-cat', 'No longer maintained. It won\'t get updates.'));
+            card.appendChild(tile(item, 44));
+            card.appendChild(info);
+            card.appendChild(el('span', 'st-ret', 'Retired'));
+            openOnActivate(card, item);
+            retList.appendChild(card);
+        });
+
+        $('glInstalled').textContent = String(onDevice.length);
+        $('glUpdates').textContent = String(waiting.length);
+        $('glUpdatesCap').textContent = waiting.length === 1 ? 'update ready' : 'updates ready';
+        $('glMissing').textContent = String(catalog.length - onDevice.length);
+        $('glFavs').textContent = String(favs);
+        $('glFavsCap').textContent = favs === 1 ? 'favorite' : 'favorites';
+        $('glBrowse').textContent = 'Browse all ' + catalog.length;
+    }
+
+    /* ================= Detail panel ================= */
+
+    var sheet = $('sheet');
+    var sheetScrim = $('sheetScrim');
+    var sheetBody = $('sheetBody');
+    var sheetItem = null;     // the item the panel is currently showing
+    var sheetFav = null;
+    var sheetReturn = null;   // where focus goes back to when it closes
+
+    var STATUS_LINE = {
+        GET: ['Not installed', 'var(--muted)', 'var(--muted-2)'],
+        UPDATE: ['Installed · update ready', 'var(--accent-ink)', 'var(--accent)'],
+        INSTALLED: ['Installed · up to date', 'var(--ink-2)', '#2E9E63'],
+        EOL: ['Retired · no longer maintained', 'var(--retired)', 'var(--retired)']
+    };
+    var STATUS_FACT = { GET: 'Not installed', UPDATE: 'Update ready', INSTALLED: 'Installed', EOL: 'Retired' };
 
     function paintSheetFav() {
-        if (!sheetItem) return;
+        if (!sheetItem || !sheetFav) return;
         var on = isFavorite(sheetItem.key);
         sheetFav.classList.toggle('on', on);
         sheetFav.setAttribute('aria-pressed', on ? 'true' : 'false');
-        sheetFav.innerHTML = starSvg(18, on) +
-            '<span>' + (on ? 'Favorited' : 'Add to Favorites') + '</span>';
+        sheetFav.setAttribute('aria-label', favLabel(sheetItem, on));
+        sheetFav.innerHTML = starSvg(22, on, 1.6);
     }
 
-    sheetFav.addEventListener('click', function () {
-        if (!sheetItem) return;
-        toggleFavorite(sheetItem.key);
-        popStar(sheetFav);
-        favoritesChanged(sheetItem);
-    });
+    function primaryAction(item) {
+        var status = statusFor(item);
+        if (status === 'INSTALLED' || status === 'EOL') {
+            var s = el('span', 'p-primary is-static');
+            s.innerHTML = status === 'INSTALLED' ? icon('check', 18, 2.4) + 'Installed' : 'Retired';
+            return s;
+        }
+        var b = el('button', 'p-primary');
+        b.type = 'button';
+        b.innerHTML = icon('download', 18, 2.2);
+        b.appendChild(document.createTextNode(status === 'UPDATE' ? 'Update' : 'Get'));
+        b.addEventListener('click', function () { openConfirm(item); });
+        return b;
+    }
+
+    function fact(term, value) {
+        var d = el('div', 'fact');
+        d.appendChild(el('dt', null, term));
+        d.appendChild(el('dd', null, value));
+        return d;
+    }
+
+    function fillSheet(item) {
+        var status = statusFor(item);
+        sheetItem = item;
+
+        var chip = $('sheetChip');
+        paintCat(chip, item.category);
+        $('sheetChipText').textContent = item.category;
+
+        sheetBody.innerHTML = '';
+        sheetBody.scrollTop = 0;
+
+        var top = el('div', 'p-top');
+        top.appendChild(tile(item, 84));
+        var titles = el('div', 'p-titles');
+        var name = el('h2', 'p-name', item.title);
+        name.id = 'sheetName';
+        titles.appendChild(name);
+        var line = STATUS_LINE[status];
+        var st = el('span', 'p-status');
+        st.style.setProperty('--st', line[1]);
+        st.style.setProperty('--sd', line[2]);
+        st.appendChild(el('i'));
+        st.appendChild(document.createTextNode(line[0]));
+        titles.appendChild(st);
+        top.appendChild(titles);
+        sheetBody.appendChild(top);
+
+        var actions = el('div', 'p-actions');
+        actions.appendChild(primaryAction(item));
+        sheetFav = el('button', 'p-fav');
+        sheetFav.type = 'button';
+        sheetFav.addEventListener('click', function () {
+            toggleFavorite(item.key);
+            popStar(sheetFav);
+            favoritesChanged(item);
+        });
+        actions.appendChild(sheetFav);
+        paintSheetFav();
+        sheetBody.appendChild(actions);
+
+        sheetBody.appendChild(el('p', 'p-desc', item.desc));
+
+        var facts = el('dl', 'facts');
+        facts.appendChild(fact('CATEGORY', item.category));
+        facts.appendChild(fact('STATUS', STATUS_FACT[status]));
+        facts.appendChild(fact('INSTALLS AS', 'Apple Shortcut'));
+        facts.appendChild(fact('OPENS IN', 'Shortcuts app'));
+        sheetBody.appendChild(facts);
+
+        var pairs = (item.pairs || []).filter(function (p) { return catalogByKey[p.key]; });
+        if (pairs.length) {
+            var sec = el('div', 'p-sec');
+            sec.appendChild(el('h3', 'p-h3', 'Works with'));
+            pairs.forEach(function (p) {
+                var other = catalogByKey[p.key];
+                var row = el('div', 'pair');
+                row.setAttribute('role', 'button');
+                row.setAttribute('tabindex', '0');
+                row.setAttribute('aria-label', 'View details for ' + other.title);
+                var info = el('div', 'pair-info');
+                var nm = el('span', 'pair-name', p.label);
+                if (other.isNew && !other.eol) nm.appendChild(el('span', 'badge-new sm tight', 'NEW'));
+                info.appendChild(nm);
+                info.appendChild(el('span', 'pair-note', p.note));
+                row.appendChild(tile(other, 44));
+                row.appendChild(info);
+                row.appendChild(actionButton(other, 'sm'));
+                openOnActivate(row, other);
+                sec.appendChild(row);
+            });
+            sheetBody.appendChild(sec);
+        }
+
+        var older = (item.older || []).filter(function (o) { return catalogByKey[o.key]; });
+        if (older.length) {
+            var osec = el('div', 'p-sec');
+            osec.appendChild(el('h3', 'p-h3', 'Older versions'));
+            var chips = el('div', 'olds');
+            older.forEach(function (o) {
+                var c = el('span', 'old', o.label);
+                c.appendChild(el('span', null, '· ' + (isOnDevice(catalogByKey[o.key]) ? 'installed' : o.note)));
+                chips.appendChild(c);
+            });
+            osec.appendChild(chips);
+            sheetBody.appendChild(osec);
+        }
+    }
 
     function openSheet(item) {
-        var status = statusFor(item);
-        var iconNode = document.getElementById('sheetIcon');
-        fillTile(iconNode, item, 36);
-        document.getElementById('sheetName').textContent = item.name;
-        document.getElementById('sheetCat').textContent =
-            item.category + (item.eol ? ' \u00b7 No longer maintained' : '');
-        document.getElementById('sheetDesc').textContent = item.desc;
-
-        var action = document.getElementById('sheetAction');
-        action.innerHTML = '';
-        action.appendChild(buildButton(item, status));
-
-        sheetItem = item;
-        paintSheetFav();
-
+        if (!sheet.classList.contains('open')) sheetReturn = document.activeElement;
+        fillSheet(item);
         sheet.classList.add('open');
-        sheetOverlay.classList.add('open');
+        sheetScrim.classList.add('open');
         document.body.style.overflow = 'hidden';
+        sheet.focus({ preventScroll: true });
     }
 
     function closeSheet() {
+        if (!sheet.classList.contains('open')) return;
         sheet.classList.remove('open');
-        sheetOverlay.classList.remove('open');
+        sheetScrim.classList.remove('open');
         document.body.style.overflow = '';
         sheetItem = null;
+        sheetFav = null;
+        if (sheetReturn && sheetReturn.isConnected && sheetReturn.focus) sheetReturn.focus({ preventScroll: true });
+        sheetReturn = null;
     }
 
-    document.getElementById('sheetClose').addEventListener('click', closeSheet);
+    $('sheetClose').addEventListener('click', closeSheet);
+    sheetScrim.addEventListener('click', closeSheet);
 
-    /* ================= About sheet ================= */
-
-    var aboutSheet = document.getElementById('aboutSheet');
-
-    function openAbout() {
-        aboutSheet.classList.add('open');
-        sheetOverlay.classList.add('open');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeAbout() {
-        aboutSheet.classList.remove('open');
-        sheetOverlay.classList.remove('open');
-        document.body.style.overflow = '';
-    }
-
-    document.getElementById('aboutBtn').addEventListener('click', openAbout);
-    document.getElementById('aboutClose').addEventListener('click', closeAbout);
-
-    sheetOverlay.addEventListener('click', function () { closeSheet(); closeAbout(); closeAppearance(); });
-
-    /* ================= Swipe-to-dismiss sheets ================= */
-
-    function enableSwipe(sheetEl, closeFn) {
+    // At phone width the panel is a bottom sheet: drag it down to dismiss.
+    (function () {
         var startY = 0, dy = 0, dragging = false;
-
-        sheetEl.addEventListener('touchstart', function (e) {
-            if (sheetEl.scrollTop > 0) return; // let content scroll first
+        var narrow = window.matchMedia ? window.matchMedia('(max-width: 760px)') : null;
+        sheet.addEventListener('touchstart', function (e) {
+            if (!narrow || !narrow.matches || sheetBody.scrollTop > 0) return;
             startY = e.touches[0].clientY;
             dy = 0;
             dragging = true;
         }, { passive: true });
-
-        sheetEl.addEventListener('touchmove', function (e) {
+        sheet.addEventListener('touchmove', function (e) {
             if (!dragging) return;
             dy = e.touches[0].clientY - startY;
             if (dy <= 0) { // upward: hand the gesture back to scrolling
                 dragging = false;
-                sheetEl.style.transition = '';
-                sheetEl.style.transform = '';
+                sheet.style.transition = '';
+                sheet.style.transform = '';
                 return;
             }
             e.preventDefault();
-            sheetEl.style.transition = 'none';
-            sheetEl.style.transform = 'translateY(' + dy + 'px)';
+            sheet.style.transition = 'none';
+            sheet.style.transform = 'translateY(' + dy + 'px)';
         }, { passive: false });
-
-        sheetEl.addEventListener('touchend', function () {
+        sheet.addEventListener('touchend', function () {
             if (!dragging) return;
             dragging = false;
             // Clearing inline styles in the same frame lets the CSS
             // transition pick up from the dragged position.
-            sheetEl.style.transition = '';
-            sheetEl.style.transform = '';
-            if (dy > 110) closeFn();
+            sheet.style.transition = '';
+            sheet.style.transform = '';
+            if (dy > 110) closeSheet();
         });
-    }
+    })();
 
-    enableSwipe(sheet, closeSheet);
-    enableSwipe(aboutSheet, closeAbout);
-    enableSwipe(appearanceSheet, closeAppearance);
+    /* ================= Install confirm ================= */
 
-    /* ================= Confirm alert ================= */
+    var alertBox = $('alert');
+    var alertScrim = $('alertScrim');
+    var alertContinue = $('alertContinue');
+    var alertReturn = null;
 
-    var alertBox = document.getElementById('alert');
-    var alertOverlay = document.getElementById('alertOverlay');
-    var alertContinue = document.getElementById('alertContinue');
-
-    function openConfirm(item, href) {
-        var iconNode = document.getElementById('alertIcon');
-        fillTile(iconNode, item, 26);
-        document.getElementById('alertMsg').textContent =
-            '\u201C' + item.name + '\u201D will open in Shortcuts.';
-        alertContinue.href = href;
+    function openConfirm(item) {
+        alertReturn = document.activeElement;
+        var iconNode = $('alertIcon');
+        iconNode.innerHTML = '';
+        iconNode.appendChild(tile(item, 60));
+        $('alertTitle').textContent = (statusFor(item) === 'UPDATE' ? 'Update ' : 'Get ') + item.title + '?';
+        // iCloud links open natively in any web view; deep link is the fallback
+        alertContinue.href = item.link || deepLink(item);
         alertBox.classList.add('open');
-        alertOverlay.classList.add('open');
+        alertScrim.classList.add('open');
+        $('alertCancel').focus({ preventScroll: true });
     }
 
     function closeConfirm() {
+        if (!alertBox.classList.contains('open')) return;
         alertBox.classList.remove('open');
-        alertOverlay.classList.remove('open');
+        alertScrim.classList.remove('open');
+        if (alertReturn && alertReturn.isConnected && alertReturn.focus) alertReturn.focus({ preventScroll: true });
+        alertReturn = null;
     }
 
-    document.getElementById('alertCancel').addEventListener('click', closeConfirm);
-    alertOverlay.addEventListener('click', closeConfirm);
+    $('alertCancel').addEventListener('click', closeConfirm);
+    alertScrim.addEventListener('click', closeConfirm);
     alertContinue.addEventListener('click', function () {
         // Let navigation proceed, then tidy up the dialog
+        alertReturn = null;
         closeConfirm();
         closeSheet();
     });
@@ -2446,12 +3129,10 @@
     document.addEventListener('keydown', function (e) {
         if (e.key !== 'Escape') return;
         if (alertBox.classList.contains('open')) { closeConfirm(); return; }
-        if (sheet.classList.contains('open')) closeSheet();
-        if (aboutSheet.classList.contains('open')) closeAbout();
-        if (appearanceSheet.classList.contains('open')) closeAppearance();
+        closeSheet();
     });
 
-    /* ================= Announcement banner ================= */
+    /* ================= Announcement ================= */
 
     function renderAnnouncement(text) {
         text = (text || '').trim();
@@ -2460,23 +3141,19 @@
             if (localStorage.getItem('abeltools-announce-dismissed') === text) return;
         } catch (e) {}
 
-        document.getElementById('announceText').textContent = text;
-        var banner = document.getElementById('announce');
-        banner.classList.add('show');
-        document.getElementById('announceClose').addEventListener('click', function () {
-            banner.classList.remove('show');
+        $('noticeText').textContent = text;
+        var notice = $('notice');
+        notice.hidden = false;
+        $('noticeClose').addEventListener('click', function () {
+            notice.hidden = true;
             try { localStorage.setItem('abeltools-announce-dismissed', text); } catch (e) {}
         });
     }
 
-    /* ================= Hero (What's New) ================= */
+    /* ================= What's new ================= */
 
-    function renderChangelog(md, version) {
-        if (version) {
-            document.getElementById('heroTitle').textContent = 'New in version ' + version;
-            document.getElementById('heroGhost').textContent = version;
-        }
-        var listNode = document.getElementById('heroList');
+    function renderChangelog(md) {
+        var listNode = $('wnList');
         var items = md.split('\n')
             .map(function (l) { return l.trim(); })
             .filter(function (l) { return /^[-*+]\s+/.test(l); })
@@ -2486,7 +3163,7 @@
         if (items.length === 0) items = [md.trim() || 'No changelog available.'];
         items.forEach(function (text) {
             var li = document.createElement('li');
-            li.innerHTML = iconSvg('check', 15);
+            li.innerHTML = icon('check', 16, 2.6);
             li.appendChild(el('span', null, text));
             listNode.appendChild(li);
         });
@@ -2505,25 +3182,39 @@
     ];
 
     function buildCatalog(lines) {
+        catalogByKey = Object.create(null);
         catalog = lines
             .map(function (l) { return l.trim(); })
             .filter(Boolean)
-            .map(function (rawName) {
+            .map(function (rawName, order) {
                 var eol = /\[EOL\]/i.test(rawName);
-                var meta = META[normalize(rawName)] || DEFAULT_META;
                 var key = normalize(rawName);
-                return {
-                    name: rawName.replace(/\s*\[EOL\]\s*/i, ' ').trim(),
+                var meta = META[key] || DEFAULT_META;
+                var name = rawName.replace(/\s*\[EOL\]\s*/i, ' ').trim();
+                var item = {
+                    name: name,                   // as listed; installs and deep links use it
+                    title: meta.title || name,    // as shown
                     key: key,
+                    order: order,
                     eol: eol,
                     isNew: newNames.indexOf(key) !== -1,
-                    icon: meta.icon,
+                    glyph: meta.glyph,
+                    tint: meta.tint,
+                    tintDark: meta.tintDark || null,
+                    soft: meta.soft || DEFAULT_META.soft,
                     link: meta.link || null,
-                    gradient: meta.gradient,
                     category: eol ? 'Legacy' : meta.category,
-                    desc: meta.desc
+                    short: meta.short,
+                    pitch: meta.pitch || meta.short,
+                    desc: meta.desc,
+                    needs: meta.needs || null,
+                    pairs: meta.pairs || null,
+                    older: meta.older || null
                 };
+                catalogByKey[key] = item;
+                return item;
             });
+        catalogReady = true;
     }
 
     function fetchText(file) {
@@ -2541,23 +3232,18 @@
     }
 
     function init() {
-        var versionPromise = fetchApi('newversion').then(function (v) {
+        fetchApi('newversion').then(function (v) {
             var version = v.trim();
-            document.getElementById('versionPill').textContent = 'v' + version;
-            document.getElementById('miniVersion').textContent = 'v' + version;
-            document.getElementById('aboutVersion').textContent = 'Version ' + version;
-            return version;
+            fillAll('installer', 'Installer · v' + version);
+            fillAll('vtag', 'v' + version);
+            fillAll('version', 'Version ' + version);
         }).catch(function () {
-            document.getElementById('versionPill').textContent = 'v?';
-            return null;
+            fillAll('installer', 'Installer · v?');
+            fillAll('version', 'Version ?');
         });
 
-        Promise.all([
-            fetchApi('newchangelog').catch(function () { return ''; }),
-            versionPromise
-        ]).then(function (results) {
-            if (results[0]) renderChangelog(results[0], results[1]);
-            else document.getElementById('heroList').innerHTML = '<li><span>Could not load changelog.</span></li>';
+        fetchApi('newchangelog').then(renderChangelog).catch(function () {
+            $('wnList').innerHTML = '<li><span>Could not load changelog.</span></li>';
         });
 
         fetchText('announcement.md').then(renderAnnouncement).catch(function () {});
@@ -2571,19 +3257,21 @@
         ]).then(function (results) {
             newNames = results[1];
             buildCatalog(results[0]);
-            buildChips();
-            render();
+            searchInput.placeholder = 'Search ' + catalog.length + ' shortcuts';
+            renderCategories();
+            renderNavCounts();
+            renderCurrent();
         });
     }
 
+    showView('discover');
     init();
 
     /* ================= Sync seam (for Abel Tools SYNC) =================
-       Sync is not wired up yet. When it lands it needs exactly two calls:
-       snapshot() for what this device holds, and merge() for what the account
-       holds. Favorites, theme mode and accent share one timestamp, and last
-       write wins on the whole snapshot, so a device that has been offline for
-       a week cannot wipe changes made since. */
+       snapshot() is what this device holds, and merge() takes what the
+       account holds. Favorites, theme mode and accent share one timestamp,
+       and last write wins on the whole snapshot, so a device that has been
+       offline for a week cannot wipe changes made since. */
 
     window.AbelToolsPrefs = {
         snapshot: function () {
@@ -2641,16 +3329,16 @@
             } finally {
                 applyingRemote = false;
             }
-            buildChips();
-            render();
+            renderNavCounts();
+            renderCurrent();
             return true;
         }
     };
 
     /* ================= Account and sync =================
        Sign in is Supabase Auth, spoken to over its own REST endpoints so the
-       installer stays one self-contained file with no CDN dependency. Tokens
-       live on this device. Preferences travel through /api/sync, which verifies
+       installer stays one self-contained file with no auth SDK. Tokens live
+       on this device. Preferences travel through /api/sync, which verifies
        the token and is the only thing that ever sees the spreadsheet.
 
        This is the installer's own sign in on purpose: the Shortcuts web view
@@ -2668,22 +3356,24 @@
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1cXRuYmh5dXVmeXltZmd2b3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3NjM4NzUsImV4cCI6MjEwNDMzOTg3NX0.ptsLo9yCspgyxyZGb2EnBMIyYWCVirQfhfFCo2zB2cA';
     var IDENTITY_BASE = SUPABASE_URL + '/auth/v1';
 
-    var accountSheet = document.getElementById('accountSheet');
-    var acctForm = document.getElementById('acctForm');
-    var acctPanel = document.getElementById('acctPanel');
-    var acctMsg = document.getElementById('acctMsg');
-    var acctSubmit = document.getElementById('acctSubmit');
-    var acctToggle = document.getElementById('acctToggle');
-    var acctEmailInput = document.getElementById('acctEmail');
-    var acctPasswordInput = document.getElementById('acctPassword');
+    var syncSignIn = $('syncSignIn');
+    var syncCode = $('syncCode');
+    var syncSignedIn = $('syncSignedIn');
+    var acctForm = $('acctForm');
+    var acctSubmit = $('acctSubmit');
+    var acctEmailInput = $('acctEmail');
+    var acctPasswordInput = $('acctPassword');
+    var modeSignIn = $('modeSignIn');
+    var modeSignUp = $('modeSignUp');
 
-    var acctMfaForm = document.getElementById('acctMfaForm');
-    var acctMfaCode = document.getElementById('acctMfaCode');
-    var acctMfaSubmit = document.getElementById('acctMfaSubmit');
+    var acctMfaForm = $('acctMfaForm');
+    var acctMfaSubmit = $('acctMfaSubmit');
+    var digits = Array.prototype.slice.call(acctMfaForm.querySelectorAll('.digit'));
 
     var signupMode = false;
     var syncTimer = null;
     var syncInFlight = false;
+    var mfaChecking = false;
 
     // A password gets an aal1 session. If the account has a verified factor
     // that session is real but unfinished, and /api/sync refuses it, which is
@@ -2698,12 +3388,12 @@
     var SYNCED_KEY = 'abeltools-synced-with';
 
     var SYNC_MESSAGES = {
-        pulled: 'Brought this device up to date.',
-        pushed: 'Saved to your account.',
-        merged: 'Merged this device with your account. Nothing was lost.',
-        backed: 'Backed up.',
-        restored: 'Backup restored here and saved to your account.',
-        removed: 'Backup removed.'
+        pulled: 'Brought this iPad up to date',
+        pushed: 'Saved to your account',
+        merged: 'Merged this iPad with your account. Nothing was lost.',
+        backed: 'Backed up',
+        restored: 'Backup restored here and saved to your account',
+        removed: 'Backup removed'
     };
 
     function readStored(key) {
@@ -2789,14 +3479,16 @@
 
     // Display only. The server reads the account from the token itself, so
     // nothing here is ever trusted for identity.
-    function sessionEmail() {
-        if (!session) return '';
+    function sessionClaims() {
+        if (!session) return {};
         try {
             var part = session.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
             while (part.length % 4) part += '=';
-            return JSON.parse(atob(part)).email || '';
-        } catch (e) { return ''; }
+            return JSON.parse(atob(part)) || {};
+        } catch (e) { return {}; }
     }
+
+    function sessionEmail() { return sessionClaims().email || ''; }
 
     function deviceId() {
         try { return (window.AbelID && AbelID.getState().id) || ''; } catch (e) { return ''; }
@@ -2828,9 +3520,10 @@
             mfaFactor = factors[0].id;
             return newChallenge().then(function () {
                 mfaPending = true;
+                clearCode();
                 renderAccount();
-                setAcctMsg('', 'Enter the code from your authenticator app.');
-                acctMfaCode.focus();
+                setAcctMsg('', '');
+                if (currentView === 'settings' && settingsPage === 'sync') digits[0].focus();
                 return true;
             });
         });
@@ -2932,74 +3625,76 @@
 
     // Restore and remove each throw something away, so both ask twice. The
     // second tap has to land within a few seconds, which keeps a stray tap in a
-    // scrolling list from taking a backup with it.
-    function armedButton(label, extra, ask, run) {
-        var btn = document.createElement('button');
+    // scrolling list from taking a backup with it. Only one is ever armed.
+    var disarmCurrent = null;
+
+    function armedButton(label, kind, whenEl, ask, run) {
+        var btn = el('button', 'bk-btn ' + kind, label);
         var timer = null;
         btn.type = 'button';
-        btn.className = 'backup-act' + (extra ? ' ' + extra : '');
-        btn.textContent = label;
 
         function disarm() {
             clearTimeout(timer);
             timer = null;
             btn.classList.remove('armed');
             btn.textContent = label;
+            whenEl.className = 'bk-when';
+            whenEl.textContent = whenEl.getAttribute('data-when');
+            if (disarmCurrent === disarm) disarmCurrent = null;
         }
 
         btn.addEventListener('click', function () {
             if (timer) {
                 disarm();
-                setAcctMsg('', '');
                 runSync(run, true);
                 return;
             }
+            if (disarmCurrent) disarmCurrent();
+            disarmCurrent = disarm;
             btn.classList.add('armed');
             btn.textContent = 'Tap again';
-            setAcctMsg('', ask);
-            timer = setTimeout(function () {
-                disarm();
-                setAcctMsg('', '');
-            }, 4000);
+            whenEl.className = 'bk-when ' + (kind === 'remove' ? 'warn' : 'ask');
+            whenEl.textContent = ask;
+            timer = setTimeout(disarm, 4000);
         });
         return btn;
     }
 
     function renderBackups() {
         var full = backups.length >= MAX_BACKUPS;
-        document.getElementById('acctBackupCount').textContent = backups.length + ' of ' + MAX_BACKUPS;
-        document.getElementById('backupEmpty').hidden = backups.length > 0;
+        if (disarmCurrent) disarmCurrent();
+        $('acctBackupCount').textContent = backups.length + ' of ' + MAX_BACKUPS + ' slots';
+        $('backupEmpty').hidden = backups.length > 0;
 
-        var addBtn = document.getElementById('acctBackup');
-        addBtn.disabled = full;
-        addBtn.textContent = full ? 'All ' + MAX_BACKUPS + ' slots are full' : 'Back up now';
+        var slots = $('bkSlots');
+        slots.innerHTML = '';
+        for (var i = 0; i < MAX_BACKUPS; i++) slots.appendChild(el('span', 'slot' + (i < backups.length ? ' on' : '')));
 
-        var list = document.getElementById('backupList');
+        $('acctBackup').disabled = full;
+        $('acctBackupLabel').textContent = full ? 'All ' + MAX_BACKUPS + ' slots are full' : 'Back up now';
+
+        var list = $('backupList');
         list.innerHTML = '';
         backups.forEach(function (entry) {
-            var row = document.createElement('li');
-            row.className = 'backup-row';
+            var row = el('li', 'bk-row');
+            var ic = el('span', 'bk-ic');
+            ic.innerHTML = icon('archive', 18, 2);
 
-            var info = document.createElement('div');
-            info.className = 'backup-info';
-            var title = document.createElement('strong');
-            title.textContent = backupSummary(entry.data);
-            var when = document.createElement('span');
-            when.textContent = backupWhen(entry);
-            info.appendChild(title);
+            var info = el('span', 'bk-info');
+            info.appendChild(el('span', 'bk-title', backupSummary(entry.data)));
+            var when = el('span', 'bk-when', backupWhen(entry));
+            when.setAttribute('data-when', when.textContent);
             info.appendChild(when);
 
-            var actions = document.createElement('div');
-            actions.className = 'backup-actions';
-            actions.appendChild(armedButton('Restore', '', 'Restore this backup? It replaces the favorites and look on this device.', function () {
-                return restoreBackup(entry.id);
-            }));
-            actions.appendChild(armedButton('Remove', 'danger', 'Remove this backup for good?', function () {
+            row.appendChild(ic);
+            row.appendChild(info);
+            row.appendChild(armedButton('Restore', 'restore', when,
+                'Restore this backup? It replaces this iPad\'s favorites and look.', function () {
+                    return restoreBackup(entry.id);
+                }));
+            row.appendChild(armedButton('Remove', 'remove', when, 'Remove this backup for good?', function () {
                 return removeBackup(entry.id);
             }));
-
-            row.appendChild(info);
-            row.appendChild(actions);
             list.appendChild(row);
         });
     }
@@ -3015,11 +3710,11 @@
     function runSync(work, loud) {
         if (syncInFlight) return Promise.resolve();
         syncInFlight = true;
-        if (loud) setAcctMsg('', 'Syncing\u2026');
+        if (loud) setAcctMsg('', 'Syncing…');
         return work().then(function (how) {
             syncInFlight = false;
             renderAccount();
-            if (loud) setAcctMsg('ok', SYNC_MESSAGES[how] || 'Done.');
+            if (loud) setAcctMsg('ok', SYNC_MESSAGES[how] || 'Done');
         }, function (err) {
             syncInFlight = false;
             // The server is the one that knows a factor is owed, so this is
@@ -3040,10 +3735,19 @@
         });
     }
 
+    // One message, shown wherever the account page currently is: under the
+    // sign in form, under the code, or in the signed-in header.
     function setAcctMsg(kind, text) {
-        acctMsg.className = 'acct-msg' + (kind ? ' ' + kind : '');
-        acctMsg.textContent = text || '';
-        acctMsg.hidden = !text;
+        [$('signInMsg'), $('codeMsg')].forEach(function (node) {
+            node.className = 'form-msg' + (kind ? ' ' + kind : '');
+            node.textContent = text || '';
+            node.hidden = !text;
+        });
+        var pill = $('syncPill');
+        pill.className = 'status-pill' + (kind ? ' ' + kind : '');
+        pill.innerHTML = kind === 'ok' ? icon('check', 15, 2.8) : (kind === 'error' ? icon('alert', 15, 2.4) : '');
+        pill.appendChild(el('span', null, text || ''));
+        pill.hidden = !text;
     }
 
     function relativeTime(ts) {
@@ -3057,36 +3761,84 @@
         return days + (days === 1 ? ' day ago' : ' days ago');
     }
 
+    // The sidebar card and the Settings row say where the account stands.
+    function renderSyncEntry() {
+        var pending = !!session && mfaPending;
+        var signedIn = !!session && !mfaPending;
+        var avatar = $('syncAvatar');
+        var title = $('syncTitle');
+        var sub = $('syncSub');
+        var setSub = $('setSyncSub');
+        var email = sessionEmail();
+
+        avatar.classList.toggle('is-initial', signedIn);
+        if (signedIn) avatar.textContent = (email.charAt(0) || 'A').toUpperCase();
+        else avatar.innerHTML = icon('user', 18, 2);
+
+        if (pending) {
+            title.textContent = 'Finish signing in';
+            sub.textContent = 'Code needed';
+            setSub.textContent = 'Code needed';
+        } else if (signedIn) {
+            title.textContent = email || 'Abel Tools account';
+            sub.textContent = lastSyncedAt ? 'Synced ' + relativeTime(lastSyncedAt) : 'Signed in';
+            setSub.textContent = sub.textContent;
+        } else {
+            title.textContent = 'Sign in to Sync';
+            sub.textContent = 'Favorites on every iPad';
+            setSub.textContent = 'Not signed in';
+        }
+        sub.classList.toggle('is-alert', pending);
+        setSub.classList.toggle('is-alert', pending);
+    }
+
     function renderAccount() {
         var pending = !!session && mfaPending;
         var signedIn = !!session && !mfaPending;
-        acctForm.hidden = !!session;
-        acctMfaForm.hidden = !pending;
-        acctPanel.hidden = !signedIn;
-        document.getElementById('acctIntro').hidden = !!session;
-        document.getElementById('acctStatus').textContent =
-            signedIn ? 'Signed in' : (pending ? 'Code needed' : 'Not signed in');
+        syncSignIn.hidden = !!session;
+        syncCode.hidden = !pending;
+        syncSignedIn.hidden = !signedIn;
+        renderSyncEntry();
         if (!signedIn) return;
-        document.getElementById('acctWho').textContent = sessionEmail() || 'Abel Tools account';
-        document.getElementById('acctFavCount').textContent = String(favState.keys.length);
-        document.getElementById('acctLastSync').textContent = relativeTime(lastSyncedAt);
+
+        var email = sessionEmail();
+        $('acctAvatar').textContent = (email.charAt(0) || 'A').toUpperCase();
+        $('acctWho').textContent = email || 'Abel Tools account';
+        $('acctWhoSub').textContent = 'Signed in on this iPad' +
+            (sessionClaims().aal === 'aal2' ? ' · two-factor on' : '');
+        $('statFav').textContent = String(favState.keys.length);
+        $('statLast').textContent = cap(relativeTime(lastSyncedAt));
     }
+
+    // "Synced 3 mins ago" should not freeze while the installer stays open
+    setInterval(function () { if (session) renderAccount(); }, 60000);
 
     function setSignupMode(on) {
         signupMode = on;
+        modeSignIn.setAttribute('aria-pressed', on ? 'false' : 'true');
+        modeSignUp.setAttribute('aria-pressed', on ? 'true' : 'false');
         acctSubmit.textContent = on ? 'Create account' : 'Sign in';
-        acctToggle.textContent = on ? 'I already have an account' : 'Create an account instead';
         acctPasswordInput.setAttribute('autocomplete', on ? 'new-password' : 'current-password');
-        document.getElementById('accountName').textContent = on ? 'Create your account' : 'Abel Tools Sync';
     }
+
+    modeSignIn.addEventListener('click', function () { setSignupMode(false); setAcctMsg('', ''); });
+    modeSignUp.addEventListener('click', function () { setSignupMode(true); setAcctMsg('', ''); });
+
+    $('pwShow').addEventListener('click', function () {
+        var show = acctPasswordInput.type === 'password';
+        acctPasswordInput.type = show ? 'text' : 'password';
+        this.textContent = show ? 'Hide' : 'Show';
+        this.setAttribute('aria-pressed', show ? 'true' : 'false');
+        this.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    });
 
     acctForm.addEventListener('submit', function (e) {
         e.preventDefault();
         var email = acctEmailInput.value.trim();
         var password = acctPasswordInput.value;
-        if (!email || !password) return;
+        if (!email || !password) { setAcctMsg('error', 'Enter your email and password.'); return; }
         acctSubmit.disabled = true;
-        setAcctMsg('', signupMode ? 'Creating your account\u2026' : 'Signing in\u2026');
+        setAcctMsg('', signupMode ? 'Creating your account…' : 'Signing in…');
 
         var work = signupMode
             ? identityCall('/signup', {
@@ -3110,12 +3862,63 @@
         });
     });
 
+    /* Six boxes, one code. Typing moves along, backspace moves back, and a
+       pasted or autofilled code spreads across the boxes from wherever it
+       lands, since autofill only ever fills the first. */
+
+    function codeValue() { return digits.map(function (d) { return d.value; }).join(''); }
+
+    function paintVerify() { acctMfaSubmit.disabled = mfaChecking || codeValue().length !== 6; }
+
+    function clearCode() {
+        digits.forEach(function (d) { d.value = ''; });
+        paintVerify();
+    }
+
+    function spreadCode(from, text) {
+        var chars = text.replace(/\D/g, '').split('');
+        for (var i = from; i < digits.length && chars.length; i++) digits[i].value = chars.shift();
+        var next = digits.filter(function (d) { return !d.value; })[0] || digits[digits.length - 1];
+        next.focus();
+        paintVerify();
+    }
+
+    digits.forEach(function (d, i) {
+        d.addEventListener('input', function () {
+            var v = d.value.replace(/\D/g, '');
+            if (v.length > 1) { d.value = ''; spreadCode(i, v); return; }
+            d.value = v;
+            if (v && i < digits.length - 1) digits[i + 1].focus();
+            paintVerify();
+        });
+        d.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && !d.value && i > 0) {
+                e.preventDefault();
+                digits[i - 1].value = '';
+                digits[i - 1].focus();
+                paintVerify();
+            } else if (e.key === 'ArrowLeft' && i > 0) {
+                digits[i - 1].focus();
+            } else if (e.key === 'ArrowRight' && i < digits.length - 1) {
+                digits[i + 1].focus();
+            }
+        });
+        d.addEventListener('paste', function (e) {
+            var t = (e.clipboardData || window.clipboardData).getData('text');
+            if (!t) return;
+            e.preventDefault();
+            spreadCode(i, t);
+        });
+        d.addEventListener('focus', function () { if (d.select) d.select(); });
+    });
+
     acctMfaForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        var code = acctMfaCode.value.replace(/\D/g, '');
+        var code = codeValue();
         if (code.length !== 6) { setAcctMsg('error', 'Enter the 6 digit code.'); return; }
-        acctMfaSubmit.disabled = true;
-        setAcctMsg('', 'Checking\u2026');
+        mfaChecking = true;
+        paintVerify();
+        setAcctMsg('', 'Checking…');
         identityAuthed('/factors/' + mfaFactor + '/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -3123,44 +3926,40 @@
         }).then(function (token) {
             storeToken(token); // the verified session comes back at aal2
             mfaPending = false;
-            acctMfaCode.value = '';
+            clearCode();
             renderAccount();
             return runSync(pullPrefs, true);
         }, function (err) {
             setAcctMsg('error', err.message);
-            acctMfaCode.value = '';
-            acctMfaCode.focus();
+            clearCode();
+            digits[0].focus();
             // A rejected code burns its challenge, so open a fresh one.
             return newChallenge().catch(function () {});
         }).then(function () {
-            acctMfaSubmit.disabled = false;
+            mfaChecking = false;
+            paintVerify();
         });
     });
 
-    document.getElementById('acctMfaCancel').addEventListener('click', function () {
+    $('acctMfaCancel').addEventListener('click', function () {
         saveSession(null);
         mfaPending = false;
         mfaFactor = null;
         mfaChallenge = null;
-        acctMfaCode.value = '';
+        clearCode();
         renderAccount();
         setAcctMsg('', '');
     });
 
-    acctToggle.addEventListener('click', function () {
-        setSignupMode(!signupMode);
-        setAcctMsg('', '');
-    });
-
-    document.getElementById('acctSync').addEventListener('click', function () {
+    $('acctSync').addEventListener('click', function () {
         runSync(pullPrefs, true);
     });
 
-    document.getElementById('acctBackup').addEventListener('click', function () {
+    $('acctBackup').addEventListener('click', function () {
         runSync(backupNow, true);
     });
 
-    document.getElementById('acctSignOut').addEventListener('click', function () {
+    $('acctSignOut').addEventListener('click', function () {
         // Local sign out only: favorites and the look stay on this device, and
         // the account's copy in the sheet is left untouched.
         saveSession(null);
@@ -3168,27 +3967,8 @@
         backups = []; // the account's backups are still in the account, just not shown here
         renderBackups();
         renderAccount();
-        setAcctMsg('', 'Signed out. Your favorites stay on this device.');
+        setAcctMsg('', 'Signed out. Your favorites stay on this iPad.');
     });
-
-    function openAccount() {
-        setAcctMsg('', '');
-        renderAccount();
-        accountSheet.classList.add('open');
-        sheetOverlay.classList.add('open');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeAccount() {
-        accountSheet.classList.remove('open');
-        sheetOverlay.classList.remove('open');
-        document.body.style.overflow = '';
-    }
-
-    document.getElementById('accountBtn').addEventListener('click', openAccount);
-    document.getElementById('accountClose').addEventListener('click', closeAccount);
-    sheetOverlay.addEventListener('click', closeAccount);
-    enableSwipe(accountSheet, closeAccount);
 
     setSignupMode(false);
     renderAccount();
@@ -3197,28 +3977,43 @@
     // A signed-in device catches up quietly as soon as the installer opens.
     if (session) runSync(pullPrefs, false);
 
-    /* ================= AbelDeviceID footer badge =================
-       Show the device's shared AbelDeviceID at the bottom, tap to copy.
-       Reads the existing AbelID module state; never generates or stores
-       anything itself (generation stays in the AbelDeviceID gate). */
+    /* ================= AbelDeviceID card =================
+       Shows the device's shared AbelDeviceID on the About page, with a copy
+       button. Reads the existing AbelID module state; never generates or
+       stores anything itself (generation stays in the AbelDeviceID gate). */
     (function () {
-        var btn = document.getElementById('abelid-view');
-        if (!btn || !window.AbelID) return;
-        function label(s) {
-            if (s.id) return 'AbelDeviceID: ' + s.id;
-            if (s.status === 'banned') return 'AbelDeviceID: banned';
-            if (s.status === 'checking') return 'AbelDeviceID: checking…';
-            return 'AbelDeviceID: not generated';
+        var value = $('abelIdValue');
+        var state = $('abelIdState');
+        var copy = $('abelIdCopy');
+        var copyLabel = $('abelIdCopyLabel');
+        if (!window.AbelID) {
+            value.textContent = 'Unavailable';
+            state.lastChild.textContent = 'Not checked';
+            state.style.setProperty('--dot', '#9C9CA6');
+            return;
         }
-        function upd() { btn.textContent = label(AbelID.getState()); }
+        var STATES = {
+            active: ['Verified', 'var(--lime)'],
+            checking: ['Checking', '#9C9CA6'],
+            missing: ['Not generated', '#9C9CA6'],
+            banned: ['Banned', '#F08A65']
+        };
+        function upd() {
+            var s = AbelID.getState();
+            var look = STATES[s.status] || STATES.checking;
+            value.textContent = s.id || (s.status === 'checking' ? 'Checking…' : 'Not generated');
+            state.lastChild.textContent = look[0];
+            state.style.setProperty('--dot', look[1]);
+            copy.disabled = !s.id;
+        }
         upd();
         AbelID.onChange(upd);
-        btn.addEventListener('click', function () {
+        copy.addEventListener('click', function () {
             var id = AbelID.getState().id;
             if (!id || !navigator.clipboard) return;
             navigator.clipboard.writeText(id).then(function () {
-                btn.textContent = 'AbelDeviceID: copied!';
-                setTimeout(upd, 1200);
+                copyLabel.textContent = 'Copied';
+                setTimeout(function () { copyLabel.textContent = 'Copy ID'; }, 1200);
             }).catch(function () {});
         });
     })();
