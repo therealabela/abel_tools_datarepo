@@ -1,4 +1,4 @@
-- All-new look built for iPad, with a sidebar for Discover, Favorites and Library
-- New Library page: your updates, installed shortcuts and retired tools in one place
-- Shortcut pages now show what works with them and their older versions
-- Settings got its own home for Account & Sync, Appearance and About
+- New: leaf blower V2 Beta, the completely rebuilt Siri alternative
+- Full conversations with Google Gemini, ChatGPT, Claude or OpenRouter, by voice or text
+- leaf blower V2 can set alarms, add reminders and open apps for you, with web search built in
+- A guided setup saves your AI, model and API key on your device; say "settings" any time to change them

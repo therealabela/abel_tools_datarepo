@@ -8,6 +8,7 @@ SaveMyBattery V2.1
 SaveMyBattery V1
 CoolBGRemover
 CoolImageEditor
+leaf blower V2 BETA
 leaf blower w/ Google Search
 leaf blower w/ Google Gemini
 Editable Materials
